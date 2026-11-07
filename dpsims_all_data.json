@@ -1,0 +1,7050 @@
+{
+  "_systemMetadata": {
+    "systemName": "Delhi Public School, Amrapali - Central Inventory Management System (DPSIMS)",
+    "exportedAt": "2026-11-07T13:57:07.653Z",
+    "exportVersion": "2.0-MASTER",
+    "purpose": "Universal Data Migration & Complete Backup",
+    "compatibilityNote": "This JSON contains both the native DPSIMS relational schema (items, faculties, requisitions) for instant 100% 1-to-1 restoration, as well as a normalized flat ledger (allMovementsLedger) and bills collection for importing into any other database or web application."
+  },
+  "statistics": {
+    "totalItems": 84,
+    "totalVariants": 149,
+    "totalCurrentStockInStore": 4626,
+    "totalOpeningStock": 4055,
+    "totalInwardTransactions": 57,
+    "totalInwardUnitsReceived": 1340,
+    "totalOutwardTransactions": 104,
+    "totalOutwardUnitsIssued": 769,
+    "totalAllTimeTransactions": 161,
+    "totalInwardBills": 1,
+    "totalFacultiesRegistered": 13,
+    "totalRequisitionsLogged": 3
+  },
+  "items": [
+    {
+      "id": 1792562001526,
+      "name": "A4 Colour Pages",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562001526",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Ms. Pragya",
+              "date": "2026-10-31",
+              "type": "OUTWARD",
+              "detail": "Ms. Pragya (Academic) - "
+            },
+            {
+              "qty": 1,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "unit": "packets",
+          "current": 4,
+          "opening": 4
+        }
+      ]
+    },
+    {
+      "id": 1792562129088,
+      "name": "A4 Foam Glitter Sheet",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562129088",
+          "logs": [],
+          "name": "Standard",
+          "unit": "packets",
+          "current": 6,
+          "opening": 6
+        }
+      ]
+    },
+    {
+      "id": 1792559651774,
+      "name": "A4 Ream",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792559651774",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Ms. Eishwari",
+              "date": "2026-11-03",
+              "type": "OUTWARD",
+              "detail": "Ms. Eishwari (Reception) - Issued via slip"
+            },
+            {
+              "qty": 1,
+              "ref": "Mr. Devesh Saini",
+              "date": "2026-10-30",
+              "type": "OUTWARD",
+              "detail": "Mr. Devesh Saini (Accountant) - "
+            }
+          ],
+          "name": "Standard",
+          "unit": "ream",
+          "current": 76,
+          "opening": 78
+        }
+      ]
+    },
+    {
+      "id": 1792562109212,
+      "name": "A4 Register",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562109212",
+          "logs": [
+            {
+              "qty": 2,
+              "ref": "Ms. Pragya",
+              "date": "2026-10-31",
+              "type": "OUTWARD",
+              "detail": "Ms. Pragya (Academic) - Issued via slip"
+            },
+            {
+              "qty": 21,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 10,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "current": 46,
+          "opening": 17
+        }
+      ]
+    },
+    {
+      "id": 1793171792187,
+      "name": "Admission Register",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793171792187",
+          "logs": [],
+          "name": "Standard",
+          "unit": "units",
+          "current": 1,
+          "opening": 1
+        }
+      ]
+    },
+    {
+      "id": 1793170587035,
+      "name": "Art Sheet",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170587035",
+          "logs": [
+            {
+              "qty": 35,
+              "ref": "Mr. Anugraha",
+              "date": "2026-10-29",
+              "type": "OUTWARD",
+              "detail": "Mr. Anugraha (Marketing) - For event"
+            }
+          ],
+          "name": "Standard",
+          "unit": "units",
+          "current": 65,
+          "opening": 100
+        }
+      ]
+    },
+    {
+      "id": 1793170888076,
+      "name": "Attendance Register",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170888076",
+          "logs": [
+            {
+              "qty": 9,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "unit": "units",
+          "current": 10,
+          "opening": 1
+        }
+      ]
+    },
+    {
+      "id": 1792562148526,
+      "name": "Balls",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562148526",
+          "logs": [],
+          "name": "Standard",
+          "current": 5,
+          "opening": 5
+        }
+      ]
+    },
+    {
+      "id": 1792560511622,
+      "name": "Black Marker",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560511622",
+          "logs": [
+            {
+              "qty": 2,
+              "ref": "Ms. Pragya",
+              "date": "2026-10-31",
+              "type": "OUTWARD",
+              "detail": "Ms. Pragya (Academic) - Issued via slip"
+            },
+            {
+              "qty": 1,
+              "ref": "Ms. Divyanshi",
+              "date": "2026-10-30",
+              "type": "OUTWARD",
+              "detail": "Ms. Divyanshi (Academic) - Issued via slip"
+            },
+            {
+              "qty": 1,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-30",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 2,
+              "ref": "Ms. Harshita",
+              "date": "2026-10-30",
+              "type": "OUTWARD",
+              "detail": "Ms. Harshita (Coordinator) - "
+            },
+            {
+              "qty": 20,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "current": 63,
+          "opening": 47
+        }
+      ]
+    },
+    {
+      "id": 1792560638720,
+      "name": "Book Cover Roll",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560638720",
+          "logs": [],
+          "name": "Standard",
+          "unit": "roll",
+          "current": 6,
+          "opening": 6
+        }
+      ]
+    },
+    {
+      "id": 1792559666294,
+      "name": "Box Files",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792559666294",
+          "logs": [
+            {
+              "qty": 16,
+              "ref": "Mr. Devesh Saini",
+              "date": "2026-10-24",
+              "type": "OUTWARD",
+              "detail": "Mr. Devesh Saini (Accountant) - Not in record"
+            },
+            {
+              "qty": 8,
+              "ref": "Mr. Devesh Saini",
+              "date": "2026-10-24",
+              "type": "OUTWARD",
+              "detail": "Mr. Devesh Saini (Accountant) - For office work"
+            }
+          ],
+          "name": "Standard",
+          "current": 9,
+          "opening": 33
+        }
+      ]
+    },
+    {
+      "id": 1792561570926,
+      "name": "Brown Cover",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792561570926",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Ms. Divyanshi",
+              "date": "2026-10-31",
+              "type": "OUTWARD",
+              "detail": "Ms. Divyanshi (Academic) - "
+            },
+            {
+              "qty": 2,
+              "ref": "Ms. Pragya",
+              "date": "2026-10-31",
+              "type": "OUTWARD",
+              "detail": "Ms. Pragya (Academic) - Issued via slip"
+            },
+            {
+              "qty": 2,
+              "ref": "Ms. Divyanshi",
+              "date": "2026-10-31",
+              "type": "OUTWARD",
+              "detail": "Ms. Divyanshi (Academic) - "
+            },
+            {
+              "qty": 20,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 1,
+              "ref": "Ms. Pragya",
+              "date": "2026-10-28",
+              "type": "OUTWARD",
+              "detail": "Ms. Pragya (Academic) - Issued via slip"
+            },
+            {
+              "qty": 1,
+              "ref": "Mr. Abhishek Shukla",
+              "date": "2026-10-26",
+              "type": "OUTWARD",
+              "detail": "Mr. Abhishek Shukla (Admin) - For Lab Register"
+            }
+          ],
+          "name": "Standard",
+          "current": 39,
+          "opening": 26
+        }
+      ]
+    },
+    {
+      "id": 1792560118425,
+      "name": "Brown Tape",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560118425",
+          "logs": [
+            {
+              "qty": 27,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "current": 39,
+          "opening": 12
+        }
+      ]
+    },
+    {
+      "id": 1793170278148,
+      "name": "Button Bag",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170278148",
+          "logs": [],
+          "name": "Standard",
+          "unit": "pieces",
+          "current": 4,
+          "opening": 4
+        }
+      ]
+    },
+    {
+      "id": 1792562060821,
+      "name": "Canvas",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562060821",
+          "logs": [
+            {
+              "qty": 3,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            }
+          ],
+          "name": "Standard",
+          "current": 0,
+          "opening": 3
+        }
+      ]
+    },
+    {
+      "id": 1793170568131,
+      "name": "Carbon Sheet",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170568131",
+          "logs": [],
+          "name": "Standard",
+          "unit": "packet",
+          "current": 1,
+          "opening": 1
+        }
+      ]
+    },
+    {
+      "id": 1792561555290,
+      "name": "Cardboard Sheets",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792561555290",
+          "logs": [],
+          "name": "Standard",
+          "current": 38,
+          "opening": 38
+        }
+      ]
+    },
+    {
+      "id": 1792560576516,
+      "name": "CD Marker",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560576516",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Ms. Eishwari",
+              "date": "2026-11-03",
+              "type": "OUTWARD",
+              "detail": "Ms. Eishwari (Reception) - Issued via slip"
+            }
+          ],
+          "name": "Standard",
+          "current": 5,
+          "opening": 6
+        }
+      ]
+    },
+    {
+      "id": 1792999802875,
+      "name": "Cellophane",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792999802875",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Ms. Eishwari",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Eishwari (Reception) - "
+            },
+            {
+              "qty": 26,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-31",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 2,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 1,
+              "ref": "Ms. Kajal",
+              "date": "2026-10-26",
+              "type": "OUTWARD",
+              "detail": "Ms. Kajal (Academic) - Issued via slip"
+            }
+          ],
+          "name": "Standard",
+          "unit": "roll",
+          "current": 28,
+          "opening": 2
+        }
+      ]
+    },
+    {
+      "id": 1792561381578,
+      "name": "Chart Papers",
+      "type": "variant",
+      "variants": [
+        {
+          "id": "v1792561381578_0",
+          "logs": [],
+          "name": "Pink",
+          "current": 107,
+          "opening": 107
+        },
+        {
+          "id": "v1792561381578_1",
+          "logs": [],
+          "name": "Turquoise",
+          "current": 9,
+          "opening": 9
+        },
+        {
+          "id": "v1792561381578_2",
+          "logs": [],
+          "name": "Light Green",
+          "current": 100,
+          "opening": 100
+        },
+        {
+          "id": "v1792561381578_3",
+          "logs": [],
+          "name": "Light Blue",
+          "current": 96,
+          "opening": 96
+        }
+      ]
+    },
+    {
+      "id": 1793171774730,
+      "name": "Class Logbook",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793171774730",
+          "logs": [],
+          "name": "Standard",
+          "unit": "units",
+          "current": 8,
+          "opening": 8
+        }
+      ]
+    },
+    {
+      "id": 1792562140414,
+      "name": "Clay",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562140414",
+          "logs": [],
+          "name": "Standard",
+          "current": 40,
+          "opening": 40
+        }
+      ]
+    },
+    {
+      "id": 1792560438276,
+      "name": "Colored Marker",
+      "type": "variant",
+      "variants": [
+        {
+          "id": "v1792560438276_0",
+          "logs": [],
+          "name": "Yellow",
+          "current": 2,
+          "opening": 2
+        },
+        {
+          "id": "v1792560438276_1",
+          "logs": [],
+          "name": "Mustard Yellow",
+          "current": 2,
+          "opening": 2
+        },
+        {
+          "id": "v1792560438276_2",
+          "logs": [
+            {
+              "qty": 2,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Green",
+          "current": 4,
+          "opening": 2
+        },
+        {
+          "id": "v1792560438276_3",
+          "logs": [],
+          "name": "Black",
+          "current": 2,
+          "opening": 2
+        },
+        {
+          "id": "v1792560438276_4",
+          "logs": [],
+          "name": "Purple",
+          "current": 2,
+          "opening": 2
+        },
+        {
+          "id": "v1792560438276_5",
+          "logs": [
+            {
+              "qty": 2,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Brown",
+          "current": 4,
+          "opening": 2
+        },
+        {
+          "id": "v1792560438276_6",
+          "logs": [
+            {
+              "qty": 4,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Pink",
+          "current": 6,
+          "opening": 2
+        },
+        {
+          "id": "v_1793171486971_520",
+          "logs": [
+            {
+              "qty": 2,
+              "ref": "Opening Stock",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Opening Stock / New Color Added"
+            }
+          ],
+          "name": "Red",
+          "unit": "units",
+          "color": "#ef4444",
+          "current": 2
+        },
+        {
+          "id": "v_1793171513890_825",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Opening Stock",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Opening Stock / New Color Added"
+            }
+          ],
+          "name": "Blue",
+          "unit": "units",
+          "color": "#2563eb",
+          "current": 1
+        },
+        {
+          "id": "v_1793171547746_689",
+          "logs": [
+            {
+              "qty": 2,
+              "ref": "Opening Stock",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Opening Stock / New Color Added"
+            }
+          ],
+          "name": "Orange",
+          "unit": "units",
+          "color": "#f97316",
+          "current": 2
+        }
+      ]
+    },
+    {
+      "id": 1792562197896,
+      "name": "Colour Tape",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562197896",
+          "logs": [
+            {
+              "qty": 50,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "current": 80,
+          "opening": 30
+        }
+      ]
+    },
+    {
+      "id": 1792560623354,
+      "name": "Craft Scissors",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560623354",
+          "logs": [],
+          "name": "Standard",
+          "current": 3,
+          "opening": 3
+        }
+      ]
+    },
+    {
+      "id": 1792560060622,
+      "name": "Crape Paper",
+      "type": "variant",
+      "variants": [
+        {
+          "id": "v1792560060622_0",
+          "logs": [],
+          "name": "Orange",
+          "current": 6,
+          "opening": 6
+        },
+        {
+          "id": "v1792560060622_1",
+          "logs": [],
+          "name": "Yellow",
+          "current": 8,
+          "opening": 8
+        },
+        {
+          "id": "v1792560060622_2",
+          "logs": [],
+          "name": "Purple",
+          "current": 28,
+          "opening": 28
+        },
+        {
+          "id": "v1792560060622_3",
+          "logs": [],
+          "name": "Mustard Yellow",
+          "current": 33,
+          "opening": 33
+        },
+        {
+          "id": "v1792560060622_4",
+          "logs": [],
+          "name": "White",
+          "current": 23,
+          "opening": 23
+        },
+        {
+          "id": "v1792560060622_5",
+          "logs": [],
+          "name": "Pink",
+          "current": 52,
+          "opening": 52
+        },
+        {
+          "id": "v1792560060622_6",
+          "logs": [],
+          "name": "Green",
+          "current": 9,
+          "opening": 9
+        },
+        {
+          "id": "v1792560060622_7",
+          "logs": [],
+          "name": "Blue",
+          "current": 22,
+          "opening": 22
+        }
+      ]
+    },
+    {
+      "id": 1792560607974,
+      "name": "Cutter",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560607974",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - "
+            }
+          ],
+          "name": "Standard",
+          "current": 1,
+          "opening": 2
+        }
+      ]
+    },
+    {
+      "id": 1792560193017,
+      "name": "Double Sided Tape",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560193017",
+          "logs": [
+            {
+              "qty": 4,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 24,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 2,
+              "ref": "Ms. Juhee",
+              "date": "2026-10-23",
+              "type": "OUTWARD",
+              "detail": "Ms. Juhee (Academic) - For Anunaad"
+            }
+          ],
+          "name": "Standard",
+          "current": 41,
+          "opening": 23
+        }
+      ]
+    },
+    {
+      "id": 1792565750443,
+      "name": "Duster",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792565750443",
+          "logs": [],
+          "name": "Standard",
+          "current": 0,
+          "opening": 0
+        }
+      ]
+    },
+    {
+      "id": 1792562378139,
+      "name": "Eraser",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562378139",
+          "logs": [],
+          "name": "Standard",
+          "current": 100,
+          "opening": 100
+        }
+      ]
+    },
+    {
+      "id": 1792740856491,
+      "name": "Fabric Colours",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792740856491",
+          "logs": [
+            {
+              "qty": 6,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 6,
+              "ref": "77 / 2026 / 2021",
+              "cgst": 54.91,
+              "date": "2026-10-22",
+              "rate": 101.69,
+              "sgst": 54.91,
+              "type": "INWARD",
+              "gstin": "07AAGCB2314M1Z8",
+              "price": 610.14,
+              "detail": "Bharat Agencies",
+              "taxRate": 18
+            }
+          ],
+          "name": "Standard",
+          "current": 0,
+          "opening": 0
+        }
+      ]
+    },
+    {
+      "id": 1793170717875,
+      "name": "Fee account register",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170717875",
+          "logs": [],
+          "name": "Standard",
+          "unit": "units",
+          "current": 2,
+          "opening": 2
+        }
+      ]
+    },
+    {
+      "id": 1792560103290,
+      "name": "Fevicol",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560103289",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 2,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 12,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 1,
+              "ref": "Mr. Abhishek Shukla",
+              "date": "2026-10-26",
+              "type": "OUTWARD",
+              "detail": "Mr. Abhishek Shukla (Admin) - Issued via slip"
+            },
+            {
+              "qty": 1,
+              "ref": "Ms. Rachana",
+              "date": "2026-10-22",
+              "type": "OUTWARD",
+              "detail": "Ms. Rachana (Academic) - Issued via slip"
+            }
+          ],
+          "name": "Standard",
+          "current": 35,
+          "opening": 28
+        }
+      ]
+    },
+    {
+      "id": 1792561869392,
+      "name": "Fluorescent paper",
+      "type": "variant",
+      "variants": [
+        {
+          "id": "v1792561869391_0",
+          "logs": [
+            {
+              "qty": 10,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            }
+          ],
+          "name": "Orange",
+          "current": 50,
+          "opening": 60
+        },
+        {
+          "id": "v1792561869391_1",
+          "logs": [
+            {
+              "qty": 10,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            }
+          ],
+          "name": "Brown",
+          "current": 1,
+          "opening": 11
+        },
+        {
+          "id": "v1792561869391_2",
+          "logs": [],
+          "name": "Lime Green",
+          "current": 45,
+          "opening": 45
+        },
+        {
+          "id": "v1792561869391_3",
+          "logs": [
+            {
+              "qty": 8,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            }
+          ],
+          "name": "Purple",
+          "current": 52,
+          "opening": 60
+        },
+        {
+          "id": "v1792561869391_4",
+          "logs": [
+            {
+              "qty": 10,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            }
+          ],
+          "name": "Pink",
+          "current": 80,
+          "opening": 90
+        },
+        {
+          "id": "v1792561869391_5",
+          "logs": [
+            {
+              "qty": 14,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 20,
+              "ref": "Manual Restock",
+              "date": "2026-10-27",
+              "type": "INWARD",
+              "detail": "1-Click Quick Restock (+20 units)"
+            }
+          ],
+          "name": "Black",
+          "current": 20,
+          "opening": 14
+        },
+        {
+          "id": "v1792561869391_6",
+          "logs": [
+            {
+              "qty": 10,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            }
+          ],
+          "name": "Yellow",
+          "current": 66,
+          "opening": 76
+        },
+        {
+          "id": "v1792561869392_7",
+          "logs": [
+            {
+              "qty": 10,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            }
+          ],
+          "name": "Red",
+          "current": 93,
+          "opening": 103
+        }
+      ]
+    },
+    {
+      "id": 1793170777651,
+      "name": "Gate Entry Register",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170777651",
+          "logs": [],
+          "name": "Standard",
+          "unit": "units",
+          "current": 1,
+          "opening": 1
+        }
+      ]
+    },
+    {
+      "id": 1792562088721,
+      "name": "Glitter Sheet",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562088721",
+          "logs": [
+            {
+              "qty": 13,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 3,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 4,
+              "ref": "Ms. Aparna",
+              "date": "2026-10-21",
+              "type": "OUTWARD",
+              "detail": "Ms. Aparna (Academic) - Issued via slip"
+            }
+          ],
+          "name": "Standard",
+          "unit": "packets",
+          "current": 19,
+          "opening": 13
+        }
+      ]
+    },
+    {
+      "id": 1792561971312,
+      "name": "Glossy Paper",
+      "type": "variant",
+      "variants": [
+        {
+          "id": "v1792561971312_0",
+          "logs": [
+            {
+              "qty": 7,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            }
+          ],
+          "name": "Blue",
+          "current": 61,
+          "opening": 68
+        },
+        {
+          "id": "v1792561971312_1",
+          "logs": [],
+          "name": "Yellow",
+          "current": 28,
+          "opening": 28
+        },
+        {
+          "id": "v1792561971312_2",
+          "logs": [],
+          "name": "Purple",
+          "current": 34,
+          "opening": 34
+        },
+        {
+          "id": "v1792561971312_3",
+          "logs": [
+            {
+              "qty": 10,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            }
+          ],
+          "name": "Red",
+          "current": 39,
+          "opening": 49
+        },
+        {
+          "id": "v1792561971312_4",
+          "logs": [],
+          "name": "Pink",
+          "current": 48,
+          "opening": 48
+        },
+        {
+          "id": "v1792561971312_5",
+          "logs": [],
+          "name": "Orange",
+          "current": 65,
+          "opening": 65
+        }
+      ]
+    },
+    {
+      "id": 1792740799066,
+      "name": "Glue Gum Stick",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792740799066",
+          "logs": [
+            {
+              "qty": 10,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 40,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 40,
+              "ref": "77 / 2026 / 2021",
+              "cgst": 54,
+              "date": "2026-10-22",
+              "rate": 15,
+              "sgst": 54,
+              "type": "INWARD",
+              "gstin": "07AAGCB2314M1Z8",
+              "price": 600,
+              "detail": "Bharat Agencies",
+              "taxRate": 18
+            },
+            {
+              "qty": 20,
+              "ref": "Manual Restock",
+              "date": "2026-10-27",
+              "type": "INWARD",
+              "detail": "1-Click Quick Restock (+20 units)"
+            }
+          ],
+          "name": "Standard",
+          "current": 30,
+          "opening": 0
+        }
+      ]
+    },
+    {
+      "id": 1792562014779,
+      "name": "Golden Sheet",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562014779",
+          "logs": [
+            {
+              "qty": 20,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - "
+            },
+            {
+              "qty": 50,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 10,
+              "ref": "77 / 2026 / 2021",
+              "cgst": 27,
+              "date": "2026-10-22",
+              "rate": 30,
+              "sgst": 27,
+              "type": "INWARD",
+              "gstin": "07AAGCB2314M1Z8",
+              "price": 300,
+              "detail": "Bharat Agencies",
+              "taxRate": 18
+            }
+          ],
+          "name": "Standard",
+          "current": 42,
+          "opening": 2
+        }
+      ]
+    },
+    {
+      "id": 1793170920404,
+      "name": "I card Pouch",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170920404",
+          "logs": [],
+          "name": "Standard",
+          "unit": "packets",
+          "current": 5,
+          "opening": 5
+        }
+      ]
+    },
+    {
+      "id": 1793171201035,
+      "name": "Ice Cream Stick",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793171201035",
+          "logs": [],
+          "name": "Standard",
+          "unit": "packets",
+          "current": 6,
+          "opening": 6
+        }
+      ]
+    },
+    {
+      "id": 1792560546088,
+      "name": "Ink",
+      "type": "variant",
+      "variants": [
+        {
+          "id": "v1792560546088_0",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 2,
+              "ref": "Ms. Pragya",
+              "date": "2026-10-31",
+              "type": "OUTWARD",
+              "detail": "Ms. Pragya (Academic) - Issued via slip"
+            },
+            {
+              "qty": 10,
+              "ref": "Ms. Harshita",
+              "date": "2026-10-30",
+              "type": "OUTWARD",
+              "detail": "Ms. Harshita (Coordinator) - "
+            },
+            {
+              "qty": 18,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Black",
+          "current": 25,
+          "opening": 20
+        },
+        {
+          "id": "v1792560546088_1",
+          "logs": [],
+          "name": "Blue",
+          "current": 10,
+          "opening": 10
+        }
+      ]
+    },
+    {
+      "id": 1793170630508,
+      "name": "Inpass booklet",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170630508",
+          "logs": [],
+          "name": "Standard",
+          "unit": "units",
+          "current": 12,
+          "opening": 12
+        }
+      ]
+    },
+    {
+      "id": 1792740817794,
+      "name": "Ivory Sheet 22*28",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792740817794",
+          "logs": [
+            {
+              "qty": 4,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 5,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 10,
+              "ref": "77 / 2026 / 2021",
+              "cgst": 31.5,
+              "date": "2026-10-22",
+              "rate": 35,
+              "sgst": 31.5,
+              "type": "INWARD",
+              "gstin": "07AAGCB2314M1Z8",
+              "price": 350,
+              "detail": "Bharat Agencies",
+              "taxRate": 18
+            }
+          ],
+          "name": "Standard",
+          "current": 1,
+          "opening": 0
+        }
+      ]
+    },
+    {
+      "id": 1792565619335,
+      "name": "Kobra Files",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792565619335",
+          "logs": [
+            {
+              "qty": 8,
+              "ref": "Mr. Devesh Saini",
+              "date": "2026-10-21",
+              "type": "OUTWARD",
+              "detail": "Mr. Devesh Saini (Accountant) - Issued via slip"
+            }
+          ],
+          "name": "Standard",
+          "current": 316,
+          "opening": 324
+        }
+      ]
+    },
+    {
+      "id": 1793170852300,
+      "name": "Leave Record Register",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170852300",
+          "logs": [
+            {
+              "qty": 2,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "unit": "units",
+          "current": 4,
+          "opening": 2
+        }
+      ]
+    },
+    {
+      "id": 1793170833219,
+      "name": "Letter Receive Register",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170833219",
+          "logs": [],
+          "name": "Standard",
+          "unit": "units",
+          "current": 1,
+          "opening": 1
+        }
+      ]
+    },
+    {
+      "id": 1793170733708,
+      "name": "Marks Register",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170733708",
+          "logs": [],
+          "name": "Standard",
+          "unit": "units",
+          "current": 8,
+          "opening": 8
+        }
+      ]
+    },
+    {
+      "id": 1792560209142,
+      "name": "Masking Tape",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560209142",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 2,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 10,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "current": 19,
+          "opening": 12
+        }
+      ]
+    },
+    {
+      "id": 1793171123500,
+      "name": "Oil Pastel Kit",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793171123500",
+          "logs": [],
+          "name": "Standard",
+          "unit": "box",
+          "current": 2,
+          "opening": 2
+        }
+      ]
+    },
+    {
+      "id": 1792562358307,
+      "name": "Paint Brush",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562358307",
+          "logs": [
+            {
+              "qty": 10,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 10,
+              "ref": "77 / 2026 / 2021",
+              "cgst": 162,
+              "date": "2026-10-22",
+              "rate": 180,
+              "sgst": 162,
+              "type": "INWARD",
+              "gstin": "07AAGCB2314M1Z8",
+              "price": 1800,
+              "detail": "Bharat Agencies",
+              "taxRate": 18
+            }
+          ],
+          "name": "Standard",
+          "current": 20,
+          "opening": 20
+        }
+      ]
+    },
+    {
+      "id": 1793171177740,
+      "name": "Paper Tape",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793171177740",
+          "logs": [],
+          "name": "Standard",
+          "unit": "packets",
+          "current": 4,
+          "opening": 4
+        }
+      ]
+    },
+    {
+      "id": 1792561540172,
+      "name": "Pastel Sheet",
+      "type": "variant",
+      "variants": [
+        {
+          "id": "v1792561540172_0",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            }
+          ],
+          "name": "Purple",
+          "unit": "sheets",
+          "group": "Standard",
+          "current": 61,
+          "opening": 62,
+          "category": "Standard"
+        },
+        {
+          "id": "v1792561540172_1",
+          "logs": [
+            {
+              "qty": 24,
+              "ref": "Ms. Kaynat",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Kaynat (Academic) - Issued via slip"
+            },
+            {
+              "qty": 5,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 4,
+              "ref": "Ms. Juhee",
+              "date": "2026-10-23",
+              "type": "OUTWARD",
+              "detail": "Ms. Juhee (Academic) - For Anunaad"
+            }
+          ],
+          "name": "Pink",
+          "unit": "sheets",
+          "group": "Standard",
+          "current": 21,
+          "opening": 54,
+          "category": "Standard"
+        },
+        {
+          "id": "v1792561540172_2",
+          "logs": [
+            {
+              "qty": 12,
+              "ref": "Ms. Kaynat",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Kaynat (Academic) - Issued via slip"
+            },
+            {
+              "qty": 2,
+              "ref": "Ms. Juhee",
+              "date": "2026-10-23",
+              "type": "OUTWARD",
+              "detail": "Ms. Juhee (Academic) - For Anunaad"
+            },
+            {
+              "qty": 4,
+              "ref": "Ms. Aparna",
+              "date": "2026-10-21",
+              "type": "OUTWARD",
+              "detail": "Ms. Aparna (Academic) - Issued via slip"
+            }
+          ],
+          "name": "Orange",
+          "unit": "sheets",
+          "group": "Standard",
+          "current": 0,
+          "opening": 18,
+          "category": "Standard"
+        },
+        {
+          "id": "v1792561540172_3",
+          "logs": [
+            {
+              "qty": 4,
+              "ref": "Ms. Juhee",
+              "date": "2026-10-23",
+              "type": "OUTWARD",
+              "detail": "Ms. Juhee (Academic) - For Anunaad"
+            }
+          ],
+          "name": "Blue",
+          "unit": "sheets",
+          "group": "Standard",
+          "current": 1,
+          "opening": 5,
+          "category": "Standard"
+        },
+        {
+          "id": "v1792561540172_4",
+          "logs": [
+            {
+              "qty": 2,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            }
+          ],
+          "name": "Grey",
+          "unit": "sheets",
+          "group": "Standard",
+          "current": 76,
+          "opening": 78,
+          "category": "Standard"
+        },
+        {
+          "id": "v1792561540172_5",
+          "logs": [
+            {
+              "qty": 20,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 2,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            }
+          ],
+          "name": "Turquoise",
+          "unit": "sheets",
+          "group": "Standard",
+          "current": 58,
+          "opening": 80,
+          "category": "Standard"
+        },
+        {
+          "id": "v1792561540172_6",
+          "logs": [
+            {
+              "qty": 8,
+              "ref": "Ms. Kaynat",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Kaynat (Academic) - Issued via slip"
+            },
+            {
+              "qty": 13,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 4,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 4,
+              "ref": "Ms. Juhee",
+              "date": "2026-10-23",
+              "type": "OUTWARD",
+              "detail": "Ms. Juhee (Academic) - For Anunaad"
+            }
+          ],
+          "name": "Brown",
+          "unit": "sheets",
+          "group": "Standard",
+          "current": 48,
+          "opening": 77,
+          "category": "Standard"
+        },
+        {
+          "id": "v1792561540172_7",
+          "logs": [
+            {
+              "qty": 4,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 1,
+              "ref": "Ms. Rachana",
+              "date": "2026-10-22",
+              "type": "OUTWARD",
+              "detail": "Ms. Rachana (Academic) - Issued via slip"
+            }
+          ],
+          "name": "Maroon",
+          "unit": "sheets",
+          "group": "Standard",
+          "current": 77,
+          "opening": 82,
+          "category": "Standard"
+        },
+        {
+          "id": "v1792561540172_8",
+          "logs": [
+            {
+              "qty": 4,
+              "ref": "Mr. Abhishek Shukla",
+              "date": "2026-10-23",
+              "type": "OUTWARD",
+              "detail": "Mr. Abhishek Shukla (Admin) - For Anunnad"
+            },
+            {
+              "qty": 4,
+              "ref": "Mr. Abhishek Shukla",
+              "date": "2026-10-23",
+              "type": "OUTWARD",
+              "detail": "Mr. Abhishek Shukla (Admin) - For Anunaad"
+            }
+          ],
+          "name": "Light Green",
+          "unit": "sheets",
+          "group": "Standard",
+          "current": 23,
+          "opening": 31,
+          "category": "Standard"
+        },
+        {
+          "id": "v_1792740697491_320",
+          "logs": [
+            {
+              "qty": 18,
+              "ref": "Ms. Kaynat",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Kaynat (Academic) - Issued via slip"
+            },
+            {
+              "qty": 15,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 4,
+              "ref": "Ms. Juhee",
+              "date": "2026-10-23",
+              "type": "OUTWARD",
+              "detail": "Ms. Juhee (Academic) - For Anunaad"
+            },
+            {
+              "qty": 50,
+              "ref": "77 / 2026 / 2021",
+              "cgst": 76.5,
+              "date": "2026-10-22",
+              "rate": 17,
+              "sgst": 76.5,
+              "type": "INWARD",
+              "gstin": "07AAGCB2314M1Z8",
+              "price": 850,
+              "detail": "Bharat Agencies",
+              "taxRate": 18
+            }
+          ],
+          "name": "White",
+          "unit": "sheets",
+          "color": "#ffffff",
+          "group": "Standard",
+          "current": 13,
+          "category": "Standard"
+        },
+        {
+          "id": "v_1792740705355_73",
+          "logs": [
+            {
+              "qty": 8,
+              "ref": "Ms. Kaynat",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Kaynat (Academic) - Issued via slip"
+            },
+            {
+              "qty": 10,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 5,
+              "ref": "Ms. Juhee",
+              "date": "2026-10-23",
+              "type": "OUTWARD",
+              "detail": "Ms. Juhee (Academic) - For Anunaad"
+            },
+            {
+              "qty": 10,
+              "ref": "Ms. Juhee",
+              "date": "2026-10-23",
+              "type": "OUTWARD",
+              "detail": "Ms. Juhee (Academic) - For Anunaad"
+            },
+            {
+              "qty": 50,
+              "ref": "77 / 2026 / 2021",
+              "cgst": 76.5,
+              "date": "2026-10-22",
+              "rate": 17,
+              "sgst": 76.5,
+              "type": "INWARD",
+              "gstin": "07AAGCB2314M1Z8",
+              "price": 850,
+              "detail": "Bharat Agencies",
+              "taxRate": 18
+            }
+          ],
+          "name": "Black",
+          "unit": "sheets",
+          "color": "#18181b",
+          "group": "Standard",
+          "current": 17,
+          "category": "Standard"
+        },
+        {
+          "id": "v_1792740712122_566",
+          "logs": [
+            {
+              "qty": 4,
+              "ref": "Ms. Pragya",
+              "date": "2026-10-31",
+              "type": "OUTWARD",
+              "detail": "Ms. Pragya (Academic) - Issued via slip"
+            },
+            {
+              "qty": 4,
+              "ref": "Ms. Juhee",
+              "date": "2026-10-23",
+              "type": "OUTWARD",
+              "detail": "Ms. Juhee (Academic) - For Anunaad"
+            },
+            {
+              "qty": 50,
+              "ref": "77 / 2026 / 2021",
+              "cgst": 76.5,
+              "date": "2026-10-22",
+              "rate": 17,
+              "sgst": 76.5,
+              "type": "INWARD",
+              "gstin": "07AAGCB2314M1Z8",
+              "price": 850,
+              "detail": "Bharat Agencies",
+              "taxRate": 18
+            }
+          ],
+          "name": "Green",
+          "unit": "sheets",
+          "color": "#16a34a",
+          "group": "Standard",
+          "current": 42,
+          "category": "Standard"
+        },
+        {
+          "id": "v_1792740717602_847",
+          "logs": [
+            {
+              "qty": 18,
+              "ref": "Ms. Kaynat",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Kaynat (Academic) - Issued via slip"
+            },
+            {
+              "qty": 4,
+              "ref": "Ms. Juhee",
+              "date": "2026-10-23",
+              "type": "OUTWARD",
+              "detail": "Ms. Juhee (Academic) - For Anunaad"
+            },
+            {
+              "qty": 50,
+              "ref": "77 / 2026 / 2021",
+              "cgst": 76.5,
+              "date": "2026-10-22",
+              "rate": 17,
+              "sgst": 76.5,
+              "type": "INWARD",
+              "gstin": "07AAGCB2314M1Z8",
+              "price": 850,
+              "detail": "Bharat Agencies",
+              "taxRate": 18
+            }
+          ],
+          "name": "Yellow",
+          "unit": "sheets",
+          "color": "#facc15",
+          "group": "Standard",
+          "current": 28,
+          "category": "Standard"
+        },
+        {
+          "id": "v_1792758025268_a4",
+          "logs": [
+            {
+              "qty": 4,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 4,
+              "ref": "77 / 2026 / 2021",
+              "cgst": 86.4,
+              "date": "2026-10-22",
+              "rate": 240,
+              "sgst": 86.4,
+              "type": "INWARD",
+              "gstin": "07AAGCB2314M1Z8",
+              "price": 960,
+              "detail": "Bharat Agencies",
+              "taxRate": 18
+            }
+          ],
+          "name": "A4",
+          "unit": "packets",
+          "group": "A4",
+          "current": 0,
+          "opening": 0,
+          "category": "A4"
+        },
+        {
+          "id": "v_1792758025269_a3",
+          "logs": [
+            {
+              "qty": 4,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 4,
+              "ref": "77 / 2026 / 2021",
+              "cgst": 57.6,
+              "date": "2026-10-22",
+              "rate": 160,
+              "sgst": 57.6,
+              "type": "INWARD",
+              "gstin": "07AAGCB2314M1Z8",
+              "price": 640,
+              "detail": "Bharat Agencies",
+              "taxRate": 18
+            }
+          ],
+          "name": "A3",
+          "unit": "packets",
+          "group": "A3",
+          "current": 0,
+          "opening": 0,
+          "category": "A3"
+        }
+      ],
+      "hasCategories": true
+    },
+    {
+      "id": 1793170000389,
+      "name": "Pearl Head Pin",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170000389",
+          "logs": [],
+          "name": "Standard",
+          "unit": "packets",
+          "current": 5,
+          "opening": 5
+        }
+      ]
+    },
+    {
+      "id": 1793239540472,
+      "name": "Pencil",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793239540472",
+          "logs": [],
+          "name": "Standard",
+          "unit": "units",
+          "current": 100,
+          "opening": 100
+        }
+      ]
+    },
+    {
+      "id": 1792562334390,
+      "name": "Pencil Colour",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562334390",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            }
+          ],
+          "name": "Standard",
+          "unit": "box",
+          "current": 2,
+          "opening": 3
+        }
+      ]
+    },
+    {
+      "id": 1792560697177,
+      "name": "Pens",
+      "type": "variant",
+      "variants": [
+        {
+          "id": "v1792560697177_0",
+          "logs": [
+            {
+              "qty": 45,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 1,
+              "ref": "Ms. Eishwari",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Eishwari (Reception) - For Director office"
+            }
+          ],
+          "name": "Black",
+          "current": 116,
+          "opening": 72
+        },
+        {
+          "id": "v1792560697177_1",
+          "logs": [
+            {
+              "qty": 20,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 1,
+              "ref": "Ms. Eishwari",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Eishwari (Reception) - For Director office"
+            }
+          ],
+          "name": "Blue",
+          "current": 91,
+          "opening": 72
+        },
+        {
+          "id": "v1792560697177_2",
+          "logs": [
+            {
+              "qty": 20,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 1,
+              "ref": "Ms. Eishwari",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Eishwari (Reception) - For Director office"
+            }
+          ],
+          "name": "Red",
+          "current": 53,
+          "opening": 34
+        },
+        {
+          "id": "v_1793171055484_70",
+          "logs": [
+            {
+              "qty": 20,
+              "ref": "Opening Stock",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Opening Stock / New Color Added"
+            }
+          ],
+          "name": "Green",
+          "unit": "units",
+          "color": "#16a34a",
+          "current": 20
+        }
+      ]
+    },
+    {
+      "id": 1792560562237,
+      "name": "Permanent Marker",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560562237",
+          "logs": [
+            {
+              "qty": 2,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 1,
+              "ref": "Ms. Eishwari",
+              "date": "2026-11-03",
+              "type": "OUTWARD",
+              "detail": "Ms. Eishwari (Reception) - Issued via slip"
+            },
+            {
+              "qty": 4,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 15,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "current": 22,
+          "opening": 6
+        }
+      ]
+    },
+    {
+      "id": 1792997911929,
+      "name": "Pointer",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792997911929",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Mr. Abhishek Shukla",
+              "date": "2026-10-26",
+              "type": "OUTWARD",
+              "detail": "Mr. Abhishek Shukla (Admin) - Issued via slip"
+            }
+          ],
+          "name": "Standard",
+          "unit": "units",
+          "current": 1,
+          "opening": 2
+        }
+      ]
+    },
+    {
+      "id": 1792562183383,
+      "name": "Poster Colour",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562183383",
+          "logs": [],
+          "name": "Standard",
+          "current": 86,
+          "opening": 86
+        }
+      ]
+    },
+    {
+      "id": 1792560916547,
+      "name": "Printed Chart Papers",
+      "type": "variant",
+      "variants": [
+        {
+          "id": "v1792560916547_0",
+          "logs": [
+            {
+              "qty": 2,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 4,
+              "ref": "Ms. Aparna",
+              "date": "2026-10-21",
+              "type": "OUTWARD",
+              "detail": "Ms. Aparna (Academic) - Issued via slip"
+            }
+          ],
+          "name": "Red",
+          "current": 7,
+          "opening": 13
+        },
+        {
+          "id": "v1792560916547_2",
+          "logs": [
+            {
+              "qty": 2,
+              "ref": "Ms. Shivangi",
+              "date": "2026-10-27",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            }
+          ],
+          "name": "Light Green",
+          "current": 16,
+          "opening": 18
+        },
+        {
+          "id": "v1792560916547_3",
+          "logs": [],
+          "name": "Light Blue",
+          "current": 31,
+          "opening": 31
+        },
+        {
+          "id": "v1792560916547_4",
+          "logs": [],
+          "name": "Brown",
+          "current": 11,
+          "opening": 11
+        },
+        {
+          "id": "v1792560916547_5",
+          "logs": [],
+          "name": "Pink",
+          "current": 41,
+          "opening": 41
+        },
+        {
+          "id": "v1792560916547_6",
+          "logs": [],
+          "name": "Yellow",
+          "current": 11,
+          "opening": 11
+        },
+        {
+          "id": "v1792560916547_7",
+          "logs": [],
+          "name": "Maroon",
+          "current": 12,
+          "opening": 12
+        },
+        {
+          "id": "v1792560916547_8",
+          "logs": [
+            {
+              "qty": 4,
+              "ref": "Ms. Aparna",
+              "date": "2026-10-21",
+              "type": "OUTWARD",
+              "detail": "Ms. Aparna (Academic) - Issued via slip"
+            }
+          ],
+          "name": "Purple",
+          "current": 22,
+          "opening": 26
+        },
+        {
+          "id": "v1792560916547_9",
+          "logs": [],
+          "name": "Grey",
+          "current": 20,
+          "opening": 20
+        },
+        {
+          "id": "v1792560916547_10",
+          "logs": [],
+          "name": "Cream",
+          "current": 3,
+          "opening": 3
+        },
+        {
+          "id": "v_1792561011864_239",
+          "logs": [
+            {
+              "qty": 2,
+              "ref": "Ms. Rachana",
+              "date": "2026-10-22",
+              "type": "OUTWARD",
+              "detail": "Ms. Rachana (Academic) - Issued via slip"
+            },
+            {
+              "qty": 4,
+              "ref": "Ms. Aparna",
+              "date": "2026-10-21",
+              "type": "OUTWARD",
+              "detail": "Ms. Aparna (Academic) - Issued via slip"
+            },
+            {
+              "qty": 36,
+              "ref": "Opening Stock",
+              "date": "2026-10-21",
+              "type": "INWARD",
+              "detail": "Opening Stock / New Color Added"
+            }
+          ],
+          "name": "Blue",
+          "color": "#2563eb",
+          "current": 30
+        },
+        {
+          "id": "v_1792561081088_215",
+          "logs": [
+            {
+              "qty": 25,
+              "ref": "Opening Stock",
+              "date": "2026-10-21",
+              "type": "INWARD",
+              "detail": "Opening Stock / New Color Added"
+            }
+          ],
+          "name": "Green",
+          "color": "#16a34a",
+          "current": 25
+        }
+      ]
+    },
+    {
+      "id": 1792565774529,
+      "name": "Punching Machine",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792565774529",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Mr. Abhishek Shukla",
+              "date": "2026-10-28",
+              "type": "OUTWARD",
+              "detail": "Mr. Abhishek Shukla (Admin) - To maintain bills in Lab"
+            },
+            {
+              "qty": 1,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "current": 0,
+          "opening": 0
+        }
+      ]
+    },
+    {
+      "id": 1793171973306,
+      "name": "Ribbon",
+      "type": "variant",
+      "variants": [
+        {
+          "id": "v1793171973306_0",
+          "logs": [],
+          "name": "Whte",
+          "unit": "units",
+          "current": 8,
+          "opening": 8
+        },
+        {
+          "id": "v1793171973306_1",
+          "logs": [],
+          "name": "Orange",
+          "unit": "units",
+          "current": 6,
+          "opening": 6
+        },
+        {
+          "id": "v1793171973306_2",
+          "logs": [],
+          "name": "Red",
+          "unit": "units",
+          "current": 1,
+          "opening": 1
+        },
+        {
+          "id": "v1793171973306_3",
+          "logs": [],
+          "name": "Blue",
+          "unit": "units",
+          "current": 2,
+          "opening": 2
+        },
+        {
+          "id": "v1793171973306_4",
+          "logs": [],
+          "name": "Black",
+          "unit": "units",
+          "current": 2,
+          "opening": 2
+        }
+      ]
+    },
+    {
+      "id": 1792560254880,
+      "name": "Scale",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560254880",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Mr. Abhishek Shukla",
+              "date": "2026-10-26",
+              "type": "OUTWARD",
+              "detail": "Mr. Abhishek Shukla (Admin) - Issued via slip"
+            }
+          ],
+          "name": "Standard",
+          "current": 26,
+          "opening": 27
+        }
+      ]
+    },
+    {
+      "id": 1792560649566,
+      "name": "Scissors",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560649566",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "current": 11,
+          "opening": 10
+        }
+      ]
+    },
+    {
+      "id": 1792562370588,
+      "name": "Sharpener",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562370588",
+          "logs": [],
+          "name": "Standard",
+          "current": 100,
+          "opening": 100
+        }
+      ]
+    },
+    {
+      "id": 1792562025608,
+      "name": "Silver Sheet",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562025608",
+          "logs": [
+            {
+              "qty": 10,
+              "ref": "77 / 2026 / 2021",
+              "cgst": 31.5,
+              "date": "2026-10-22",
+              "rate": 35,
+              "sgst": 31.5,
+              "type": "INWARD",
+              "gstin": "07AAGCB2314M1Z8",
+              "price": 350,
+              "detail": "Bharat Agencies",
+              "taxRate": 18
+            }
+          ],
+          "name": "Standard",
+          "current": 14,
+          "opening": 4
+        }
+      ]
+    },
+    {
+      "id": 1793171150099,
+      "name": "Soft Board Pins",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793171150099",
+          "logs": [],
+          "name": "Standard",
+          "unit": "packets",
+          "current": 9,
+          "opening": 9
+        }
+      ]
+    },
+    {
+      "id": 1793171751010,
+      "name": "Spring File",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793171751010",
+          "logs": [],
+          "name": "Standard",
+          "unit": "units",
+          "current": 10,
+          "opening": 10
+        }
+      ]
+    },
+    {
+      "id": 1792560462643,
+      "name": "Stamp Pad",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560462643",
+          "logs": [
+            {
+              "qty": 2,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "current": 8,
+          "opening": 6
+        }
+      ]
+    },
+    {
+      "id": 1793171692650,
+      "name": "Stamp Pad Ink",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793171692650",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Direct Stock Inward",
+              "date": "2026-11-04",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 1,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - "
+            }
+          ],
+          "name": "Standard",
+          "unit": "units",
+          "current": 2,
+          "opening": 2
+        }
+      ]
+    },
+    {
+      "id": 1792560238736,
+      "name": "Stapler",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560238736",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Ms. Eishwari",
+              "date": "2026-11-03",
+              "type": "OUTWARD",
+              "detail": "Ms. Eishwari (Reception) - Issued via slip"
+            },
+            {
+              "qty": 1,
+              "ref": "Mr. Abhishek Shukla",
+              "date": "2026-10-26",
+              "type": "OUTWARD",
+              "detail": "Mr. Abhishek Shukla (Admin) - Issued via slip"
+            }
+          ],
+          "name": "Standard",
+          "current": 16,
+          "opening": 18
+        }
+      ]
+    },
+    {
+      "id": 1792560227994,
+      "name": "Stapler Pins",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560227994",
+          "logs": [
+            {
+              "qty": 1,
+              "ref": "Ms. Eishwari",
+              "date": "2026-11-03",
+              "type": "OUTWARD",
+              "detail": "Ms. Eishwari (Reception) - Issued via slip"
+            },
+            {
+              "qty": 313,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            },
+            {
+              "qty": 1,
+              "ref": "Mr. Abhishek Shukla",
+              "date": "2026-10-26",
+              "type": "OUTWARD",
+              "detail": "Mr. Abhishek Shukla (Admin) - Issued via slip"
+            }
+          ],
+          "name": "Standard",
+          "current": 475,
+          "opening": 164
+        }
+      ]
+    },
+    {
+      "id": 1792560271981,
+      "name": "Sticky Notes",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792560271980",
+          "logs": [
+            {
+              "qty": 14,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "current": 25,
+          "opening": 11
+        }
+      ]
+    },
+    {
+      "id": 1793170516627,
+      "name": "Stock Register",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170516627",
+          "logs": [],
+          "name": "Standard",
+          "unit": "units",
+          "current": 3,
+          "opening": 3
+        }
+      ]
+    },
+    {
+      "id": 1792562310725,
+      "name": "Straw",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562310725",
+          "logs": [
+            {
+              "qty": 4,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "current": 24,
+          "opening": 20
+        }
+      ]
+    },
+    {
+      "id": 1792995183655,
+      "name": "Student Project Files",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792995183655",
+          "logs": [],
+          "name": "Standard",
+          "unit": "files",
+          "current": 13,
+          "opening": 13
+        }
+      ]
+    },
+    {
+      "id": 1793170873027,
+      "name": "TC Register",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170873027",
+          "logs": [],
+          "name": "Standard",
+          "unit": "units",
+          "current": 1,
+          "opening": 1
+        }
+      ]
+    },
+    {
+      "id": 1793170490651,
+      "name": "Transparent Double Side tape",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170490651",
+          "logs": [],
+          "name": "Standard",
+          "unit": "pieces",
+          "current": 8,
+          "opening": 8
+        }
+      ]
+    },
+    {
+      "id": 1793170358491,
+      "name": "Transparent Folder",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170358491",
+          "logs": [],
+          "name": "Standard",
+          "unit": "pieces",
+          "current": 60,
+          "opening": 60
+        }
+      ]
+    },
+    {
+      "id": 1793170381891,
+      "name": "Transparent Sheet Protector",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793170381891",
+          "logs": [
+            {
+              "qty": 200,
+              "ref": "Ms. Harshita",
+              "date": "2026-10-30",
+              "type": "OUTWARD",
+              "detail": "Ms. Harshita (Coordinator) - "
+            },
+            {
+              "qty": 120,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-30",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "unit": "pieces",
+          "current": 70,
+          "opening": 150
+        }
+      ]
+    },
+    {
+      "id": 1792560158351,
+      "name": "Transparent Tape",
+      "type": "variant",
+      "variants": [
+        {
+          "id": "v1792560158351_0",
+          "logs": [
+            {
+              "qty": 6,
+              "ref": "Ms. Shivangi",
+              "date": "2026-11-04",
+              "type": "OUTWARD",
+              "detail": "Ms. Shivangi (Art) - Issued via slip"
+            },
+            {
+              "qty": 1,
+              "ref": "Ms. Divyanshi",
+              "date": "2026-10-31",
+              "type": "OUTWARD",
+              "detail": "Ms. Divyanshi (Academic) - "
+            }
+          ],
+          "name": "Broad",
+          "current": 4,
+          "opening": 11
+        },
+        {
+          "id": "v1792560158351_1",
+          "logs": [
+            {
+              "qty": 18,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Thin",
+          "current": 28,
+          "opening": 10
+        }
+      ]
+    },
+    {
+      "id": 1792562323652,
+      "name": "Wax Colour",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1792562323652",
+          "logs": [
+            {
+              "qty": 8,
+              "ref": "Direct Stock Inward",
+              "date": "2026-10-28",
+              "type": "INWARD",
+              "detail": "Direct stock addition"
+            }
+          ],
+          "name": "Standard",
+          "unit": "box",
+          "current": 21,
+          "opening": 13
+        }
+      ]
+    },
+    {
+      "id": 1793171384739,
+      "name": "Whitener",
+      "type": "single",
+      "variants": [
+        {
+          "id": "v1793171384739",
+          "logs": [],
+          "name": "Standard",
+          "unit": "units",
+          "current": 7,
+          "opening": 7
+        }
+      ]
+    }
+  ],
+  "faculties": [
+    {
+      "id": 1792565672053,
+      "pin": "1234",
+      "dept": "Accountant",
+      "name": "Mr. Devesh Saini",
+      "empId": "DPS-101"
+    },
+    {
+      "id": 1792569257123,
+      "pin": "1234",
+      "dept": "Academic",
+      "name": "Ms. Aparna",
+      "empId": "DPS-102"
+    },
+    {
+      "id": 1792650282308,
+      "pin": "1234",
+      "dept": "Academic",
+      "name": "Ms. Rachana",
+      "empId": "DPS-103"
+    },
+    {
+      "id": 1792731640589,
+      "pin": "1234",
+      "dept": "Admin",
+      "name": "Mr. Abhishek Shukla",
+      "empId": "DPS-104"
+    },
+    {
+      "id": 1792741458114,
+      "pin": "1234",
+      "dept": "Academic",
+      "name": "Ms. Juhee",
+      "empId": "DPS-105"
+    },
+    {
+      "id": 1792990270669,
+      "pin": "1234",
+      "dept": "Academic",
+      "name": "Ms. Pragya",
+      "empId": "DPS-106"
+    },
+    {
+      "id": 1792999855099,
+      "pin": "1234",
+      "dept": "Academic",
+      "name": "Ms. Kajal",
+      "empId": "DPS-107"
+    },
+    {
+      "id": 1793076211644,
+      "pin": "1234",
+      "dept": "Art",
+      "name": "Ms. Shivangi",
+      "empId": "DPS-108"
+    },
+    {
+      "id": 1793078820206,
+      "pin": "1234",
+      "dept": "Reception",
+      "name": "Ms. Eishwari",
+      "empId": "DPS-109"
+    },
+    {
+      "id": 1793262469817,
+      "dept": "Marketing",
+      "name": "Mr. Anugraha"
+    },
+    {
+      "id": 1793341581728,
+      "dept": "Coordinator",
+      "name": "Ms. Harshita"
+    },
+    {
+      "id": 1793346437834,
+      "dept": "Academic",
+      "name": "Ms. Divyanshi"
+    },
+    {
+      "id": 1793781802433,
+      "dept": "Academic",
+      "name": "Ms. Kaynat"
+    }
+  ],
+  "requisitions": [
+    {
+      "id": "DPS-REQ-UNIT-01",
+      "items": [
+        {
+          "qty": 2,
+          "itemName": "Gel Pen"
+        }
+      ],
+      "status": "pending",
+      "verified": true,
+      "createdAt": "2026-10-28T17:20:58.746Z",
+      "verifiedAt": "2026-10-28T17:20:58.730Z",
+      "teacherName": "Devesh Saini"
+    },
+    {
+      "id": "DPS-REQ-AUTH-7567",
+      "dept": "Academic",
+      "items": [
+        {
+          "qty": 2,
+          "itemId": 1,
+          "itemName": "Marker Pen"
+        }
+      ],
+      "status": "pending",
+      "priority": "Normal",
+      "verified": true,
+      "createdAt": "2026-10-28T16:11:49.968Z",
+      "verifiedAt": "2026-10-28T16:11:49.968Z",
+      "teacherName": "Aparna"
+    },
+    {
+      "id": "DPS-REQ-TEST-5315",
+      "dept": "Science Labs",
+      "room": "Lab 2",
+      "items": [
+        {
+          "qty": 5,
+          "unit": "pcs",
+          "notes": "Blue color",
+          "itemId": 1,
+          "category": "Stationery",
+          "itemName": "Marker Pen"
+        }
+      ],
+      "phone": "9876543210",
+      "status": "pending",
+      "remarks": "Automated test requisition for Grade 10 Science practical",
+      "neededBy": "2026-10-29",
+      "priority": "Urgent",
+      "createdAt": "2026-10-28T13:38:33.951Z",
+      "teacherName": "Kavita Sharma"
+    }
+  ],
+  "bills": [
+    {
+      "billNumber": "77",
+      "financialYear": "2026",
+      "inPassNumber": "2021",
+      "billReference": "77 / 2026 / 2021",
+      "vendorName": "Bharat Agencies",
+      "vendorGstin": "07AAGCB2314M1Z8",
+      "billDate": "2026-10-22",
+      "totalLineItems": 12,
+      "totalQuantityReceived": 294,
+      "taxableAmount": 9010.14,
+      "cgst": 810.91,
+      "sgst": 810.91,
+      "igst": 0,
+      "totalInvoiceAmount": 10631.96,
+      "itemsReceived": [
+        {
+          "itemId": 1792740856491,
+          "itemName": "Fabric Colours",
+          "variantId": "v1792740856491",
+          "variantName": "Standard",
+          "unit": "units",
+          "quantity": 6,
+          "unitRate": 101.69,
+          "taxablePrice": 610.14,
+          "cgst": 54.91,
+          "sgst": 54.91,
+          "igst": 0
+        },
+        {
+          "itemId": 1792740799066,
+          "itemName": "Glue Gum Stick",
+          "variantId": "v1792740799066",
+          "variantName": "Standard",
+          "unit": "units",
+          "quantity": 40,
+          "unitRate": 15,
+          "taxablePrice": 600,
+          "cgst": 54,
+          "sgst": 54,
+          "igst": 0
+        },
+        {
+          "itemId": 1792562014779,
+          "itemName": "Golden Sheet",
+          "variantId": "v1792562014779",
+          "variantName": "Standard",
+          "unit": "units",
+          "quantity": 10,
+          "unitRate": 30,
+          "taxablePrice": 300,
+          "cgst": 27,
+          "sgst": 27,
+          "igst": 0
+        },
+        {
+          "itemId": 1792740817794,
+          "itemName": "Ivory Sheet 22*28",
+          "variantId": "v1792740817794",
+          "variantName": "Standard",
+          "unit": "units",
+          "quantity": 10,
+          "unitRate": 35,
+          "taxablePrice": 350,
+          "cgst": 31.5,
+          "sgst": 31.5,
+          "igst": 0
+        },
+        {
+          "itemId": 1792562358307,
+          "itemName": "Paint Brush",
+          "variantId": "v1792562358307",
+          "variantName": "Standard",
+          "unit": "units",
+          "quantity": 10,
+          "unitRate": 180,
+          "taxablePrice": 1800,
+          "cgst": 162,
+          "sgst": 162,
+          "igst": 0
+        },
+        {
+          "itemId": 1792561540172,
+          "itemName": "Pastel Sheet",
+          "variantId": "v_1792740697491_320",
+          "variantName": "White",
+          "unit": "sheets",
+          "quantity": 50,
+          "unitRate": 17,
+          "taxablePrice": 850,
+          "cgst": 76.5,
+          "sgst": 76.5,
+          "igst": 0
+        },
+        {
+          "itemId": 1792561540172,
+          "itemName": "Pastel Sheet",
+          "variantId": "v_1792740705355_73",
+          "variantName": "Black",
+          "unit": "sheets",
+          "quantity": 50,
+          "unitRate": 17,
+          "taxablePrice": 850,
+          "cgst": 76.5,
+          "sgst": 76.5,
+          "igst": 0
+        },
+        {
+          "itemId": 1792561540172,
+          "itemName": "Pastel Sheet",
+          "variantId": "v_1792740712122_566",
+          "variantName": "Green",
+          "unit": "sheets",
+          "quantity": 50,
+          "unitRate": 17,
+          "taxablePrice": 850,
+          "cgst": 76.5,
+          "sgst": 76.5,
+          "igst": 0
+        },
+        {
+          "itemId": 1792561540172,
+          "itemName": "Pastel Sheet",
+          "variantId": "v_1792740717602_847",
+          "variantName": "Yellow",
+          "unit": "sheets",
+          "quantity": 50,
+          "unitRate": 17,
+          "taxablePrice": 850,
+          "cgst": 76.5,
+          "sgst": 76.5,
+          "igst": 0
+        },
+        {
+          "itemId": 1792561540172,
+          "itemName": "Pastel Sheet",
+          "variantId": "v_1792758025268_a4",
+          "variantName": "A4",
+          "unit": "packets",
+          "quantity": 4,
+          "unitRate": 240,
+          "taxablePrice": 960,
+          "cgst": 86.4,
+          "sgst": 86.4,
+          "igst": 0
+        },
+        {
+          "itemId": 1792561540172,
+          "itemName": "Pastel Sheet",
+          "variantId": "v_1792758025269_a3",
+          "variantName": "A3",
+          "unit": "packets",
+          "quantity": 4,
+          "unitRate": 160,
+          "taxablePrice": 640,
+          "cgst": 57.6,
+          "sgst": 57.6,
+          "igst": 0
+        },
+        {
+          "itemId": 1792562025608,
+          "itemName": "Silver Sheet",
+          "variantId": "v1792562025608",
+          "variantName": "Standard",
+          "unit": "units",
+          "quantity": 10,
+          "unitRate": 35,
+          "taxablePrice": 350,
+          "cgst": 31.5,
+          "sgst": 31.5,
+          "igst": 0
+        }
+      ]
+    }
+  ],
+  "allMovementsLedger": [
+    {
+      "id": "MOV-1792562060821-v1792562060821-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792562060821,
+      "itemName": "Canvas",
+      "itemType": "single",
+      "variantId": "v1792562060821",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 3,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792999802875-v1792999802875-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792999802875,
+      "itemName": "Cellophane",
+      "itemType": "single",
+      "variantId": "v1792999802875",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "roll",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Eishwari",
+      "department": "Reception",
+      "purposeOrNotes": "",
+      "referenceNumber": "Ms. Eishwari",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560607974-v1792560607974-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792560607974,
+      "itemName": "Cutter",
+      "itemType": "single",
+      "variantId": "v1792560607974",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560193017-v1792560193017-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792560193017,
+      "itemName": "Double Sided Tape",
+      "itemType": "single",
+      "variantId": "v1792560193017",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560103290-v1792560103289-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792560103290,
+      "itemName": "Fevicol",
+      "itemType": "single",
+      "variantId": "v1792560103289",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560103290-v1792560103289-1",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792560103290,
+      "itemName": "Fevicol",
+      "itemType": "single",
+      "variantId": "v1792560103289",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561971312-v1792561971312_0-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792561971312,
+      "itemName": "Glossy Paper",
+      "itemType": "variant",
+      "variantId": "v1792561971312_0",
+      "variantName": "Blue",
+      "category": null,
+      "unit": "units",
+      "quantity": 7,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561971312-v1792561971312_3-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792561971312,
+      "itemName": "Glossy Paper",
+      "itemType": "variant",
+      "variantId": "v1792561971312_3",
+      "variantName": "Red",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562014779-v1792562014779-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792562014779,
+      "itemName": "Golden Sheet",
+      "itemType": "single",
+      "variantId": "v1792562014779",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 20,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560546088-v1792560546088_0-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792560546088,
+      "itemName": "Ink",
+      "itemType": "variant",
+      "variantId": "v1792560546088_0",
+      "variantName": "Black",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792740817794-v1792740817794-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792740817794,
+      "itemName": "Ivory Sheet 22*28",
+      "itemType": "single",
+      "variantId": "v1792740817794",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560209142-v1792560209142-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792560209142,
+      "itemName": "Masking Tape",
+      "itemType": "single",
+      "variantId": "v1792560209142",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560209142-v1792560209142-1",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792560209142,
+      "itemName": "Masking Tape",
+      "itemType": "single",
+      "variantId": "v1792560209142",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_1-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_1",
+      "variantName": "Pink",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 24,
+      "recipientOrVendor": "Ms. Kaynat",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Kaynat",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_2-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_2",
+      "variantName": "Orange",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 12,
+      "recipientOrVendor": "Ms. Kaynat",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Kaynat",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_5-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_5",
+      "variantName": "Turquoise",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 20,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_6-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_6",
+      "variantName": "Brown",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 8,
+      "recipientOrVendor": "Ms. Kaynat",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Kaynat",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_6-1",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_6",
+      "variantName": "Brown",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 13,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740697491_320-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740697491_320",
+      "variantName": "White",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 18,
+      "recipientOrVendor": "Ms. Kaynat",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Kaynat",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740705355_73-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740705355_73",
+      "variantName": "Black",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 8,
+      "recipientOrVendor": "Ms. Kaynat",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Kaynat",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740717602_847-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740717602_847",
+      "variantName": "Yellow",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 18,
+      "recipientOrVendor": "Ms. Kaynat",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Kaynat",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560562237-v1792560562237-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792560562237,
+      "itemName": "Permanent Marker",
+      "itemType": "single",
+      "variantId": "v1792560562237",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1793171692650-v1793171692650-0",
+      "date": "2026-11-04",
+      "type": "INWARD",
+      "itemId": 1793171692650,
+      "itemName": "Stamp Pad Ink",
+      "itemType": "single",
+      "variantId": "v1793171692650",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1793171692650-v1793171692650-1",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1793171692650,
+      "itemName": "Stamp Pad Ink",
+      "itemType": "single",
+      "variantId": "v1793171692650",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560158351-v1792560158351_0-0",
+      "date": "2026-11-04",
+      "type": "OUTWARD",
+      "itemId": 1792560158351,
+      "itemName": "Transparent Tape",
+      "itemType": "variant",
+      "variantId": "v1792560158351_0",
+      "variantName": "Broad",
+      "category": null,
+      "unit": "units",
+      "quantity": 6,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792559651774-v1792559651774-0",
+      "date": "2026-11-03",
+      "type": "OUTWARD",
+      "itemId": 1792559651774,
+      "itemName": "A4 Ream",
+      "itemType": "single",
+      "variantId": "v1792559651774",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "ream",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Eishwari",
+      "department": "Reception",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Eishwari",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560576516-v1792560576516-0",
+      "date": "2026-11-03",
+      "type": "OUTWARD",
+      "itemId": 1792560576516,
+      "itemName": "CD Marker",
+      "itemType": "single",
+      "variantId": "v1792560576516",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Eishwari",
+      "department": "Reception",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Eishwari",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560562237-v1792560562237-1",
+      "date": "2026-11-03",
+      "type": "OUTWARD",
+      "itemId": 1792560562237,
+      "itemName": "Permanent Marker",
+      "itemType": "single",
+      "variantId": "v1792560562237",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Eishwari",
+      "department": "Reception",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Eishwari",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560238736-v1792560238736-0",
+      "date": "2026-11-03",
+      "type": "OUTWARD",
+      "itemId": 1792560238736,
+      "itemName": "Stapler",
+      "itemType": "single",
+      "variantId": "v1792560238736",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Eishwari",
+      "department": "Reception",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Eishwari",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560227994-v1792560227994-0",
+      "date": "2026-11-03",
+      "type": "OUTWARD",
+      "itemId": 1792560227994,
+      "itemName": "Stapler Pins",
+      "itemType": "single",
+      "variantId": "v1792560227994",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Eishwari",
+      "department": "Reception",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Eishwari",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562001526-v1792562001526-0",
+      "date": "2026-10-31",
+      "type": "OUTWARD",
+      "itemId": 1792562001526,
+      "itemName": "A4 Colour Pages",
+      "itemType": "single",
+      "variantId": "v1792562001526",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "packets",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Pragya",
+      "department": "Academic",
+      "purposeOrNotes": "",
+      "referenceNumber": "Ms. Pragya",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562109212-v1792562109212-0",
+      "date": "2026-10-31",
+      "type": "OUTWARD",
+      "itemId": 1792562109212,
+      "itemName": "A4 Register",
+      "itemType": "single",
+      "variantId": "v1792562109212",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Pragya",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Pragya",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560511622-v1792560511622-0",
+      "date": "2026-10-31",
+      "type": "OUTWARD",
+      "itemId": 1792560511622,
+      "itemName": "Black Marker",
+      "itemType": "single",
+      "variantId": "v1792560511622",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Pragya",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Pragya",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561570926-v1792561570926-0",
+      "date": "2026-10-31",
+      "type": "OUTWARD",
+      "itemId": 1792561570926,
+      "itemName": "Brown Cover",
+      "itemType": "single",
+      "variantId": "v1792561570926",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Divyanshi",
+      "department": "Academic",
+      "purposeOrNotes": "",
+      "referenceNumber": "Ms. Divyanshi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561570926-v1792561570926-1",
+      "date": "2026-10-31",
+      "type": "OUTWARD",
+      "itemId": 1792561570926,
+      "itemName": "Brown Cover",
+      "itemType": "single",
+      "variantId": "v1792561570926",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Pragya",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Pragya",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561570926-v1792561570926-2",
+      "date": "2026-10-31",
+      "type": "OUTWARD",
+      "itemId": 1792561570926,
+      "itemName": "Brown Cover",
+      "itemType": "single",
+      "variantId": "v1792561570926",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Divyanshi",
+      "department": "Academic",
+      "purposeOrNotes": "",
+      "referenceNumber": "Ms. Divyanshi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792999802875-v1792999802875-1",
+      "date": "2026-10-31",
+      "type": "INWARD",
+      "itemId": 1792999802875,
+      "itemName": "Cellophane",
+      "itemType": "single",
+      "variantId": "v1792999802875",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "roll",
+      "quantity": 26,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560546088-v1792560546088_0-1",
+      "date": "2026-10-31",
+      "type": "OUTWARD",
+      "itemId": 1792560546088,
+      "itemName": "Ink",
+      "itemType": "variant",
+      "variantId": "v1792560546088_0",
+      "variantName": "Black",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Pragya",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Pragya",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740712122_566-0",
+      "date": "2026-10-31",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740712122_566",
+      "variantName": "Green",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Pragya",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Pragya",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560158351-v1792560158351_0-1",
+      "date": "2026-10-31",
+      "type": "OUTWARD",
+      "itemId": 1792560158351,
+      "itemName": "Transparent Tape",
+      "itemType": "variant",
+      "variantId": "v1792560158351_0",
+      "variantName": "Broad",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Divyanshi",
+      "department": "Academic",
+      "purposeOrNotes": "",
+      "referenceNumber": "Ms. Divyanshi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792559651774-v1792559651774-1",
+      "date": "2026-10-30",
+      "type": "OUTWARD",
+      "itemId": 1792559651774,
+      "itemName": "A4 Ream",
+      "itemType": "single",
+      "variantId": "v1792559651774",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "ream",
+      "quantity": 1,
+      "recipientOrVendor": "Mr. Devesh Saini",
+      "department": "Accountant",
+      "purposeOrNotes": "",
+      "referenceNumber": "Mr. Devesh Saini",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560511622-v1792560511622-1",
+      "date": "2026-10-30",
+      "type": "OUTWARD",
+      "itemId": 1792560511622,
+      "itemName": "Black Marker",
+      "itemType": "single",
+      "variantId": "v1792560511622",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Divyanshi",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Divyanshi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560511622-v1792560511622-2",
+      "date": "2026-10-30",
+      "type": "INWARD",
+      "itemId": 1792560511622,
+      "itemName": "Black Marker",
+      "itemType": "single",
+      "variantId": "v1792560511622",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560511622-v1792560511622-3",
+      "date": "2026-10-30",
+      "type": "OUTWARD",
+      "itemId": 1792560511622,
+      "itemName": "Black Marker",
+      "itemType": "single",
+      "variantId": "v1792560511622",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Harshita",
+      "department": "Coordinator",
+      "purposeOrNotes": "",
+      "referenceNumber": "Ms. Harshita",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560546088-v1792560546088_0-2",
+      "date": "2026-10-30",
+      "type": "OUTWARD",
+      "itemId": 1792560546088,
+      "itemName": "Ink",
+      "itemType": "variant",
+      "variantId": "v1792560546088_0",
+      "variantName": "Black",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Ms. Harshita",
+      "department": "Coordinator",
+      "purposeOrNotes": "",
+      "referenceNumber": "Ms. Harshita",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1793170381891-v1793170381891-0",
+      "date": "2026-10-30",
+      "type": "OUTWARD",
+      "itemId": 1793170381891,
+      "itemName": "Transparent Sheet Protector",
+      "itemType": "single",
+      "variantId": "v1793170381891",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "pieces",
+      "quantity": 200,
+      "recipientOrVendor": "Ms. Harshita",
+      "department": "Coordinator",
+      "purposeOrNotes": "",
+      "referenceNumber": "Ms. Harshita",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1793170381891-v1793170381891-1",
+      "date": "2026-10-30",
+      "type": "INWARD",
+      "itemId": 1793170381891,
+      "itemName": "Transparent Sheet Protector",
+      "itemType": "single",
+      "variantId": "v1793170381891",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "pieces",
+      "quantity": 120,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1793170587035-v1793170587035-0",
+      "date": "2026-10-29",
+      "type": "OUTWARD",
+      "itemId": 1793170587035,
+      "itemName": "Art Sheet",
+      "itemType": "single",
+      "variantId": "v1793170587035",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 35,
+      "recipientOrVendor": "Mr. Anugraha",
+      "department": "Marketing",
+      "purposeOrNotes": "For event",
+      "referenceNumber": "Mr. Anugraha",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562001526-v1792562001526-1",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792562001526,
+      "itemName": "A4 Colour Pages",
+      "itemType": "single",
+      "variantId": "v1792562001526",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "packets",
+      "quantity": 1,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562109212-v1792562109212-1",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792562109212,
+      "itemName": "A4 Register",
+      "itemType": "single",
+      "variantId": "v1792562109212",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 21,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562109212-v1792562109212-2",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792562109212,
+      "itemName": "A4 Register",
+      "itemType": "single",
+      "variantId": "v1792562109212",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1793170888076-v1793170888076-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1793170888076,
+      "itemName": "Attendance Register",
+      "itemType": "single",
+      "variantId": "v1793170888076",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 9,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560511622-v1792560511622-4",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560511622,
+      "itemName": "Black Marker",
+      "itemType": "single",
+      "variantId": "v1792560511622",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 20,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561570926-v1792561570926-3",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792561570926,
+      "itemName": "Brown Cover",
+      "itemType": "single",
+      "variantId": "v1792561570926",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 20,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561570926-v1792561570926-4",
+      "date": "2026-10-28",
+      "type": "OUTWARD",
+      "itemId": 1792561570926,
+      "itemName": "Brown Cover",
+      "itemType": "single",
+      "variantId": "v1792561570926",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Pragya",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Pragya",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560118425-v1792560118425-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560118425,
+      "itemName": "Brown Tape",
+      "itemType": "single",
+      "variantId": "v1792560118425",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 27,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792999802875-v1792999802875-2",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792999802875,
+      "itemName": "Cellophane",
+      "itemType": "single",
+      "variantId": "v1792999802875",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "roll",
+      "quantity": 2,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560438276-v1792560438276_2-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560438276,
+      "itemName": "Colored Marker",
+      "itemType": "variant",
+      "variantId": "v1792560438276_2",
+      "variantName": "Green",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560438276-v1792560438276_5-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560438276,
+      "itemName": "Colored Marker",
+      "itemType": "variant",
+      "variantId": "v1792560438276_5",
+      "variantName": "Brown",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560438276-v1792560438276_6-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560438276,
+      "itemName": "Colored Marker",
+      "itemType": "variant",
+      "variantId": "v1792560438276_6",
+      "variantName": "Pink",
+      "category": null,
+      "unit": "units",
+      "quantity": 4,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560438276-v_1793171486971_520-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560438276,
+      "itemName": "Colored Marker",
+      "itemType": "variant",
+      "variantId": "v_1793171486971_520",
+      "variantName": "Red",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Opening Stock / New Color Added",
+      "department": null,
+      "purposeOrNotes": "Opening Stock / New Color Added",
+      "referenceNumber": "Opening Stock",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560438276-v_1793171513890_825-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560438276,
+      "itemName": "Colored Marker",
+      "itemType": "variant",
+      "variantId": "v_1793171513890_825",
+      "variantName": "Blue",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Opening Stock / New Color Added",
+      "department": null,
+      "purposeOrNotes": "Opening Stock / New Color Added",
+      "referenceNumber": "Opening Stock",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560438276-v_1793171547746_689-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560438276,
+      "itemName": "Colored Marker",
+      "itemType": "variant",
+      "variantId": "v_1793171547746_689",
+      "variantName": "Orange",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Opening Stock / New Color Added",
+      "department": null,
+      "purposeOrNotes": "Opening Stock / New Color Added",
+      "referenceNumber": "Opening Stock",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562197896-v1792562197896-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792562197896,
+      "itemName": "Colour Tape",
+      "itemType": "single",
+      "variantId": "v1792562197896",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 50,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560193017-v1792560193017-1",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560193017,
+      "itemName": "Double Sided Tape",
+      "itemType": "single",
+      "variantId": "v1792560193017",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 24,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560103290-v1792560103289-2",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560103290,
+      "itemName": "Fevicol",
+      "itemType": "single",
+      "variantId": "v1792560103289",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 12,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562088721-v1792562088721-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792562088721,
+      "itemName": "Glitter Sheet",
+      "itemType": "single",
+      "variantId": "v1792562088721",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "packets",
+      "quantity": 13,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792740799066-v1792740799066-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792740799066,
+      "itemName": "Glue Gum Stick",
+      "itemType": "single",
+      "variantId": "v1792740799066",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562014779-v1792562014779-1",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792562014779,
+      "itemName": "Golden Sheet",
+      "itemType": "single",
+      "variantId": "v1792562014779",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 50,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560546088-v1792560546088_0-3",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560546088,
+      "itemName": "Ink",
+      "itemType": "variant",
+      "variantId": "v1792560546088_0",
+      "variantName": "Black",
+      "category": null,
+      "unit": "units",
+      "quantity": 18,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1793170852300-v1793170852300-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1793170852300,
+      "itemName": "Leave Record Register",
+      "itemType": "single",
+      "variantId": "v1793170852300",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560209142-v1792560209142-2",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560209142,
+      "itemName": "Masking Tape",
+      "itemType": "single",
+      "variantId": "v1792560209142",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560697177-v1792560697177_0-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560697177,
+      "itemName": "Pens",
+      "itemType": "variant",
+      "variantId": "v1792560697177_0",
+      "variantName": "Black",
+      "category": null,
+      "unit": "units",
+      "quantity": 45,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560697177-v1792560697177_1-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560697177,
+      "itemName": "Pens",
+      "itemType": "variant",
+      "variantId": "v1792560697177_1",
+      "variantName": "Blue",
+      "category": null,
+      "unit": "units",
+      "quantity": 20,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560697177-v1792560697177_2-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560697177,
+      "itemName": "Pens",
+      "itemType": "variant",
+      "variantId": "v1792560697177_2",
+      "variantName": "Red",
+      "category": null,
+      "unit": "units",
+      "quantity": 20,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560697177-v_1793171055484_70-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560697177,
+      "itemName": "Pens",
+      "itemType": "variant",
+      "variantId": "v_1793171055484_70",
+      "variantName": "Green",
+      "category": null,
+      "unit": "units",
+      "quantity": 20,
+      "recipientOrVendor": "Opening Stock / New Color Added",
+      "department": null,
+      "purposeOrNotes": "Opening Stock / New Color Added",
+      "referenceNumber": "Opening Stock",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560562237-v1792560562237-2",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560562237,
+      "itemName": "Permanent Marker",
+      "itemType": "single",
+      "variantId": "v1792560562237",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 4,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560562237-v1792560562237-3",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560562237,
+      "itemName": "Permanent Marker",
+      "itemType": "single",
+      "variantId": "v1792560562237",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 15,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792565774529-v1792565774529-0",
+      "date": "2026-10-28",
+      "type": "OUTWARD",
+      "itemId": 1792565774529,
+      "itemName": "Punching Machine",
+      "itemType": "single",
+      "variantId": "v1792565774529",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Mr. Abhishek Shukla",
+      "department": "Admin",
+      "purposeOrNotes": "To maintain bills in Lab",
+      "referenceNumber": "Mr. Abhishek Shukla",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792565774529-v1792565774529-1",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792565774529,
+      "itemName": "Punching Machine",
+      "itemType": "single",
+      "variantId": "v1792565774529",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560649566-v1792560649566-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560649566,
+      "itemName": "Scissors",
+      "itemType": "single",
+      "variantId": "v1792560649566",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560462643-v1792560462643-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560462643,
+      "itemName": "Stamp Pad",
+      "itemType": "single",
+      "variantId": "v1792560462643",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560227994-v1792560227994-1",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560227994,
+      "itemName": "Stapler Pins",
+      "itemType": "single",
+      "variantId": "v1792560227994",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 313,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560271981-v1792560271980-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560271981,
+      "itemName": "Sticky Notes",
+      "itemType": "single",
+      "variantId": "v1792560271980",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 14,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562310725-v1792562310725-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792562310725,
+      "itemName": "Straw",
+      "itemType": "single",
+      "variantId": "v1792562310725",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 4,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560158351-v1792560158351_1-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792560158351,
+      "itemName": "Transparent Tape",
+      "itemType": "variant",
+      "variantId": "v1792560158351_1",
+      "variantName": "Thin",
+      "category": null,
+      "unit": "units",
+      "quantity": 18,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562323652-v1792562323652-0",
+      "date": "2026-10-28",
+      "type": "INWARD",
+      "itemId": 1792562323652,
+      "itemName": "Wax Colour",
+      "itemType": "single",
+      "variantId": "v1792562323652",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "box",
+      "quantity": 8,
+      "recipientOrVendor": "Direct stock addition",
+      "department": null,
+      "purposeOrNotes": "Direct stock addition",
+      "referenceNumber": "Direct Stock Inward",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792740856491-v1792740856491-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792740856491,
+      "itemName": "Fabric Colours",
+      "itemType": "single",
+      "variantId": "v1792740856491",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 6,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561869392-v1792561869391_0-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561869392,
+      "itemName": "Fluorescent paper",
+      "itemType": "variant",
+      "variantId": "v1792561869391_0",
+      "variantName": "Orange",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561869392-v1792561869391_1-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561869392,
+      "itemName": "Fluorescent paper",
+      "itemType": "variant",
+      "variantId": "v1792561869391_1",
+      "variantName": "Brown",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561869392-v1792561869391_3-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561869392,
+      "itemName": "Fluorescent paper",
+      "itemType": "variant",
+      "variantId": "v1792561869391_3",
+      "variantName": "Purple",
+      "category": null,
+      "unit": "units",
+      "quantity": 8,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561869392-v1792561869391_4-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561869392,
+      "itemName": "Fluorescent paper",
+      "itemType": "variant",
+      "variantId": "v1792561869391_4",
+      "variantName": "Pink",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561869392-v1792561869391_5-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561869392,
+      "itemName": "Fluorescent paper",
+      "itemType": "variant",
+      "variantId": "v1792561869391_5",
+      "variantName": "Black",
+      "category": null,
+      "unit": "units",
+      "quantity": 14,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561869392-v1792561869391_5-1",
+      "date": "2026-10-27",
+      "type": "INWARD",
+      "itemId": 1792561869392,
+      "itemName": "Fluorescent paper",
+      "itemType": "variant",
+      "variantId": "v1792561869391_5",
+      "variantName": "Black",
+      "category": null,
+      "unit": "units",
+      "quantity": 20,
+      "recipientOrVendor": "1-Click Quick Restock (+20 units)",
+      "department": null,
+      "purposeOrNotes": "1-Click Quick Restock (+20 units)",
+      "referenceNumber": "Manual Restock",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561869392-v1792561869391_6-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561869392,
+      "itemName": "Fluorescent paper",
+      "itemType": "variant",
+      "variantId": "v1792561869391_6",
+      "variantName": "Yellow",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561869392-v1792561869392_7-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561869392,
+      "itemName": "Fluorescent paper",
+      "itemType": "variant",
+      "variantId": "v1792561869392_7",
+      "variantName": "Red",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562088721-v1792562088721-1",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792562088721,
+      "itemName": "Glitter Sheet",
+      "itemType": "single",
+      "variantId": "v1792562088721",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "packets",
+      "quantity": 3,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792740799066-v1792740799066-1",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792740799066,
+      "itemName": "Glue Gum Stick",
+      "itemType": "single",
+      "variantId": "v1792740799066",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 40,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792740799066-v1792740799066-3",
+      "date": "2026-10-27",
+      "type": "INWARD",
+      "itemId": 1792740799066,
+      "itemName": "Glue Gum Stick",
+      "itemType": "single",
+      "variantId": "v1792740799066",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 20,
+      "recipientOrVendor": "1-Click Quick Restock (+20 units)",
+      "department": null,
+      "purposeOrNotes": "1-Click Quick Restock (+20 units)",
+      "referenceNumber": "Manual Restock",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792740817794-v1792740817794-1",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792740817794,
+      "itemName": "Ivory Sheet 22*28",
+      "itemType": "single",
+      "variantId": "v1792740817794",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 5,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562358307-v1792562358307-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792562358307,
+      "itemName": "Paint Brush",
+      "itemType": "single",
+      "variantId": "v1792562358307",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_0-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_0",
+      "variantName": "Purple",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_1-1",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_1",
+      "variantName": "Pink",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 5,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_4-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_4",
+      "variantName": "Grey",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_5-1",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_5",
+      "variantName": "Turquoise",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_6-2",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_6",
+      "variantName": "Brown",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_7-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_7",
+      "variantName": "Maroon",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740697491_320-1",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740697491_320",
+      "variantName": "White",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 15,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740705355_73-1",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740705355_73",
+      "variantName": "Black",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 10,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v_1792758025268_a4-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792758025268_a4",
+      "variantName": "A4",
+      "category": "A4",
+      "unit": "packets",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v_1792758025269_a3-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792758025269_a3",
+      "variantName": "A3",
+      "category": "A3",
+      "unit": "packets",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562334390-v1792562334390-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792562334390,
+      "itemName": "Pencil Colour",
+      "itemType": "single",
+      "variantId": "v1792562334390",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "box",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560697177-v1792560697177_0-1",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792560697177,
+      "itemName": "Pens",
+      "itemType": "variant",
+      "variantId": "v1792560697177_0",
+      "variantName": "Black",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Eishwari",
+      "department": "Reception",
+      "purposeOrNotes": "For Director office",
+      "referenceNumber": "Ms. Eishwari",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560697177-v1792560697177_1-1",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792560697177,
+      "itemName": "Pens",
+      "itemType": "variant",
+      "variantId": "v1792560697177_1",
+      "variantName": "Blue",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Eishwari",
+      "department": "Reception",
+      "purposeOrNotes": "For Director office",
+      "referenceNumber": "Ms. Eishwari",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560697177-v1792560697177_2-1",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792560697177,
+      "itemName": "Pens",
+      "itemType": "variant",
+      "variantId": "v1792560697177_2",
+      "variantName": "Red",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Eishwari",
+      "department": "Reception",
+      "purposeOrNotes": "For Director office",
+      "referenceNumber": "Ms. Eishwari",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560916547-v1792560916547_0-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792560916547,
+      "itemName": "Printed Chart Papers",
+      "itemType": "variant",
+      "variantId": "v1792560916547_0",
+      "variantName": "Red",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560916547-v1792560916547_2-0",
+      "date": "2026-10-27",
+      "type": "OUTWARD",
+      "itemId": 1792560916547,
+      "itemName": "Printed Chart Papers",
+      "itemType": "variant",
+      "variantId": "v1792560916547_2",
+      "variantName": "Light Green",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Shivangi",
+      "department": "Art",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Shivangi",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561570926-v1792561570926-5",
+      "date": "2026-10-26",
+      "type": "OUTWARD",
+      "itemId": 1792561570926,
+      "itemName": "Brown Cover",
+      "itemType": "single",
+      "variantId": "v1792561570926",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Mr. Abhishek Shukla",
+      "department": "Admin",
+      "purposeOrNotes": "For Lab Register",
+      "referenceNumber": "Mr. Abhishek Shukla",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792999802875-v1792999802875-3",
+      "date": "2026-10-26",
+      "type": "OUTWARD",
+      "itemId": 1792999802875,
+      "itemName": "Cellophane",
+      "itemType": "single",
+      "variantId": "v1792999802875",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "roll",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Kajal",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Kajal",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560103290-v1792560103289-3",
+      "date": "2026-10-26",
+      "type": "OUTWARD",
+      "itemId": 1792560103290,
+      "itemName": "Fevicol",
+      "itemType": "single",
+      "variantId": "v1792560103289",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Mr. Abhishek Shukla",
+      "department": "Admin",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Mr. Abhishek Shukla",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792997911929-v1792997911929-0",
+      "date": "2026-10-26",
+      "type": "OUTWARD",
+      "itemId": 1792997911929,
+      "itemName": "Pointer",
+      "itemType": "single",
+      "variantId": "v1792997911929",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Mr. Abhishek Shukla",
+      "department": "Admin",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Mr. Abhishek Shukla",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560254880-v1792560254880-0",
+      "date": "2026-10-26",
+      "type": "OUTWARD",
+      "itemId": 1792560254880,
+      "itemName": "Scale",
+      "itemType": "single",
+      "variantId": "v1792560254880",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Mr. Abhishek Shukla",
+      "department": "Admin",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Mr. Abhishek Shukla",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560238736-v1792560238736-1",
+      "date": "2026-10-26",
+      "type": "OUTWARD",
+      "itemId": 1792560238736,
+      "itemName": "Stapler",
+      "itemType": "single",
+      "variantId": "v1792560238736",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Mr. Abhishek Shukla",
+      "department": "Admin",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Mr. Abhishek Shukla",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560227994-v1792560227994-2",
+      "date": "2026-10-26",
+      "type": "OUTWARD",
+      "itemId": 1792560227994,
+      "itemName": "Stapler Pins",
+      "itemType": "single",
+      "variantId": "v1792560227994",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Mr. Abhishek Shukla",
+      "department": "Admin",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Mr. Abhishek Shukla",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792559666294-v1792559666294-0",
+      "date": "2026-10-24",
+      "type": "OUTWARD",
+      "itemId": 1792559666294,
+      "itemName": "Box Files",
+      "itemType": "single",
+      "variantId": "v1792559666294",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 16,
+      "recipientOrVendor": "Mr. Devesh Saini",
+      "department": "Accountant",
+      "purposeOrNotes": "Not in record",
+      "referenceNumber": "Mr. Devesh Saini",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792559666294-v1792559666294-1",
+      "date": "2026-10-24",
+      "type": "OUTWARD",
+      "itemId": 1792559666294,
+      "itemName": "Box Files",
+      "itemType": "single",
+      "variantId": "v1792559666294",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 8,
+      "recipientOrVendor": "Mr. Devesh Saini",
+      "department": "Accountant",
+      "purposeOrNotes": "For office work",
+      "referenceNumber": "Mr. Devesh Saini",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560193017-v1792560193017-2",
+      "date": "2026-10-23",
+      "type": "OUTWARD",
+      "itemId": 1792560193017,
+      "itemName": "Double Sided Tape",
+      "itemType": "single",
+      "variantId": "v1792560193017",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Juhee",
+      "department": "Academic",
+      "purposeOrNotes": "For Anunaad",
+      "referenceNumber": "Ms. Juhee",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_1-2",
+      "date": "2026-10-23",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_1",
+      "variantName": "Pink",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Juhee",
+      "department": "Academic",
+      "purposeOrNotes": "For Anunaad",
+      "referenceNumber": "Ms. Juhee",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_2-1",
+      "date": "2026-10-23",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_2",
+      "variantName": "Orange",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Juhee",
+      "department": "Academic",
+      "purposeOrNotes": "For Anunaad",
+      "referenceNumber": "Ms. Juhee",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_3-0",
+      "date": "2026-10-23",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_3",
+      "variantName": "Blue",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Juhee",
+      "department": "Academic",
+      "purposeOrNotes": "For Anunaad",
+      "referenceNumber": "Ms. Juhee",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_6-3",
+      "date": "2026-10-23",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_6",
+      "variantName": "Brown",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Juhee",
+      "department": "Academic",
+      "purposeOrNotes": "For Anunaad",
+      "referenceNumber": "Ms. Juhee",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_8-0",
+      "date": "2026-10-23",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_8",
+      "variantName": "Light Green",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 4,
+      "recipientOrVendor": "Mr. Abhishek Shukla",
+      "department": "Admin",
+      "purposeOrNotes": "For Anunnad",
+      "referenceNumber": "Mr. Abhishek Shukla",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_8-1",
+      "date": "2026-10-23",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_8",
+      "variantName": "Light Green",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 4,
+      "recipientOrVendor": "Mr. Abhishek Shukla",
+      "department": "Admin",
+      "purposeOrNotes": "For Anunaad",
+      "referenceNumber": "Mr. Abhishek Shukla",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740697491_320-2",
+      "date": "2026-10-23",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740697491_320",
+      "variantName": "White",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Juhee",
+      "department": "Academic",
+      "purposeOrNotes": "For Anunaad",
+      "referenceNumber": "Ms. Juhee",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740705355_73-2",
+      "date": "2026-10-23",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740705355_73",
+      "variantName": "Black",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 5,
+      "recipientOrVendor": "Ms. Juhee",
+      "department": "Academic",
+      "purposeOrNotes": "For Anunaad",
+      "referenceNumber": "Ms. Juhee",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740705355_73-3",
+      "date": "2026-10-23",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740705355_73",
+      "variantName": "Black",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 10,
+      "recipientOrVendor": "Ms. Juhee",
+      "department": "Academic",
+      "purposeOrNotes": "For Anunaad",
+      "referenceNumber": "Ms. Juhee",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740712122_566-1",
+      "date": "2026-10-23",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740712122_566",
+      "variantName": "Green",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Juhee",
+      "department": "Academic",
+      "purposeOrNotes": "For Anunaad",
+      "referenceNumber": "Ms. Juhee",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740717602_847-1",
+      "date": "2026-10-23",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740717602_847",
+      "variantName": "Yellow",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Juhee",
+      "department": "Academic",
+      "purposeOrNotes": "For Anunaad",
+      "referenceNumber": "Ms. Juhee",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792740856491-v1792740856491-1",
+      "date": "2026-10-22",
+      "type": "INWARD",
+      "itemId": 1792740856491,
+      "itemName": "Fabric Colours",
+      "itemType": "single",
+      "variantId": "v1792740856491",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 6,
+      "recipientOrVendor": "Bharat Agencies",
+      "department": null,
+      "purposeOrNotes": "Bharat Agencies",
+      "referenceNumber": "77 / 2026 / 2021",
+      "rate": 101.69,
+      "taxableAmount": 610.14,
+      "cgst": 54.91,
+      "sgst": 54.91,
+      "igst": 0,
+      "vendorGstin": "07AAGCB2314M1Z8"
+    },
+    {
+      "id": "MOV-1792560103290-v1792560103289-4",
+      "date": "2026-10-22",
+      "type": "OUTWARD",
+      "itemId": 1792560103290,
+      "itemName": "Fevicol",
+      "itemType": "single",
+      "variantId": "v1792560103289",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Rachana",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Rachana",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792740799066-v1792740799066-2",
+      "date": "2026-10-22",
+      "type": "INWARD",
+      "itemId": 1792740799066,
+      "itemName": "Glue Gum Stick",
+      "itemType": "single",
+      "variantId": "v1792740799066",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 40,
+      "recipientOrVendor": "Bharat Agencies",
+      "department": null,
+      "purposeOrNotes": "Bharat Agencies",
+      "referenceNumber": "77 / 2026 / 2021",
+      "rate": 15,
+      "taxableAmount": 600,
+      "cgst": 54,
+      "sgst": 54,
+      "igst": 0,
+      "vendorGstin": "07AAGCB2314M1Z8"
+    },
+    {
+      "id": "MOV-1792562014779-v1792562014779-2",
+      "date": "2026-10-22",
+      "type": "INWARD",
+      "itemId": 1792562014779,
+      "itemName": "Golden Sheet",
+      "itemType": "single",
+      "variantId": "v1792562014779",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Bharat Agencies",
+      "department": null,
+      "purposeOrNotes": "Bharat Agencies",
+      "referenceNumber": "77 / 2026 / 2021",
+      "rate": 30,
+      "taxableAmount": 300,
+      "cgst": 27,
+      "sgst": 27,
+      "igst": 0,
+      "vendorGstin": "07AAGCB2314M1Z8"
+    },
+    {
+      "id": "MOV-1792740817794-v1792740817794-2",
+      "date": "2026-10-22",
+      "type": "INWARD",
+      "itemId": 1792740817794,
+      "itemName": "Ivory Sheet 22*28",
+      "itemType": "single",
+      "variantId": "v1792740817794",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Bharat Agencies",
+      "department": null,
+      "purposeOrNotes": "Bharat Agencies",
+      "referenceNumber": "77 / 2026 / 2021",
+      "rate": 35,
+      "taxableAmount": 350,
+      "cgst": 31.5,
+      "sgst": 31.5,
+      "igst": 0,
+      "vendorGstin": "07AAGCB2314M1Z8"
+    },
+    {
+      "id": "MOV-1792562358307-v1792562358307-1",
+      "date": "2026-10-22",
+      "type": "INWARD",
+      "itemId": 1792562358307,
+      "itemName": "Paint Brush",
+      "itemType": "single",
+      "variantId": "v1792562358307",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Bharat Agencies",
+      "department": null,
+      "purposeOrNotes": "Bharat Agencies",
+      "referenceNumber": "77 / 2026 / 2021",
+      "rate": 180,
+      "taxableAmount": 1800,
+      "cgst": 162,
+      "sgst": 162,
+      "igst": 0,
+      "vendorGstin": "07AAGCB2314M1Z8"
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_7-1",
+      "date": "2026-10-22",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_7",
+      "variantName": "Maroon",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 1,
+      "recipientOrVendor": "Ms. Rachana",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Rachana",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740697491_320-3",
+      "date": "2026-10-22",
+      "type": "INWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740697491_320",
+      "variantName": "White",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 50,
+      "recipientOrVendor": "Bharat Agencies",
+      "department": null,
+      "purposeOrNotes": "Bharat Agencies",
+      "referenceNumber": "77 / 2026 / 2021",
+      "rate": 17,
+      "taxableAmount": 850,
+      "cgst": 76.5,
+      "sgst": 76.5,
+      "igst": 0,
+      "vendorGstin": "07AAGCB2314M1Z8"
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740705355_73-4",
+      "date": "2026-10-22",
+      "type": "INWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740705355_73",
+      "variantName": "Black",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 50,
+      "recipientOrVendor": "Bharat Agencies",
+      "department": null,
+      "purposeOrNotes": "Bharat Agencies",
+      "referenceNumber": "77 / 2026 / 2021",
+      "rate": 17,
+      "taxableAmount": 850,
+      "cgst": 76.5,
+      "sgst": 76.5,
+      "igst": 0,
+      "vendorGstin": "07AAGCB2314M1Z8"
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740712122_566-2",
+      "date": "2026-10-22",
+      "type": "INWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740712122_566",
+      "variantName": "Green",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 50,
+      "recipientOrVendor": "Bharat Agencies",
+      "department": null,
+      "purposeOrNotes": "Bharat Agencies",
+      "referenceNumber": "77 / 2026 / 2021",
+      "rate": 17,
+      "taxableAmount": 850,
+      "cgst": 76.5,
+      "sgst": 76.5,
+      "igst": 0,
+      "vendorGstin": "07AAGCB2314M1Z8"
+    },
+    {
+      "id": "MOV-1792561540172-v_1792740717602_847-2",
+      "date": "2026-10-22",
+      "type": "INWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792740717602_847",
+      "variantName": "Yellow",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 50,
+      "recipientOrVendor": "Bharat Agencies",
+      "department": null,
+      "purposeOrNotes": "Bharat Agencies",
+      "referenceNumber": "77 / 2026 / 2021",
+      "rate": 17,
+      "taxableAmount": 850,
+      "cgst": 76.5,
+      "sgst": 76.5,
+      "igst": 0,
+      "vendorGstin": "07AAGCB2314M1Z8"
+    },
+    {
+      "id": "MOV-1792561540172-v_1792758025268_a4-1",
+      "date": "2026-10-22",
+      "type": "INWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792758025268_a4",
+      "variantName": "A4",
+      "category": "A4",
+      "unit": "packets",
+      "quantity": 4,
+      "recipientOrVendor": "Bharat Agencies",
+      "department": null,
+      "purposeOrNotes": "Bharat Agencies",
+      "referenceNumber": "77 / 2026 / 2021",
+      "rate": 240,
+      "taxableAmount": 960,
+      "cgst": 86.4,
+      "sgst": 86.4,
+      "igst": 0,
+      "vendorGstin": "07AAGCB2314M1Z8"
+    },
+    {
+      "id": "MOV-1792561540172-v_1792758025269_a3-1",
+      "date": "2026-10-22",
+      "type": "INWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v_1792758025269_a3",
+      "variantName": "A3",
+      "category": "A3",
+      "unit": "packets",
+      "quantity": 4,
+      "recipientOrVendor": "Bharat Agencies",
+      "department": null,
+      "purposeOrNotes": "Bharat Agencies",
+      "referenceNumber": "77 / 2026 / 2021",
+      "rate": 160,
+      "taxableAmount": 640,
+      "cgst": 57.6,
+      "sgst": 57.6,
+      "igst": 0,
+      "vendorGstin": "07AAGCB2314M1Z8"
+    },
+    {
+      "id": "MOV-1792560916547-v_1792561011864_239-0",
+      "date": "2026-10-22",
+      "type": "OUTWARD",
+      "itemId": 1792560916547,
+      "itemName": "Printed Chart Papers",
+      "itemType": "variant",
+      "variantId": "v_1792561011864_239",
+      "variantName": "Blue",
+      "category": null,
+      "unit": "units",
+      "quantity": 2,
+      "recipientOrVendor": "Ms. Rachana",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Rachana",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792562025608-v1792562025608-0",
+      "date": "2026-10-22",
+      "type": "INWARD",
+      "itemId": 1792562025608,
+      "itemName": "Silver Sheet",
+      "itemType": "single",
+      "variantId": "v1792562025608",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 10,
+      "recipientOrVendor": "Bharat Agencies",
+      "department": null,
+      "purposeOrNotes": "Bharat Agencies",
+      "referenceNumber": "77 / 2026 / 2021",
+      "rate": 35,
+      "taxableAmount": 350,
+      "cgst": 31.5,
+      "sgst": 31.5,
+      "igst": 0,
+      "vendorGstin": "07AAGCB2314M1Z8"
+    },
+    {
+      "id": "MOV-1792562088721-v1792562088721-2",
+      "date": "2026-10-21",
+      "type": "OUTWARD",
+      "itemId": 1792562088721,
+      "itemName": "Glitter Sheet",
+      "itemType": "single",
+      "variantId": "v1792562088721",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "packets",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Aparna",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Aparna",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792565619335-v1792565619335-0",
+      "date": "2026-10-21",
+      "type": "OUTWARD",
+      "itemId": 1792565619335,
+      "itemName": "Kobra Files",
+      "itemType": "single",
+      "variantId": "v1792565619335",
+      "variantName": "Standard",
+      "category": null,
+      "unit": "units",
+      "quantity": 8,
+      "recipientOrVendor": "Mr. Devesh Saini",
+      "department": "Accountant",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Mr. Devesh Saini",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792561540172-v1792561540172_2-2",
+      "date": "2026-10-21",
+      "type": "OUTWARD",
+      "itemId": 1792561540172,
+      "itemName": "Pastel Sheet",
+      "itemType": "variant",
+      "variantId": "v1792561540172_2",
+      "variantName": "Orange",
+      "category": "Standard",
+      "unit": "sheets",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Aparna",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Aparna",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560916547-v1792560916547_0-1",
+      "date": "2026-10-21",
+      "type": "OUTWARD",
+      "itemId": 1792560916547,
+      "itemName": "Printed Chart Papers",
+      "itemType": "variant",
+      "variantId": "v1792560916547_0",
+      "variantName": "Red",
+      "category": null,
+      "unit": "units",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Aparna",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Aparna",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560916547-v1792560916547_8-0",
+      "date": "2026-10-21",
+      "type": "OUTWARD",
+      "itemId": 1792560916547,
+      "itemName": "Printed Chart Papers",
+      "itemType": "variant",
+      "variantId": "v1792560916547_8",
+      "variantName": "Purple",
+      "category": null,
+      "unit": "units",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Aparna",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Aparna",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560916547-v_1792561011864_239-1",
+      "date": "2026-10-21",
+      "type": "OUTWARD",
+      "itemId": 1792560916547,
+      "itemName": "Printed Chart Papers",
+      "itemType": "variant",
+      "variantId": "v_1792561011864_239",
+      "variantName": "Blue",
+      "category": null,
+      "unit": "units",
+      "quantity": 4,
+      "recipientOrVendor": "Ms. Aparna",
+      "department": "Academic",
+      "purposeOrNotes": "Issued via slip",
+      "referenceNumber": "Ms. Aparna",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560916547-v_1792561011864_239-2",
+      "date": "2026-10-21",
+      "type": "INWARD",
+      "itemId": 1792560916547,
+      "itemName": "Printed Chart Papers",
+      "itemType": "variant",
+      "variantId": "v_1792561011864_239",
+      "variantName": "Blue",
+      "category": null,
+      "unit": "units",
+      "quantity": 36,
+      "recipientOrVendor": "Opening Stock / New Color Added",
+      "department": null,
+      "purposeOrNotes": "Opening Stock / New Color Added",
+      "referenceNumber": "Opening Stock",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    },
+    {
+      "id": "MOV-1792560916547-v_1792561081088_215-0",
+      "date": "2026-10-21",
+      "type": "INWARD",
+      "itemId": 1792560916547,
+      "itemName": "Printed Chart Papers",
+      "itemType": "variant",
+      "variantId": "v_1792561081088_215",
+      "variantName": "Green",
+      "category": null,
+      "unit": "units",
+      "quantity": 25,
+      "recipientOrVendor": "Opening Stock / New Color Added",
+      "department": null,
+      "purposeOrNotes": "Opening Stock / New Color Added",
+      "referenceNumber": "Opening Stock",
+      "rate": null,
+      "taxableAmount": null,
+      "cgst": 0,
+      "sgst": 0,
+      "igst": 0,
+      "vendorGstin": null
+    }
+  ]
+}
