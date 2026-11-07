@@ -8,10 +8,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="DPS Stationery">
 <title>DPS Amrapali Inventory</title>
-<link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/svg+xml" href="icon.svg">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <style>
 [hidden]{display:none!important}
 html,body{width:100%;height:100%;margin:0;padding:0;background:#050505;overflow-x:hidden}
@@ -1945,6 +1945,25 @@ html:not([data-theme="dgwhite"]) .login-theme-switch .lts-btn[data-theme-val="ob
   color: #ffffff !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45) !important;
 }
+
+/* PWA Install UI */
+.pwa-install-pill {
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
+}
+.pwa-install-pill:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+.pwa-install-pill:active {
+  transform: translateY(1px);
+}
+body.app-is-standalone .pwa-install-pill {
+  display: none !important;
+}
+
 </style>
 <script>
 window.__thId=function(){try{return localStorage.getItem("dps_theme")==="obsidian"?"obsidian":"dgwhite"}catch(e){return "dgwhite"}};
@@ -3087,6 +3106,12 @@ html body #L#L .done,
     <p class="msg" id="msg" role="alert"></p>
     <button class="link" id="swap" type="button">Use PIN instead</button>
     <div class="foot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Protected sign-in · Authorised staff only</div>
+    <div style="text-align:center;margin-top:14px;">
+      <button type="button" class="pwa-install-pill login-pwa-btn" data-a="install-pwa" style="display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:20px;border:1.5px solid #10b981;background:rgba(16,185,129,0.12);color:#10b981;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Install DPS App</span>
+      </button>
+    </div>
   </section>
 
   <div class="done" id="done" hidden>
@@ -3571,7 +3596,7 @@ html body #L#L .done,
     }).join('');
     var sub=$('#a-sub');if(sub)sub.textContent=(role==='principal'?'Principal Portal':'Admin Portal')+' \u2022 Stationery Store';
     var ac=$('#a-actions');
-    if(ac)ac.innerHTML='<span class="a-role">'+(role==='principal'?'Principal':'Admin')+'</span><button class="a-gear a-sbtn'+(query?' has':'')+'" data-asearch="1" title="Search items" aria-label="Search items"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.500-3.500"/></svg></button><button class="a-gear pwa-install-pill" data-a="install-pwa" title="Install DPS App" style="display:none;width:auto;padding:0 12px;gap:6px;border-radius:20px;font-size:12px;font-weight:600;background:var(--accent);color:#fff;align-items:center;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Install App</span></button><button class="a-gear" data-a="open-settings" title="Settings">'+ic('gear')+'</button><button class="a-out" data-v="out" title="Sign out">'+ic('out')+'<span>Sign out</span></button>';
+    if(ac)ac.innerHTML='<span class="a-role">'+(role==='principal'?'Principal':'Admin')+'</span><button class="a-gear a-sbtn'+(query?' has':'')+'" data-asearch="1" title="Search items" aria-label="Search items"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.500-3.500"/></svg></button><button class="a-gear pwa-install-pill" data-a="install-pwa" title="Install DPS App" style="display:inline-flex;width:auto;padding:0 12px;gap:6px;border-radius:20px;font-size:12px;font-weight:600;background:var(--accent);color:#fff;align-items:center;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Install App</span></button><button class="a-gear" data-a="open-settings" title="Settings">'+ic('gear')+'</button><button class="a-out" data-v="out" title="Sign out">'+ic('out')+'<span>Sign out</span></button>';
   }
   function tree(){
     var h='';
@@ -5322,6 +5347,7 @@ html body #L#L .done,
     html+='<button class="t-tab-btn '+(tView==='stock'?'on':'')+'" data-t-action="nav-stock"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.730l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.730l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.270 6.960 12 12.010 20.730 6.960"/><line x1="12" y1="22.080" x2="12" y2="12"/></svg><span>Browse Items</span></button>';
     html+='<button class="t-tab-btn '+(tView==='my-slips'?'on':'')+'" data-t-action="nav-my-slips"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>My Slips</span>'+(pending>0?'<span class="t-badge">'+pending+'</span>':'')+'</button>';
     html+='</nav><div class="t-actions">';
+    html+='<button class="t-gear-btn pwa-install-pill" data-a="install-pwa" title="Install App" style="display:inline-flex;align-items:center;gap:6px;padding:0 12px;border-radius:20px;font-size:12px;font-weight:700;background:var(--accent);color:#fff;"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Install</span></button>';
     html+='<button class="sp-cartbtn" id="sp-cartbtn" data-sp-cart="1" title="My Requisition Slip"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg><span class="sp-lab">My Requisition Slip</span><span class="sp-cnt">'+tCart.length+'</span></button>';
     html+='<div class="t-user-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg><span>'+E(tTeacherName)+'</span></div>';
     html+='<button class="t-gear" id="t-settings-btn" title="Appearance &amp; Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.400 15a1.650 1.650 0 0 0 .33 1.820l.06.06a2 2 0 0 1 0 2.830 2 2 0 0 1-2.830 0l-.06-.06a1.650 1.650 0 0 0-1.820-.33 1.650 1.650 0 0 0-1 1.510V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.650 1.650 0 0 0 9 19.400a1.650 1.650 0 0 0-1.820.33l-.06.06a2 2 0 0 1-2.830 0 2 2 0 0 1 0-2.830l.06-.06A1.650 1.650 0 0 0 4.600 15a1.650 1.650 0 0 0-1.510-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.650 1.650 0 0 0 4.600 9a1.650 1.650 0 0 0-.33-1.820l-.06-.06a2 2 0 0 1 0-2.830 2 2 0 0 1 2.830 0l.06.06A1.650 1.650 0 0 0 9 4.600a1.650 1.650 0 0 0 1-1.510V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.650 1.650 0 0 0 1 1.510 1.650 1.650 0 0 0 1.820-.33l.06-.06a2 2 0 0 1 2.830 0 2 2 0 0 1 0 2.830l-.06.06A1.650 1.650 0 0 0 19.400 9a1.650 1.650 0 0 0 1.510 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.650 1.650 0 0 0-1.510 1z"/></svg></button>';
@@ -6516,74 +6542,160 @@ html[data-theme="obsidian"] #dps-exit .bar{background:#9bab84}
 })();
 </script>
 <script id="dps-pwa">
-/* DPS Stationery PWA Controller: Service Worker Registration & Install Experience */
+/* DPS Stationery PWA Controller: Bulletproof Service Worker & Install Flow */
 (function() {
   var deferredInstallPrompt = null;
 
-  // Register Service Worker
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('./sw.js')
-        .then(function(reg) {
-          console.log('[PWA] Service Worker registered successfully, scope:', reg.scope);
-        })
-        .catch(function(err) {
-          console.log('[PWA] Service Worker registration note:', err.message);
-        });
-    });
+  function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true
+      || document.referrer.includes('android-app://');
   }
 
-  // Handle PWA Install Prompt
+  function syncStandaloneClass() {
+    if (isStandalone()) {
+      document.body.classList.add('app-is-standalone');
+    } else {
+      document.body.classList.remove('app-is-standalone');
+    }
+  }
+  syncStandaloneClass();
+
+  // Register Service Worker reliably
+  function registerSW() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js', { scope: '/' })
+        .then(function(reg) {
+          console.log('[PWA] Service Worker active, scope:', reg.scope);
+        })
+        .catch(function(err) {
+          console.warn('[PWA] SW registration note:', err.message);
+        });
+    }
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    registerSW();
+  } else {
+    window.addEventListener('DOMContentLoaded', registerSW);
+  }
+
+  // Capture install prompt
   window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault();
     deferredInstallPrompt = e;
-    updateInstallButtons(true);
+    console.log('[PWA] beforeinstallprompt event captured successfully!');
+    syncStandaloneClass();
   });
 
   window.addEventListener('appinstalled', function() {
     deferredInstallPrompt = null;
-    updateInstallButtons(false);
+    document.body.classList.add('app-is-standalone');
     if (typeof pToast === 'function') {
-      pToast('DPS Stationery App installed successfully! You can launch it from your home screen or desktop.');
+      pToast('DPS Stationery App installed successfully!');
+    } else {
+      alert('DPS Stationery App installed successfully! You can launch it directly from your home screen or desktop.');
     }
   });
 
-  function isStandalone() {
-    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-  }
+  // Modal Guide for devices/browsers when beforeinstallprompt is pending or manual
+  function openInstallGuideModal() {
+    var old = document.getElementById('pwa-guide-modal');
+    if (old && old.parentNode) old.parentNode.removeChild(old);
 
-  function updateInstallButtons(available) {
-    if (isStandalone()) available = false;
-    var btns = document.querySelectorAll('.pwa-install-pill');
-    btns.forEach(function(b) {
-      b.style.display = available ? 'inline-flex' : 'none';
-    });
+    var isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    var isMac = /Macintosh/i.test(navigator.userAgent) && !isIos;
+    var isAndroid = /Android/i.test(navigator.userAgent);
+
+    var guideHtml = '';
+    if (isIos) {
+      guideHtml = '<div style="margin-top:12px;line-height:1.6;font-size:14px;color:var(--text);">'
+        + '<div style="margin-bottom:10px;"><b>To install on your iPhone / iPad:</b></div>'
+        + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
+          + '<span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,0.15);color:#10b981;font-weight:700;align-items:center;justify-content:center;">1</span>'
+          + '<span>Tap the <b>Share</b> button <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> at the bottom of Safari.</span>'
+        + '</div>'
+        + '<div style="display:flex;align-items:center;gap:10px;">'
+          + '<span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,0.15);color:#10b981;font-weight:700;align-items:center;justify-content:center;">2</span>'
+          + '<span>Scroll down and tap <b>Add to Home Screen (+)</b>.</span>'
+        + '</div>'
+      + '</div>';
+    } else if (isAndroid) {
+      guideHtml = '<div style="margin-top:12px;line-height:1.6;font-size:14px;color:var(--text);">'
+        + '<div style="margin-bottom:10px;"><b>To install on your Android device:</b></div>'
+        + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
+          + '<span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,0.15);color:#10b981;font-weight:700;align-items:center;justify-content:center;">1</span>'
+          + '<span>Tap browser menu <b>(⋮)</b> in the top right.</span>'
+        + '</div>'
+        + '<div style="display:flex;align-items:center;gap:10px;">'
+          + '<span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,0.15);color:#10b981;font-weight:700;align-items:center;justify-content:center;">2</span>'
+          + '<span>Tap <b>Install app</b> or <b>Add to Home screen</b>.</span>'
+        + '</div>'
+      + '</div>';
+    } else {
+      guideHtml = '<div style="margin-top:12px;line-height:1.6;font-size:14px;color:var(--text);">'
+        + '<div style="margin-bottom:10px;"><b>To install on your PC / Laptop:</b></div>'
+        + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
+          + '<span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,0.15);color:#10b981;font-weight:700;align-items:center;justify-content:center;">1</span>'
+          + '<span>Look at the right side of your browser\'s <b>address bar</b> (top of screen).</span>'
+        + '</div>'
+        + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
+          + '<span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,0.15);color:#10b981;font-weight:700;align-items:center;justify-content:center;">2</span>'
+          + '<span>Click the <b>Install (⊕ or ⬇)</b> icon next to the bookmark star.</span>'
+        + '</div>'
+        + '<div style="display:flex;align-items:center;gap:10px;">'
+          + '<span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,0.15);color:#10b981;font-weight:700;align-items:center;justify-content:center;">3</span>'
+          + '<span>Or click menu <b>(⋮) → "Install Delhi Public School..."</b></span>'
+        + '</div>'
+      + '</div>';
+    }
+
+    var div = document.createElement('div');
+    div.id = 'pwa-guide-modal';
+    div.className = 'settings-backdrop';
+    div.innerHTML = '<div class="settings-window" style="max-width:440px;padding:20px;border-radius:16px;">'
+      + '<div class="settings-header" style="margin-bottom:12px;">'
+        + '<h2 style="display:flex;align-items:center;gap:8px;font-size:16px;color:var(--text);">'
+          + '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
+          + 'Install DPS Stationery App'
+        + '</h2>'
+        + '<button class="kite-close" data-a="close-pwa-guide" aria-label="Close" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-sub);">\u2715</button>'
+      + '</div>'
+      + '<div style="text-align:center;margin:12px 0;">'
+        + '<img src="/icon-192.png" width="64" height="64" style="border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,0.15);" alt="DPS Logo"/>'
+      + '</div>'
+      + guideHtml
+      + '<div style="margin-top:20px;text-align:right;">'
+        + '<button type="button" class="rq-prbtn" data-a="close-pwa-guide" style="padding:8px 20px;background:var(--accent);color:#fff;border-radius:8px;font-weight:600;">Got it</button>'
+      + '</div>'
+    + '</div>';
+    document.body.appendChild(div);
   }
 
   window.installPWA = function() {
-    if (!deferredInstallPrompt) {
-      if (typeof pToast === 'function') {
-        pToast('To install: open browser menu (⋮) and tap "Install App" or "Add to Home screen".');
-      } else {
-        alert('To install: open browser menu and select "Install App" or "Add to Home screen".');
-      }
-      return;
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      deferredInstallPrompt.userChoice.then(function(choice) {
+        if (choice.outcome === 'accepted') {
+          console.log('[PWA] Install prompt accepted');
+        }
+        deferredInstallPrompt = null;
+      });
+    } else {
+      openInstallGuideModal();
     }
-    deferredInstallPrompt.prompt();
-    deferredInstallPrompt.userChoice.then(function(choice) {
-      if (choice.outcome === 'accepted') {
-        console.log('[PWA] User accepted the install prompt');
-      }
-      deferredInstallPrompt = null;
-      updateInstallButtons(false);
-    });
   };
 
   document.addEventListener('click', function(e) {
-    var btn = e.target.closest('[data-a="install-pwa"]');
-    if (btn) {
+    if (e.target.closest('[data-a="install-pwa"]')) {
       e.preventDefault();
       window.installPWA();
+      return;
+    }
+    if (e.target.id === 'pwa-guide-modal' || e.target.closest('[data-a="close-pwa-guide"]')) {
+      var m = document.getElementById('pwa-guide-modal');
+      if (m && m.parentNode) m.parentNode.removeChild(m);
+      return;
     }
   });
 })();

@@ -1,10 +1,10 @@
 {
-  "id": "/Dps.html",
+  "id": "/",
   "name": "Delhi Public School - Stationery Inventory",
   "short_name": "DPS Stationery",
   "description": "Official Stationery & Inventory Management Application for Delhi Public School, Amrapali Yojna",
-  "start_url": "./Dps.html",
-  "scope": "./",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#0f5b3a",
@@ -15,25 +15,25 @@
   "categories": ["education", "productivity", "business"],
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-maskable-512.png",
+      "src": "/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "icon.svg",
+      "src": "/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
@@ -44,16 +44,15 @@
       "name": "Stock Overview",
       "short_name": "Stock",
       "description": "View inventory stock levels",
-      "url": "./Dps.html#stock",
-      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+      "url": "/#stock",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Requisition Slips",
       "short_name": "Slips",
       "description": "View and print requisition slips",
-      "url": "./Dps.html#req",
-      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+      "url": "/#req",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
-
