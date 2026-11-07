@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dps-inventory-v2';
+const CACHE_NAME = 'dps-inventory-v3';
 const STATIC_ASSETS = [
   '/',
   '/Dps.html',
@@ -39,6 +39,11 @@ self.addEventListener('fetch', event => {
   const url = new URL(req.url);
 
   if (req.method !== 'GET') return;
+
+  // Never cache live notification streams or polling
+  if (url.pathname.startsWith('/api/notifications')) {
+    return;
+  }
 
   // Dynamic API calls (Network-first with cache fallback)
   if (url.pathname.startsWith('/api/')) {
@@ -88,4 +93,56 @@ self.addEventListener('fetch', event => {
       return cached || fetchPromise;
     })
   );
+});
+
+// Push Notifications
+self.addEventListener('push', event => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (e) {
+    data = { title: 'DPS Stationery Alert', body: event.data ? event.data.text() : '' };
+  }
+  const title = data.title || 'DPS Stationery Alert';
+  const options = {
+    body: data.body || 'You have an update in stationery store.',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    tag: data.tag || 'dps-notify-' + Date.now(),
+    vibrate: [200, 100, 200],
+    data: data
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+// Notification click: Focus existing DPS window or open new
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+      for (let client of windowClients) {
+        if (client.url && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow('/');
+      }
+    })
+  );
+});
+
+// Receive notification trigger from client script
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
+    const payload = event.data.payload || {};
+    self.registration.showNotification(payload.title || 'DPS Stationery', {
+      body: payload.body || '',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      tag: payload.tag || 'dps-notify-' + Date.now(),
+      vibrate: [200, 100, 200],
+      data: payload
+    });
+  }
 });

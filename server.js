@@ -20,8 +20,105 @@ const MIME = {
   '.ico': 'image/x-icon'
 };
 
+// Notification Broker (In-memory ring buffer + SSE live streaming)
+const notificationsQueue = [];
+const notificationClients = new Set();
+let lastReqsState = null;
+
+// Initialize lastReqsState from data.json if available
+try {
+  if (fs.existsSync(DATA_FILE)) {
+    const raw = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    if (Array.isArray(raw.reqs)) {
+      lastReqsState = {};
+      raw.reqs.forEach(r => { if (r && r.id != null) lastReqsState[r.id] = r.st; });
+    }
+  }
+} catch (e) {}
+
+function broadcastNotification(notif) {
+  if (!notif.id) notif.id = 'notif_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+  if (!notif.timestamp) notif.timestamp = Date.now();
+
+  // Deduplicate by tag or id in recent queue
+  const exists = notificationsQueue.some(n => n.id === notif.id || (notif.tag && n.tag === notif.tag && Math.abs(n.timestamp - notif.timestamp) < 5000));
+  if (exists) return;
+
+  notificationsQueue.push(notif);
+  if (notificationsQueue.length > 200) notificationsQueue.shift();
+
+  const eventPayload = `data: ${JSON.stringify(notif)}\n\n`;
+  notificationClients.forEach(client => {
+    try {
+      client.res.write(eventPayload);
+    } catch (e) {
+      notificationClients.delete(client);
+    }
+  });
+}
+
 const server = http.createServer((req, res) => {
-  const urlPath = decodeURI(req.url.split('?')[0]);
+  const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+  const urlPath = decodeURI(parsedUrl.pathname);
+
+  // CORS headers for all API requests
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204);
+    return res.end();
+  }
+
+  // SSE Real-time Notification Stream
+  if (urlPath === '/api/notifications/stream') {
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache, no-transform',
+      'Connection': 'keep-alive',
+      'X-Accel-Buffering': 'no'
+    });
+    res.write(': connected\n\n');
+
+    const client = { res, req };
+    notificationClients.add(client);
+
+    req.on('close', () => {
+      notificationClients.delete(client);
+    });
+    return;
+  }
+
+  // Notification API endpoints (Query / Publish)
+  if (urlPath === '/api/notifications' || urlPath === '/api/notify') {
+    if (req.method === 'GET') {
+      const since = parseInt(parsedUrl.searchParams.get('since') || '0', 10);
+      const filtered = notificationsQueue.filter(n => n.timestamp > since);
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      return res.end(JSON.stringify({ ok: true, notifications: filtered }));
+    }
+
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk;
+        if (body.length > 1024 * 1024) req.destroy();
+      });
+      req.on('end', () => {
+        try {
+          const notif = JSON.parse(body);
+          broadcastNotification(notif);
+          res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+          res.end(JSON.stringify({ ok: true, id: notif.id }));
+        } catch (e) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'Invalid JSON' }));
+        }
+      });
+      return;
+    }
+  }
 
   // Shared data persistence endpoint (Dual-layer: PostgreSQL + local data.json fallback)
   if (urlPath === '/api/data') {
@@ -38,7 +135,6 @@ const server = http.createServer((req, res) => {
           .then(r => {
             if (r.rows && r.rows.length && r.rows[0].payload) {
               const payloadStr = typeof r.rows[0].payload === 'string' ? r.rows[0].payload : JSON.stringify(r.rows[0].payload);
-              // Also update local data.json cache in background
               fs.writeFile(DATA_FILE, payloadStr, () => {});
               res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
               return res.end(payloadStr);
@@ -51,6 +147,7 @@ const server = http.createServer((req, res) => {
       fallbackLocalRead();
       return;
     }
+
     if (req.method === 'POST') {
       let body = '';
       req.on('data', chunk => {
@@ -59,7 +156,70 @@ const server = http.createServer((req, res) => {
       });
       req.on('end', () => {
         try {
-          JSON.parse(body);
+          const parsed = JSON.parse(body);
+
+          // Auto-detect requisition status changes and broadcast push notifications
+          if (Array.isArray(parsed.reqs)) {
+            const nextMap = {};
+            parsed.reqs.forEach(r => {
+              if (!r || r.id == null) return;
+              nextMap[r.id] = r.st;
+              const prevSt = lastReqsState ? lastReqsState[r.id] : undefined;
+
+              // 1. New Requisition submitted by Teacher -> Notify Principal & Admin
+              if (prevSt === undefined && r.st === 'Pending') {
+                const count = Array.isArray(r.it) ? r.it.length : 0;
+                broadcastNotification({
+                  id: `req_new_${r.id}_${Date.now()}`,
+                  type: 'req_created',
+                  targetRole: ['principal', 'admin'],
+                  title: '📋 New Requisition Slip Raised',
+                  body: `${r.by || 'Teacher'} raised requisition #${String(r.id).padStart(3, '0')} (${count} items). Awaiting approval.`,
+                  tag: `req-slip-${r.id}`,
+                  slipId: r.id
+                });
+              }
+              // 2. Principal verifies slip -> Notify Teacher & Admin
+              else if (prevSt === 'Pending' && r.st === 'Verified') {
+                broadcastNotification({
+                  id: `req_ver_${r.id}_${Date.now()}`,
+                  type: 'req_verified',
+                  targetTeacher: r.by,
+                  targetRole: ['admin'],
+                  title: '✅ Requisition Approved by Principal',
+                  body: `Requisition #${String(r.id).padStart(3, '0')} for ${r.by} has been approved by Principal and forwarded to Admin.`,
+                  tag: `req-verified-${r.id}`,
+                  slipId: r.id
+                });
+              }
+              // 3. Admin issues/approves slip -> Notify Teacher
+              else if (prevSt === 'Verified' && r.st === 'Approved') {
+                broadcastNotification({
+                  id: `req_app_${r.id}_${Date.now()}`,
+                  type: 'req_approved',
+                  targetTeacher: r.by,
+                  title: '🎉 Stationery Requisition Issued!',
+                  body: `Your requisition #${String(r.id).padStart(3, '0')} has been approved & issued by Store Admin. Please collect items.`,
+                  tag: `req-approved-${r.id}`,
+                  slipId: r.id
+                });
+              }
+              // 4. Declined slip -> Notify Teacher
+              else if (prevSt && prevSt !== 'Declined' && r.st === 'Declined') {
+                broadcastNotification({
+                  id: `req_dec_${r.id}_${Date.now()}`,
+                  type: 'req_declined',
+                  targetTeacher: r.by,
+                  title: '❌ Requisition Declined',
+                  body: `Your requisition #${String(r.id).padStart(3, '0')} was declined by ${r.declBy === 'principal' ? 'Principal' : 'Store Admin'}.`,
+                  tag: `req-declined-${r.id}`,
+                  slipId: r.id
+                });
+              }
+            });
+            lastReqsState = nextMap;
+          }
+
           // 1. Write local disk cache
           fs.writeFile(DATA_FILE, body, 'utf8', err => {
             if (err) console.error('[DATA] Local write error:', err.message);
@@ -130,5 +290,6 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(`  > Local:    http://localhost:${PORT}/`);
   console.log(`  > Network:  http://${lanIp}:${PORT}/`);
   console.log(`  > Database: ${db.isConnected() ? 'Connected (Neon PostgreSQL)' : 'Local JSON only'}`);
+  console.log(`  > Push:     Live (SSE + Notifications API)`);
   console.log('======================================================');
 });

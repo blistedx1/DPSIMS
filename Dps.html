@@ -1964,6 +1964,27 @@ body.app-is-standalone .pwa-install-pill {
   display: none !important;
 }
 
+
+/* Push Notification Toast */
+@keyframes dpsToastIn {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.dps-notify-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+.dps-notify-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+}
+
 </style>
 <script>
 window.__thId=function(){try{return localStorage.getItem("dps_theme")==="obsidian"?"obsidian":"dgwhite"}catch(e){return "dgwhite"}};
@@ -3722,7 +3743,25 @@ html body #L#L .done,
           + '</div>'
           + '<button type="button" class="rq-prbtn pwa-install-pill" data-a="install-pwa" style="display:inline-flex;padding:8px 16px;background:var(--accent);color:#fff;font-weight:600;">Install App</button>'
         + '</div>'
-      + '</div>';
+      + '</div>'
+      + (function(){
+          var granted = ('Notification' in window && Notification.permission === 'granted');
+          var denied = ('Notification' in window && Notification.permission === 'denied');
+          var desc = granted ? 'Active (Real-time browser and OS push alerts are enabled)' : (denied ? 'Notifications blocked in browser permissions. Please allow in site settings.' : 'Instant alerts when slips are raised or approved.');
+          var btnTxt = granted ? '✓ Notifications Active' : 'Enable Notifications';
+          return '<div style="margin-top:14px;padding:16px;background:var(--card-bg, #fff);border-radius:12px;border:1px solid var(--border);">'
+            + '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">'
+              + '<div>'
+                + '<div style="font-weight:600;font-size:14px;color:var(--text);display:flex;align-items:center;gap:6px;">'
+                  + '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>'
+                  + 'Requisition Push Notifications'
+                + '</div>'
+                + '<div style="font-size:12px;color:var(--text-sub);margin-top:2px;">' + desc + '</div>'
+              + '</div>'
+              + '<button type="button" class="rq-prbtn" data-a="toggle-push-notif" style="display:inline-flex;padding:8px 16px;background:' + (granted ? '#059669' : 'var(--accent)') + ';color:#fff;font-weight:600;">' + btnTxt + '</button>'
+            + '</div>'
+          + '</div>';
+        })();
 
     } else if(settingsTab==='password'){
       var sessInfo=JSON.parse(sessionStorage.getItem('dps_session')||'{}');
@@ -4887,6 +4926,18 @@ html body #L#L .done,
         if(rj.length===r.it.length){msg='All items are rejected. Use Decline to reject the whole slip, or accept at least one item.';okm=false}
         else{
           r.st='Verified';r.pDate=iso();if(rj.length)r.rejP=rj;
+          if(window.DPS_NOTIFY){
+            window.DPS_NOTIFY.send({
+              id: 'req_ver_' + r.id + '_' + Date.now(),
+              type: 'req_verified',
+              targetTeacher: r.by,
+              targetRole: ['admin'],
+              title: '✅ Requisition Approved by Principal',
+              body: 'Requisition #' + slipNo(r.id) + ' for ' + r.by + ' has been approved by Principal and forwarded to Admin to issue.',
+              tag: 'req-verified-' + r.id,
+              slipId: r.id
+            });
+          }
           msg='Slip #'+slipNo(r.id)+' of '+r.by+' approved and sent to Admin for issue.'+(rj.length?' '+rj.length+' item'+(rj.length>1?'s were':' was')+' rejected.':'');
         }
       }else if(d.s==='Approved'){
@@ -4916,11 +4967,33 @@ html body #L#L .done,
             else if(q<x[2])shorts.push((it?it.name:'Item')+' ('+x[1]+'): requested '+x[2]+', issued '+q+' ('+(x[2]-q)+' not issued)');
           });
           r.st='Approved';r.iDate=iso();r.iss=qs;r.short=shorts;r.iRem=adminNote;if(rjAl.length)r.rejA=rjAl;
+          if(window.DPS_NOTIFY){
+            window.DPS_NOTIFY.send({
+              id: 'req_app_' + r.id + '_' + Date.now(),
+              type: 'req_approved',
+              targetTeacher: r.by,
+              title: '🎉 Requisition Approved & Issued!',
+              body: 'Your requisition #' + slipNo(r.id) + ' has been approved and issued by Store Admin. Please collect your items.',
+              tag: 'req-approved-' + r.id,
+              slipId: r.id
+            });
+          }
           msg='Slip #'+slipNo(r.id)+' issued to '+r.by+(shorts.length?' with a partial issue. The remark is now visible to everyone.':'. Stock was deducted automatically.');
         }
       }else if(d.s==='Declined'){
         if(!((role==='principal'&&r.st==='Pending')||(role==='admin'&&r.st==='Verified')))return;
         r.st='Declined';r.declBy=role;r.dDate=iso();
+        if(window.DPS_NOTIFY){
+          window.DPS_NOTIFY.send({
+            id: 'req_dec_' + r.id + '_' + Date.now(),
+            type: 'req_declined',
+            targetTeacher: r.by,
+            title: '❌ Requisition Declined',
+            body: 'Requisition #' + slipNo(r.id) + ' was declined by ' + (role === 'principal' ? 'Principal' : 'Store Admin') + '.',
+            tag: 'req-declined-' + r.id,
+            slipId: r.id
+          });
+        }
         msg='Slip #'+slipNo(r.id)+' of '+r.by+' was declined.';
       }else return;
       save();rail();tree();
@@ -5242,7 +5315,22 @@ html body #L#L .done,
     });
     if(problem){saveCart();renderLayer();cartMsg(problem);return}
     var id=nextSlipId();
-    reqs.unshift({id:id,by:getTeacherName(),it:tCart.map(function(l){return [l.id,l.v,l.q]}),st:'Pending',date:iso(),purpose:purpose});
+    var teacherSubmitting = getTeacherName();
+    var cartCopy = tCart.slice();
+    reqs.unshift({id:id,by:teacherSubmitting,it:tCart.map(function(l){return [l.id,l.v,l.q]}),st:'Pending',date:iso(),purpose:purpose});
+    if(window.DPS_NOTIFY){
+      var summaryList = cartCopy.map(function(l){var it=find(l.id);return (it?it.name:'Item')+' ('+l.q+')'}).slice(0,3).join(', ');
+      if(cartCopy.length>3) summaryList += ' +'+(cartCopy.length-3)+' more';
+      window.DPS_NOTIFY.send({
+        id: 'req_new_' + id + '_' + Date.now(),
+        type: 'req_created',
+        targetRole: ['principal', 'admin'],
+        title: '📋 New Requisition Slip Raised',
+        body: teacherSubmitting + ' raised slip #' + slipNo(id) + ' (' + cartCopy.length + ' items: ' + summaryList + '). Awaiting approval.',
+        tag: 'req-slip-' + id,
+        slipId: id
+      });
+    }
     save();
     if(window.__beep)window.__beep('send');
     tCart=[];tPurpose='';saveCart();
@@ -6412,6 +6500,7 @@ window.__beep=function(kind){
     if(kind==='send')tone(880,0,.09,'sine',.09);
     else if(kind==='approve'){tone(880,0,.08,'sine',.09);tone(1175,.1,.11,'sine',.09)}
     else if(kind==='decline'){tone(392,0,.1,'triangle',.11);tone(262,.12,.15,'triangle',.11)}
+    else if(kind==='notify'){tone(587.33,0,.1,'sine',.09);tone(880,.09,.12,'sine',.09);tone(1174.66,.18,.16,'sine',.1)}
   }catch(e){}
 };
 function sync(id){
