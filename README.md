@@ -29,3 +29,15 @@ node server.js
 - QR Code Engine (Model 2, Error Correction Level H)
 - Service Worker & Web App Manifest
 - Node.js HTTP Server (`server.js`)
+- Cloud Database: Neon Serverless PostgreSQL (`db.js`)
+
+## Database Configuration
+Copy `.env.example` to `.env` and configure your database connection string:
+```bash
+cp .env.example .env
+```
+To initialize schema and upload inventory data to PostgreSQL:
+```bash
+node scripts/db_init_and_upload.js
+```
+

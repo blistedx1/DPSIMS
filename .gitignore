@@ -1,3 +1,9 @@
+# Environment & Secrets (NEVER COMMIT)
+.env
+.env.local
+.env.*.local
+
+# Dependencies & temporary folders
 node_modules/
 scratch/
 .DS_Store
