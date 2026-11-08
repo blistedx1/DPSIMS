@@ -1,6 +1,8 @@
-const CACHE_NAME = 'dps-inventory-v6';
+// DPS Stationery - Service Worker v7 (Silent Auto-Update & Real-Time Push)
+const CACHE_NAME = 'dps-stationery-v7';
 const STATIC_ASSETS = [
   '/',
+  '/index.html',
   '/Dps.html',
   '/manifest.json',
   '/icon-192.png',
@@ -9,6 +11,7 @@ const STATIC_ASSETS = [
   '/icon.svg'
 ];
 
+// Install: Pre-cache core shell & immediately take over (skipWaiting)
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
@@ -16,7 +19,7 @@ self.addEventListener('install', event => {
       return Promise.all(
         STATIC_ASSETS.map(url => {
           return cache.add(url).catch(err => {
-            console.warn('[SW] Cache add warning for ' + url + ':', err.message);
+            console.warn('[SW] Cache prefetch warning:', url, err.message);
           });
         })
       );
@@ -24,28 +27,33 @@ self.addEventListener('install', event => {
   );
 });
 
+// Activate: Immediately claim all clients and silently delete older caches
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => {
       return Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+        keys.filter(k => k !== CACHE_NAME).map(k => {
+          console.log('[SW] Purging obsolete cache:', k);
+          return caches.delete(k);
+        })
       );
     }).then(() => self.clients.claim())
   );
 });
 
+// Fetch: Silent background updates with Network-First navigation & API
 self.addEventListener('fetch', event => {
   const req = event.request;
   const url = new URL(req.url);
 
   if (req.method !== 'GET') return;
 
-  // Never cache live notification streams or polling
+  // Never intercept or cache live notification streams
   if (url.pathname.startsWith('/api/notifications')) {
     return;
   }
 
-  // Dynamic API calls (Network-first with cache fallback)
+  // 1. Dynamic API requests: Network-first with cache fallback
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(
       fetch(req)
@@ -61,23 +69,23 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // HTML navigation requests
-  if (req.mode === 'navigate') {
+  // 2. HTML navigation requests: Network-first (silent update on every visit)
+  if (req.mode === 'navigate' || req.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
       fetch(req)
-        .then(res => {
-          if (res && res.status === 200) {
-            const clone = res.clone();
+        .then(networkRes => {
+          if (networkRes && networkRes.status === 200) {
+            const clone = networkRes.clone();
             caches.open(CACHE_NAME).then(c => c.put(req, clone));
           }
-          return res;
+          return networkRes;
         })
-        .catch(() => caches.match('/') || caches.match('/Dps.html'))
+        .catch(() => caches.match('/') || caches.match('/index.html') || caches.match('/Dps.html'))
     );
     return;
   }
 
-  // Static assets (Cache-first with background revalidation)
+  // 3. Static assets: Stale-While-Revalidate (instant load + silent background refresh)
   event.respondWith(
     caches.match(req).then(cached => {
       const fetchPromise = fetch(req)
@@ -95,7 +103,7 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// Push Notifications
+// Native Push Notifications
 self.addEventListener('push', event => {
   let data = {};
   try {
@@ -115,7 +123,7 @@ self.addEventListener('push', event => {
   event.waitUntil(self.registration.showNotification(title, options));
 });
 
-// Notification click: Focus existing DPS window or open new
+// Click notification: Focus active window or open application
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   event.waitUntil(
@@ -132,8 +140,11 @@ self.addEventListener('notificationclick', event => {
   );
 });
 
-// Receive notification trigger from client script
+// Message listener from web app
 self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
   if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
     const payload = event.data.payload || {};
     self.registration.showNotification(payload.title || 'DPS Stationery', {

@@ -2061,6 +2061,18 @@ body.app-is-standalone .pwa-install-pill {
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
 }
 
+
+@keyframes dpsBannerIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
 </style>
 <script>
 window.__thId=function(){try{return localStorage.getItem("dps_theme")==="obsidian"?"obsidian":"dgwhite"}catch(e){return "dgwhite"}};
@@ -6707,35 +6719,73 @@ html[data-theme="obsidian"] #dps-exit .bar{background:#9bab84}
 })();
 </script>
 <script id="dps-pwa">
-/* DPS Stationery PWA Controller: Bulletproof Service Worker & Install Flow */
+/* DPS Stationery PWA Controller: Silent Auto-Update, Native App Manifest & Upfront Setup */
 (function() {
   var deferredInstallPrompt = null;
+  var dismissedBanner = sessionStorage.getItem('dps_pwa_banner_dismissed') === '1';
 
   function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches
       || window.navigator.standalone === true
-      || document.referrer.includes('android-app://');
+      || document.referrer.includes('android-app://')
+      || window.location.search.includes('source=pwa');
   }
 
   function syncStandaloneClass() {
     if (isStandalone()) {
       document.body.classList.add('app-is-standalone');
+      var b = document.getElementById('dps-upfront-banner');
+      if (b) b.remove();
     } else {
       document.body.classList.remove('app-is-standalone');
     }
   }
   syncStandaloneClass();
 
-  // Register Service Worker reliably
+  // Register Service Worker with silent auto-update engine
   function registerSW() {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js', { scope: '/' })
         .then(function(reg) {
           console.log('[PWA] Service Worker active, scope:', reg.scope);
+
+          // Check for background updates immediately
+          reg.update().catch(function() {});
+
+          // Silent background update check every 60 seconds
+          setInterval(function() {
+            reg.update().catch(function() {});
+          }, 60000);
+
+          // Detect new version and activate secretly
+          reg.onupdatefound = function() {
+            var newWorker = reg.installing;
+            if (!newWorker) return;
+            newWorker.onstatechange = function() {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('[PWA] New version ready - applying silently in background');
+                newWorker.postMessage({ type: 'SKIP_WAITING' });
+              }
+            };
+          };
         })
         .catch(function(err) {
           console.warn('[PWA] SW registration note:', err.message);
         });
+
+      // Check for updates whenever user returns to the tab/app
+      document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+          navigator.serviceWorker.ready.then(function(reg) {
+            reg.update().catch(function() {});
+          }).catch(function() {});
+        }
+      });
+
+      // Controller change: new version taken over
+      navigator.serviceWorker.addEventListener('controllerchange', function() {
+        console.log('[PWA] Controller updated silently');
+      });
     }
   }
 
@@ -6745,68 +6795,138 @@ html[data-theme="obsidian"] #dps-exit .bar{background:#9bab84}
     window.addEventListener('DOMContentLoaded', registerSW);
   }
 
-  // Capture install prompt
+  // Capture native install prompt
   window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault();
     deferredInstallPrompt = e;
-    console.log('[PWA] beforeinstallprompt event captured successfully!');
+    console.log('[PWA] beforeinstallprompt event captured!');
     syncStandaloneClass();
+    renderUpfrontBanner();
   });
 
   window.addEventListener('appinstalled', function() {
     deferredInstallPrompt = null;
     document.body.classList.add('app-is-standalone');
+    var b = document.getElementById('dps-upfront-banner');
+    if (b) b.remove();
     if (typeof pToast === 'function') {
       pToast('DPS Stationery App installed successfully!');
-    } else {
-      alert('DPS Stationery App installed successfully! You can launch it directly from your home screen or desktop.');
     }
   });
 
-  // Modal Guide for devices/browsers when beforeinstallprompt is pending or manual
-  function openInstallGuideModal() {
-    var old = document.getElementById('pwa-guide-modal');
-    if (old && old.parentNode) old.parentNode.removeChild(old);
+  // Upfront Banner: Prompts user to Install App & Enable Notifications
+  function renderUpfrontBanner() {
+    if (isStandalone() || dismissedBanner || document.getElementById('dps-upfront-banner')) return;
 
-    var isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    var isMac = /Macintosh/i.test(navigator.userAgent) && !isIos;
-    var isAndroid = /Android/i.test(navigator.userAgent);
+    var banner = document.createElement('div');
+    banner.id = 'dps-upfront-banner';
+    banner.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:99999;width:calc(100% - 24px);max-width:520px;background:#0d1811;border:1.5px solid #10b981;border-radius:16px;box-shadow:0 12px 35px rgba(0,0,0,0.6);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#fff;animation:dpsBannerIn 0.35s cubic-bezier(0.16,1,0.3,1);font-family:inherit;box-sizing:border-box;';
+
+    var notifGranted = ('Notification' in window && Notification.permission === 'granted');
+
+    banner.innerHTML = '<div style="display:flex;align-items:center;gap:12px;min-width:0;">'
+      + '<img src="/icon-192.png" width="40" height="40" style="border-radius:10px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.3);" alt="DPS"/>'
+      + '<div style="min-width:0;">'
+        + '<div style="font-weight:700;font-size:13.5px;color:#ffffff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Install DPS Stationery App</div>'
+        + '<div style="font-size:11.5px;color:#9ca3af;margin-top:2px;line-height:1.3;">1-tap launch, full standalone window &amp; instant alerts.</div>'
+      + '</div>'
+    + '</div>'
+    + '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">'
+      + (!notifGranted ? '<button type="button" class="dps-banner-notif-btn" style="background:rgba(16,185,129,0.15);color:#10b981;border:1px solid #10b981;padding:6px 10px;border-radius:10px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap;">🔔 Alerts</button>' : '')
+      + '<button type="button" class="dps-banner-install-btn" style="background:#10b981;color:#ffffff;border:none;padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(16,185,129,0.4);">Install App</button>'
+      + '<button type="button" class="dps-banner-close-btn" style="background:none;border:none;color:#9ca3af;font-size:18px;cursor:pointer;padding:0 4px;line-height:1;" aria-label="Close">&times;</button>'
+    + '</div>';
+
+    var installBtn = banner.querySelector('.dps-banner-install-btn');
+    if (installBtn) {
+      installBtn.onclick = function() {
+        window.installPWA();
+      };
+    }
+
+    var notifBtn = banner.querySelector('.dps-banner-notif-btn');
+    if (notifBtn) {
+      notifBtn.onclick = function() {
+        if (window.DPS_NOTIFY && window.DPS_NOTIFY.requestPermission) {
+          window.DPS_NOTIFY.requestPermission(function(res) {
+            if (res === 'granted' && notifBtn) notifBtn.remove();
+          });
+        }
+      };
+    }
+
+    var closeBtn = banner.querySelector('.dps-banner-close-btn');
+    if (closeBtn) {
+      closeBtn.onclick = function() {
+        sessionStorage.setItem('dps_pwa_banner_dismissed', '1');
+        dismissedBanner = true;
+        banner.remove();
+      };
+    }
+
+    document.body.appendChild(banner);
+  }
+
+  // Trigger Install Dialog
+  window.installPWA = function() {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      deferredInstallPrompt.userChoice.then(function(choice) {
+        if (choice.outcome === 'accepted') {
+          console.log('[PWA] User accepted installation');
+          var b = document.getElementById('dps-upfront-banner');
+          if (b) b.remove();
+        }
+        deferredInstallPrompt = null;
+      });
+    } else {
+      openInstallGuideModal();
+    }
+  };
+
+  // Step-by-step installation guide fallback
+  function openInstallGuideModal() {
+    var existing = document.getElementById('pwa-guide-modal');
+    if (existing) return;
+
+    var isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    var isAndroid = /android/i.test(navigator.userAgent);
 
     var guideHtml = '';
     if (isIos) {
       guideHtml = '<div style="margin-top:12px;line-height:1.6;font-size:14px;color:var(--text);">'
-        + '<div style="margin-bottom:10px;"><b>To install on your iPhone / iPad:</b></div>'
-        + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
+        + '<div style="margin-bottom:10px;"><b>To install standalone app on iPhone/iPad:</b></div>'
+        + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
           + '<span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,0.15);color:#10b981;font-weight:700;align-items:center;justify-content:center;">1</span>'
-          + '<span>Tap the <b>Share</b> button <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> at the bottom of Safari.</span>'
+          + '<span>Tap the <b>Share button</b> (box with arrow ↑) in Safari.</span>'
         + '</div>'
         + '<div style="display:flex;align-items:center;gap:10px;">'
           + '<span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,0.15);color:#10b981;font-weight:700;align-items:center;justify-content:center;">2</span>'
-          + '<span>Scroll down and tap <b>Add to Home Screen (+)</b>.</span>'
+          + '<span>Scroll down and tap <b>Add to Home Screen ⊞</b>.</span>'
         + '</div>'
       + '</div>';
     } else if (isAndroid) {
       guideHtml = '<div style="margin-top:12px;line-height:1.6;font-size:14px;color:var(--text);">'
-        + '<div style="margin-bottom:10px;"><b>To install on your Android device:</b></div>'
-        + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
+        + '<div style="margin-bottom:10px;"><b>To install standalone app on Android:</b></div>'
+        + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
           + '<span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,0.15);color:#10b981;font-weight:700;align-items:center;justify-content:center;">1</span>'
-          + '<span>Tap browser menu <b>(⋮)</b> in the top right.</span>'
+          + '<span>Tap the browser menu <b>(⋮)</b> in Chrome.</span>'
         + '</div>'
         + '<div style="display:flex;align-items:center;gap:10px;">'
           + '<span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,0.15);color:#10b981;font-weight:700;align-items:center;justify-content:center;">2</span>'
-          + '<span>Tap <b>Install app</b> or <b>Add to Home screen</b>.</span>'
+          + '<span>Tap <b>Install app</b>.</span>'
         + '</div>'
       + '</div>';
     } else {
       guideHtml = '<div style="margin-top:12px;line-height:1.6;font-size:14px;color:var(--text);">'
-        + '<div style="margin-bottom:10px;"><b>To install on your PC / Laptop:</b></div>'
+        + '<div style="margin-bottom:10px;"><b>To install standalone app on Desktop:</b></div>'
         + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
           + '<span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,0.15);color:#10b981;font-weight:700;align-items:center;justify-content:center;">1</span>'
-          + '<span>Look at the right side of your browser\'s <b>address bar</b> (top of screen).</span>'
+          + '<span>Look at the right side of Chrome address bar.</span>'
         + '</div>'
         + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
           + '<span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,0.15);color:#10b981;font-weight:700;align-items:center;justify-content:center;">2</span>'
-          + '<span>Click the <b>Install (⊕ or ⬇)</b> icon next to the bookmark star.</span>'
+          + '<span>Click the <b>Install (⊕ or ⬇)</b> icon.</span>'
         + '</div>'
         + '<div style="display:flex;align-items:center;gap:10px;">'
           + '<span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,0.15);color:#10b981;font-weight:700;align-items:center;justify-content:center;">3</span>'
@@ -6824,7 +6944,7 @@ html[data-theme="obsidian"] #dps-exit .bar{background:#9bab84}
           + '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
           + 'Install DPS Stationery App'
         + '</h2>'
-        + '<button class="kite-close" data-a="close-pwa-guide" aria-label="Close" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-sub);">\u2715</button>'
+        + '<button class="kite-close" data-a="close-pwa-guide" aria-label="Close" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-sub);">&times;</button>'
       + '</div>'
       + '<div style="text-align:center;margin:12px 0;">'
         + '<img src="/icon-192.png" width="64" height="64" style="border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,0.15);" alt="DPS Logo"/>'
@@ -6837,20 +6957,7 @@ html[data-theme="obsidian"] #dps-exit .bar{background:#9bab84}
     document.body.appendChild(div);
   }
 
-  window.installPWA = function() {
-    if (deferredInstallPrompt) {
-      deferredInstallPrompt.prompt();
-      deferredInstallPrompt.userChoice.then(function(choice) {
-        if (choice.outcome === 'accepted') {
-          console.log('[PWA] Install prompt accepted');
-        }
-        deferredInstallPrompt = null;
-      });
-    } else {
-      openInstallGuideModal();
-    }
-  };
-
+  // Global click listeners
   document.addEventListener('click', function(e) {
     if (e.target.closest('[data-a="install-pwa"]')) {
       e.preventDefault();
@@ -6862,6 +6969,21 @@ html[data-theme="obsidian"] #dps-exit .bar{background:#9bab84}
       if (m && m.parentNode) m.parentNode.removeChild(m);
       return;
     }
+  });
+
+  // Upfront auto-prompt on initial visit (after 1.2s delay)
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      if (!isStandalone()) {
+        renderUpfrontBanner();
+      }
+      // Also request notification permission upfront if not yet decided
+      if ('Notification' in window && Notification.permission === 'default') {
+        if (window.DPS_NOTIFY && window.DPS_NOTIFY.requestPermission) {
+          window.DPS_NOTIFY.requestPermission();
+        }
+      }
+    }, 1200);
   });
 })();
 </script>

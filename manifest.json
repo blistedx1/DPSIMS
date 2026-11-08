@@ -1,9 +1,9 @@
 {
-  "id": "/",
+  "id": "/?source=pwa",
   "name": "Delhi Public School - Stationery Inventory",
   "short_name": "DPS Stationery",
   "description": "Official Stationery & Inventory Management Application for Delhi Public School, Amrapali Yojna",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
@@ -12,6 +12,7 @@
   "orientation": "any",
   "lang": "en",
   "dir": "ltr",
+  "prefer_related_applications": false,
   "categories": ["education", "productivity", "business"],
   "icons": [
     {
@@ -37,6 +38,22 @@
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Delhi Public School Stationery & Inventory Portal"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "DPS Stationery Mobile App"
     }
   ],
   "shortcuts": [
