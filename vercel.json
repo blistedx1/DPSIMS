@@ -1,6 +1,11 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "functions": {
+    "server.js": {
+      "includeFiles": "{*.html,*.js,*.json,*.png,*.svg,*.webmanifest}"
+    }
+  },
   "headers": [
     {
       "source": "/sw.js",

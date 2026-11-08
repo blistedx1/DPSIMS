@@ -278,6 +278,18 @@ const server = http.createServer((req, res) => {
     }
   }
 
+// Force NFT (Node File Trace) to bundle critical PWA & shell assets for Vercel
+const _TRACE_ASSETS = [
+  path.join(__dirname, 'sw.js'),
+  path.join(__dirname, 'manifest.json'),
+  path.join(__dirname, 'Dps.html'),
+  path.join(__dirname, 'index.html'),
+  path.join(__dirname, 'icon.svg'),
+  path.join(__dirname, 'icon-192.png'),
+  path.join(__dirname, 'icon-512.png'),
+  path.join(__dirname, 'icon-maskable-512.png')
+];
+
   // Static file serving
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     res.writeHead(405, { 'Content-Type': 'text/plain' });
@@ -291,10 +303,10 @@ const server = http.createServer((req, res) => {
     return res.end();
   }
   
-  const safePath = path.resolve(__dirname, '.' + path.normalize(reqPath));
-  if (!safePath.startsWith(__dirname)) {
-    res.writeHead(403, { 'Content-Type': 'text/plain' });
-    return res.end('403 Forbidden');
+  let safePath = path.resolve(__dirname, '.' + path.normalize(reqPath));
+  if (!fs.existsSync(safePath)) {
+    const cwdPath = path.resolve(process.cwd(), '.' + path.normalize(reqPath));
+    if (fs.existsSync(cwdPath)) safePath = cwdPath;
   }
 
   fs.readFile(safePath, (err, data) => {
@@ -303,7 +315,14 @@ const server = http.createServer((req, res) => {
       return res.end('404 Not Found');
     }
     const ext = path.extname(safePath).toLowerCase();
-    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
+    const headers = { 'Content-Type': MIME[ext] || 'application/octet-stream' };
+    if (reqPath === '/sw.js') {
+      headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+      headers['Service-Worker-Allowed'] = '/';
+    } else if (reqPath === '/manifest.json') {
+      headers['Cache-Control'] = 'no-cache, must-revalidate';
+    }
+    res.writeHead(200, headers);
     res.end(req.method === 'HEAD' ? null : data);
   });
 });
