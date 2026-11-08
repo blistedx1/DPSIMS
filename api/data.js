@@ -160,3 +160,4 @@ module.exports = async (req, res) => {
 
   return res.status(405).send('Method Not Allowed');
 };
+
