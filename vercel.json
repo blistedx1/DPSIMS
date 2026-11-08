@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/api/notifications/stream", "destination": "/api/notifications" },
+    { "source": "/api/notify", "destination": "/api/notify" },
+    { "source": "/api/notifications", "destination": "/api/notifications" },
+    { "source": "/api/data", "destination": "/api/data" },
+    { "source": "/", "destination": "/Dps.html" }
+  ]
+}

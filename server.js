@@ -47,6 +47,25 @@ function broadcastNotification(notif) {
   notificationsQueue.push(notif);
   if (notificationsQueue.length > 200) notificationsQueue.shift();
 
+  // Persist to Neon DB so Vercel and all remote clients have access
+  if (db.isConnected()) {
+    db.query(`
+      INSERT INTO dps_notifications (id, type, title, body, target_role, target_teacher, tag, slip_id, created_at)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      ON CONFLICT (id) DO NOTHING;
+    `, [
+      notif.id,
+      notif.type || 'info',
+      notif.title || 'DPS Alert',
+      notif.body || '',
+      notif.targetRole || null,
+      notif.targetTeacher || null,
+      notif.tag || null,
+      notif.slipId || null,
+      notif.timestamp
+    ]).catch(err => console.error('[DB] Notif insert error:', err.message));
+  }
+
   const eventPayload = `data: ${JSON.stringify(notif)}\n\n`;
   notificationClients.forEach(client => {
     try {
@@ -94,6 +113,23 @@ const server = http.createServer((req, res) => {
   if (urlPath === '/api/notifications' || urlPath === '/api/notify') {
     if (req.method === 'GET') {
       const since = parseInt(parsedUrl.searchParams.get('since') || '0', 10);
+      if (db.isConnected()) {
+        db.query(`
+          SELECT id, type, title, body, target_role as "targetRole", target_teacher as "targetTeacher", tag, slip_id as "slipId", created_at as "timestamp"
+          FROM dps_notifications
+          WHERE created_at > $1
+          ORDER BY created_at ASC
+          LIMIT 50;
+        `, [since]).then(r => {
+          res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+          res.end(JSON.stringify({ ok: true, notifications: r.rows || [] }));
+        }).catch(() => {
+          const filtered = notificationsQueue.filter(n => n.timestamp > since);
+          res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+          res.end(JSON.stringify({ ok: true, notifications: filtered }));
+        });
+        return;
+      }
       const filtered = notificationsQueue.filter(n => n.timestamp > since);
       res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
       return res.end(JSON.stringify({ ok: true, notifications: filtered }));

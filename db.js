@@ -2,6 +2,7 @@ require('dotenv').config();
 const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 let connectionString = (process.env.DATABASE_URL || '').trim();
 
@@ -12,7 +13,6 @@ function getHost() {
   try {
     const m = connectionString.match(/@([^/:?]+)/);
     if (!m) return null;
-    // Neon HTTP endpoint is on the direct compute endpoint without -pooler
     return m[1].replace('-pooler', '');
   } catch(e) {
     return null;
@@ -20,10 +20,7 @@ function getHost() {
 }
 
 const dbHost = getHost();
-const tmpDir = path.join(__dirname, 'scratch');
-if (!fs.existsSync(tmpDir)) {
-  try { fs.mkdirSync(tmpDir, { recursive: true }); } catch(e) {}
-}
+const tmpDir = os.tmpdir();
 
 async function query(sqlText, params = []) {
   if (!connectionString || !dbHost) {
@@ -39,8 +36,10 @@ async function query(sqlText, params = []) {
   const tmpFile = path.join(tmpDir, `neon_q_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.json`);
   fs.writeFileSync(tmpFile, payload, 'utf8');
 
+  const bin = process.platform === 'win32' ? 'curl.exe' : 'curl';
+
   try {
-    const raw = execFileSync('curl.exe', [
+    const raw = execFileSync(bin, [
       '-s',
       '-X', 'POST',
       endpoint,
@@ -49,7 +48,8 @@ async function query(sqlText, params = []) {
       '--data-binary', `@${tmpFile}`
     ], {
       encoding: 'utf8',
-      maxBuffer: 50 * 1024 * 1024
+      maxBuffer: 50 * 1024 * 1024,
+      timeout: 20000
     });
 
     try { fs.unlinkSync(tmpFile); } catch(e) {}
