@@ -2,6 +2,6 @@
 title DPS Stationery & Inventory Server
 cd /d "%~dp0"
 echo Starting Delhi Public School Stationery Server...
-node server.js
+node local-server.js
 pause
 
