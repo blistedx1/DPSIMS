@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dps-inventory-v3';
+const CACHE_NAME = 'dps-inventory-v5';
 const STATIC_ASSETS = [
   '/',
   '/Dps.html',
