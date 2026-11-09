@@ -290,11 +290,25 @@ const server = http.createServer((req, res) => {
     }
   }
 
+// Explicit references so Vercel NFT bundler includes lib/auth and modular APIs
+const authLib = require('./lib/auth');
+const API_HANDLERS = {
+  'auth/login': require('./api/auth/login'),
+  'auth/logout': require('./api/auth/logout'),
+  'auth/me': require('./api/auth/me'),
+  'auth/recover': require('./api/auth/recover'),
+  'auth/admin/devices': require('./api/auth/admin/devices'),
+  'webauthn/login/options': require('./api/webauthn/login/options'),
+  'webauthn/login/verify': require('./api/webauthn/login/verify'),
+  'webauthn/register/options': require('./api/webauthn/register/options'),
+  'webauthn/register/verify': require('./api/webauthn/register/verify')
+};
+
   // Generic /api/* handler for modular serverless functions (Auth & WebAuthn)
   if (urlPath.startsWith('/api/')) {
-    const relApi = urlPath.slice(5); // e.g. "auth/login", "webauthn/login/options"
-    const apiFile = path.join(__dirname, 'api', relApi + '.js');
-    if (fs.existsSync(apiFile)) {
+    const relApi = urlPath.slice(5).replace(/^\/+|\/+$/g, '');
+    const handler = API_HANDLERS[relApi];
+    if (handler) {
       let body = '';
       req.on('data', chunk => {
         body += chunk;
@@ -321,9 +335,6 @@ const server = http.createServer((req, res) => {
         };
 
         try {
-          // Clear require cache in dev so code edits reload
-          delete require.cache[require.resolve(apiFile)];
-          const handler = require(apiFile);
           await handler(req, res);
         } catch(err) {
           console.error(`[SERVER API ERROR ${urlPath}]`, err);
@@ -337,8 +348,9 @@ const server = http.createServer((req, res) => {
     }
   }
 
-// Force NFT (Node File Trace) to bundle critical PWA & shell assets for Vercel
+// Force NFT (Node File Trace) to bundle critical PWA, lib & shell assets for Vercel
 const _TRACE_ASSETS = [
+  path.join(__dirname, 'lib', 'auth.js'),
   path.join(__dirname, 'sw.js'),
   path.join(__dirname, 'manifest.json'),
   path.join(__dirname, 'Dps.html'),
