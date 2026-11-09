@@ -3347,7 +3347,7 @@ html body #L#L .done,
     return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || window.matchMedia('(max-width: 820px)').matches;
   }
   function canUseBiometric(){
-    return isMobileMode() && (role === 'admin');
+    return (role === 'admin');
   }
   var pendingEnrollUser=null,pendingNewPin=null;
 
@@ -3586,6 +3586,8 @@ html body #L#L .done,
   function render(){
     var t=$('#title'),s=$('#sub');
     $('#nameGroup').hidden=(role!=='teacher');
+    var isAdm=(role==='admin');
+    if(isAdm) method='pin';
     var isPw=(method==='pw');
     var pwView=$('#pwView');
     var pinView=$('#pinView');
@@ -3593,11 +3595,20 @@ html body #L#L .done,
     var lockView=$('#lockView');
 
     if(lockView) lockView.hidden=true;
-    if(pwView) pwView.hidden=!isPw;
-    if(pinView) pinView.hidden=isPw;
-    if(swapBtn){
-      swapBtn.hidden=false;
-      swapBtn.textContent=isPw?'Use PIN instead':'Use password instead';
+
+    if(isAdm){
+      // Admin: STRICTLY BIOMETRIC (1st) & PIN (2nd) - NO PASSWORD!
+      if(pwView) pwView.hidden=true;
+      if(pinView) pinView.hidden=false;
+      if(swapBtn) swapBtn.hidden=true;
+    } else {
+      // Principal & Teacher: PASSWORD (1st) & PIN (2nd) - NO BIOMETRIC!
+      if(pwView) pwView.hidden=!isPw;
+      if(pinView) pinView.hidden=isPw;
+      if(swapBtn){
+        swapBtn.hidden=false;
+        swapBtn.textContent=isPw?'Use PIN instead':'Use password instead';
+      }
     }
 
     if(mode==='new'){
@@ -3613,16 +3624,18 @@ html body #L#L .done,
       if(pinView) pinView.hidden=false;
       if(swapBtn) swapBtn.hidden=true;
     } else {
-      var rName = role==='admin'?'Admin':role==='principal'?'Principal':'Teacher';
+      var rName = isAdm?'Admin':role==='principal'?'Principal':'Teacher';
       t.textContent=rName+' sign-in';
-      if(isPw){
+      if(isAdm){
+        s.textContent='Touch fingerprint or enter PIN to unlock';
+      } else if(isPw){
         s.textContent=(role==='teacher')?'Select your name and enter your password':'Enter your password';
       } else {
         s.textContent=(role==='teacher')?'Select your name and enter your 4-digit PIN':'Enter your 4-digit PIN';
       }
     }
     var pInp = $('#pw');
-    if(pInp) pInp.placeholder = (role==='principal' ? 'Principal Password' : role==='teacher' ? 'Teacher Password' : 'Admin Password');
+    if(pInp) pInp.placeholder = (role==='principal' ? 'Principal Password' : role==='teacher' ? 'Teacher Password' : '');
     dots();
   }
 
