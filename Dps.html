@@ -3447,6 +3447,79 @@ html body #L#L .done,
   var lup = $('#lockUsePin');
   if(lup) lup.addEventListener('click', function(){ window.__dlLockOn(false); });
 
+  async function autoTriggerBiometric(){
+    var uname = currentUsername();
+    if(!uname || (role === 'teacher' && !$('#name').value)) return;
+
+    // Initially hide PIN view while biometric prompt opens
+    $('#pinView').hidden = true;
+    var s = $('#sub');
+    if(s) s.textContent = 'Verifying Screen Lock / Biometric…';
+
+    try {
+      if(!window.PublicKeyCredential){
+        throw new Error('NO_WEBAUTHN');
+      }
+
+      var optRes = await fetch('/api/webauthn/login/options', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify({ username: uname, role: role })
+      });
+      var optData = await optRes.json();
+      if(!optData.ok || !optData.options || !optData.options.allowCredentials || optData.options.allowCredentials.length === 0){
+        throw new Error('NO_PASSKEY');
+      }
+
+      var opts = optData.options;
+      opts.challenge = base64URLToBuffer(opts.challenge);
+      opts.allowCredentials.forEach(function(c){
+        c.id = base64URLToBuffer(c.id);
+      });
+
+      // Opens native system biometric (Fingerprint, Face ID, Screen Lock)
+      var assertion = await navigator.credentials.get({ publicKey: opts });
+      if(!assertion) throw new Error('CANCELLED');
+
+      var assertionResponse = {
+        id: assertion.id,
+        rawId: bufferToBase64URL(assertion.rawId),
+        type: assertion.type,
+        response: {
+          authenticatorData: bufferToBase64URL(assertion.response.authenticatorData),
+          clientDataJSON: bufferToBase64URL(assertion.response.clientDataJSON),
+          signature: bufferToBase64URL(assertion.response.signature),
+          userHandle: assertion.response.userHandle ? bufferToBase64URL(assertion.response.userHandle) : null
+        }
+      };
+
+      var verRes = await fetch('/api/webauthn/login/verify', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify({ username: uname, response: assertionResponse })
+      });
+      var verData = await verRes.json();
+      if(verData.ok){
+        sfx('ok');
+        return success('Screen lock verified!');
+      } else {
+        throw new Error(verData.error || 'Verification failed');
+      }
+    } catch(err) {
+      // JAB BIOMETRIC FAIL HOGA TAB PIN DAALNE KA OPTION AAYEGA!
+      console.warn('[Biometric fallback to PIN]', err);
+      $('#pinView').hidden = false;
+      var sub = $('#sub');
+      if(sub){
+        if(role === 'teacher') sub.textContent = 'Select your name and enter your 4-digit PIN';
+        else sub.textContent = 'Enter your 4-digit PIN';
+      }
+      dots();
+    }
+  }
+
   async function checkUserPasskeyStatus(){
     var u = currentUsername();
     if(!u){
@@ -3485,17 +3558,17 @@ html body #L#L .done,
     } else {
       if(role==='admin'){
         t.textContent='Admin sign-in';
-        s.textContent='Enter your 4-digit PIN (2026)';
+        s.textContent='Enter your 4-digit PIN';
       } else if(role==='principal'){
         t.textContent='Principal sign-in';
-        s.textContent='Enter your 4-digit PIN (2025)';
+        s.textContent='Enter your 4-digit PIN';
       } else {
         t.textContent='Teacher sign-in';
         s.textContent='Select your name and enter your 4-digit PIN';
       }
     }
     dots();
-    checkUserPasskeyStatus();
+    // autoTriggerBiometric handles passkey and PIN fallback
   }
 
   function reset(){buf='';first='';mode='login';setErr('');render()}
@@ -3510,6 +3583,9 @@ html body #L#L .done,
 
   $('#name').addEventListener('change', function(){
     reset();
+    if($('#name').value){
+      autoTriggerBiometric();
+    }
   });
 
   $('#seg').addEventListener('click',function(e){
@@ -3518,6 +3594,9 @@ html body #L#L .done,
     this.dataset.i=role==='admin'?0:role==='principal'?1:2;
     this.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-selected',x===b)});
     reset();
+    if(role==='admin'||role==='principal'){
+      autoTriggerBiometric();
+    }
   });
 
   // ---- Keypad Input ----
@@ -3890,7 +3969,7 @@ html body #L#L .done,
     $('#done').hidden=true;
     var sh=$('#L .sheet');if(sh)sh.hidden=false;
     var hr=$('#L .hero');if(hr)hr.hidden=false;
-    busy=false;buf='';first='';mode='login';method='pw';$('#pw').value='';setErr('');render();
+    busy=false;buf='';first='';mode='login';method='pin';$('#pw').value='';setErr('');render();
   };
 
   window.__unlock = unlock;
@@ -3902,6 +3981,9 @@ html body #L#L .done,
     fillNames();
     render();
     lockedMsg();
+    if(role==='admin'||role==='principal'){
+      autoTriggerBiometric();
+    }
   });
 })();
 </script>
@@ -4272,7 +4354,7 @@ html body #L#L .done,
           + '</div>'
           + '<div class="fg" style="margin-top:10px">'
             + '<label class="fl">New 4-Digit Quick PIN (Optional)'
-              + '<input id="pin-new" type="password" maxlength="4" placeholder="4 numeric digits (e.g. 2026)">'
+              + '<input id="pin-new" type="password" maxlength="4" placeholder="4 numeric digits">'
             + '</label>'
           + '</div>'
           + '<div style="display:flex;gap:10px;align-items:center;margin-top:16px">'
