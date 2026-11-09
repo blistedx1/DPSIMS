@@ -3554,6 +3554,10 @@ html body #L#L .done,
   }
 
   async function checkUserPasskeyStatus(){
+    if(!canUseBiometric()){
+      window.__dlLockOn(false);
+      return;
+    }
     var u = currentUsername();
     if(!u){
       window.__dlLockOn(false);
@@ -3758,7 +3762,7 @@ html body #L#L .done,
         });
         var data = await r.json();
         busy=false;buf='';dots();
-        if(data.status==='BIO_VERIFY_REQUIRED'){
+        if(canUseBiometric() && data.status==='BIO_VERIFY_REQUIRED'){
           setLock({fails:0,until:0});
           return autoBiometricVerify(uname, role);
         }
@@ -3794,8 +3798,8 @@ html body #L#L .done,
           mode='new';render();return;
         }
 
-        // 1. Agar fingerprint pehle se save hai -> BIOMETRIC APNE AAP OPEN HO JAYEGA
-        if(resData.status==='BIO_VERIFY_REQUIRED'){
+        // 1. Biometric auto-verify strictly for Admin only
+        if(canUseBiometric() && resData.status==='BIO_VERIFY_REQUIRED'){
           setLock({fails:0,until:0});
           return autoBiometricVerify(uname, role);
         }
@@ -3914,6 +3918,7 @@ html body #L#L .done,
 
   // ---- Server-Verified WebAuthn Enrollment (Register Screen Lock) ----
   function enroll(targetUser, userRole, note){
+    if(!canUseBiometric()) return;
     pendingEnrollUser = targetUser || { username: currentUsername(), role: role };
     var mod = $('#dlEnroll');
     if(mod) mod.hidden = false;

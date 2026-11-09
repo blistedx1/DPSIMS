@@ -42,6 +42,14 @@ module.exports = async (req, res) => {
     // Auto-clean old mock/test passkeys created during headless tests
     await db.query("UPDATE passkeys SET revoked_at = NOW() WHERE revoked_at IS NULL AND device_label IN ('Desktop Device', 'Windows Laptop (Edge)', 'Pixel Phone (Android)');");
 
+    // BIOMETRIC auth only for ADMIN
+    if (user.role !== 'admin') {
+      return res.status(200).json({
+        ok: true,
+        options: { allowCredentials: [] }
+      });
+    }
+
     // Find active passkeys for user
     const passRes = await db.query(
       'SELECT credential_id, transports FROM passkeys WHERE user_id = $1 AND revoked_at IS NULL;',

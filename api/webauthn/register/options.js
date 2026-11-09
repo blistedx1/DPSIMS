@@ -33,6 +33,11 @@ module.exports = async (req, res) => {
     }
     const user = userRes.rows[0];
 
+    // BIOMETRIC auth only for ADMIN
+    if (user.role !== 'admin') {
+      return res.status(403).json({ ok: false, error: 'Biometric registration is only available for Administrator.' });
+    }
+
     // Get existing passkeys for this user to exclude them
     const passkeyRes = await db.query(
       'SELECT credential_id, transports FROM passkeys WHERE user_id = $1 AND revoked_at IS NULL;',
