@@ -40,38 +40,21 @@ module.exports = async (req, res) => {
 
     const user = userRes.rows[0];
 
-    // Check passkey enforcement
-    const passkeyRes = await db.query(
-      'SELECT id FROM passkeys WHERE user_id = $1 AND revoked_at IS NULL LIMIT 1;',
-      [user.id]
-    );
-    const hasActivePasskey = passkeyRes.rows && passkeyRes.rows.length > 0;
-
-    // ENFORCEMENT: If user has an active passkey and reset_required is FALSE,
-    // server refuses PIN/password sign-in!
-    if (hasActivePasskey && !user.reset_required) {
-      return res.status(403).json({
-        ok: false,
-        code: 'PASSKEY_ENFORCED',
-        message: 'Screen lock / Passkey is enforced for this account. Please use your device screen lock to sign in.'
-      });
-    }
-
-    // Verify secret (PIN or password)
+    // Verify secret (PIN)
     let secretVerified = false;
-    if (password) {
-      secretVerified = verifySecret(password, user.password_hash);
-    } else if (pin) {
+    if (pin) {
       secretVerified = verifySecret(pin, user.pin_hash);
+    } else if (password) {
+      secretVerified = verifySecret(password, user.password_hash);
     }
 
     if (!secretVerified) {
       // Log failed login
       await db.query(
         'INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5, $6);',
-        [user.id, username, 'failed_pin_pw_login', { role, method: password ? 'password' : 'pin' }, clientIp, req.headers['user-agent'] || '']
+        [user.id, username, 'failed_pin_login', { role }, clientIp, req.headers['user-agent'] || '']
       );
-      return res.status(401).json({ ok: false, error: 'Incorrect PIN or password. Please try again.' });
+      return res.status(401).json({ ok: false, error: 'Incorrect PIN. Please try again.' });
     }
 
     // Check teacher initial PIN change requirement
@@ -92,7 +75,14 @@ module.exports = async (req, res) => {
       }
     }
 
-    // Issue LIMITED session cookie (scope: register_only, 10 min TTL)
+    // Check if user has active passkey / fingerprint saved
+    const passkeyRes = await db.query(
+      'SELECT id FROM passkeys WHERE user_id = $1 AND revoked_at IS NULL LIMIT 1;',
+      [user.id]
+    );
+    const hasActivePasskey = passkeyRes.rows && passkeyRes.rows.length > 0;
+
+    // Issue limited session token for WebAuthn calls
     const limitedToken = signToken({
       userId: user.id,
       username: user.username,
@@ -100,26 +90,60 @@ module.exports = async (req, res) => {
       displayName: user.display_name,
       scope: 'register_only'
     }, 10 * 60 * 1000);
-
     const limitedCookie = formatCookie('dps_limited_sess', limitedToken, 600, true);
-    res.setHeader('Set-Cookie', limitedCookie);
 
-    // Audit log
+    if (hasActivePasskey) {
+      // User has fingerprint saved -> Biometric prompt opens automatically to verify
+      res.setHeader('Set-Cookie', limitedCookie);
+
+      await db.query(
+        'INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5, $6);',
+        [user.id, username, 'pin_verified_biometric_required', { role }, clientIp, req.headers['user-agent'] || '']
+      );
+
+      return res.status(200).json({
+        ok: true,
+        status: 'BIO_VERIFY_REQUIRED',
+        hasActivePasskey: true,
+        user: {
+          id: user.id,
+          username: user.username,
+          role: user.role,
+          displayName: user.display_name
+        },
+        message: 'PIN verified. Verify with saved fingerprint / screen lock.'
+      });
+    }
+
+    // Agar fingerprint save nahi hai -> PIN HI CHALEGA!
+    // Issue full session cookie directly
+    const fullToken = signToken({
+      userId: user.id,
+      username: user.username,
+      role: user.role,
+      displayName: user.display_name,
+      scope: 'full'
+    }, 8 * 60 * 60 * 1000);
+    const fullCookie = formatCookie('dps_session', fullToken, 28800, true);
+
+    res.setHeader('Set-Cookie', [fullCookie, limitedCookie]);
+
     await db.query(
       'INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5, $6);',
-      [user.id, username, 'pin_login_limited_session', { role, resetRequired: user.reset_required }, clientIp, req.headers['user-agent'] || '']
+      [user.id, username, 'pin_login_success', { role }, clientIp, req.headers['user-agent'] || '']
     );
 
     return res.status(200).json({
       ok: true,
-      status: 'ENROLL_REQUIRED',
+      status: 'LOGGED_IN_PIN',
+      hasActivePasskey: false,
       user: {
         id: user.id,
         username: user.username,
         role: user.role,
         displayName: user.display_name
       },
-      message: 'Initial verification successful. Device screen lock enrollment required.'
+      message: 'Signed in with PIN.'
     });
   } catch (err) {
     console.error('[API/AUTH/LOGIN] Error:', err.message);
