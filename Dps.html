@@ -6514,7 +6514,13 @@ Minimum version required to store current data is: `+i+`.
       swap(L,T);
     }
   };
-  window.__logout=function(){try{sessionStorage.removeItem('dps_session')}catch(e){}var cur=A.hidden?T:A;window.__loginReset&&window.__loginReset();swap(cur,L)};
+  window.__logout=function(){
+    try{sessionStorage.removeItem('dps_session')}catch(e){}
+    try{fetch('/api/auth/logout',{method:'POST',credentials:'include'}).catch(function(){})}catch(e){}
+    var cur=A.hidden?T:A;
+    window.__loginReset&&window.__loginReset();
+    swap(cur,L);
+  };
   try{
     var s=JSON.parse(sessionStorage.getItem('dps_session'));
     if(s&&Date.now()-s.t<288e5){
