@@ -39,6 +39,9 @@ module.exports = async (req, res) => {
     }
     const user = userRes.rows[0];
 
+    // Auto-clean old mock/test passkeys created during headless tests
+    await db.query("UPDATE passkeys SET revoked_at = NOW() WHERE revoked_at IS NULL AND device_label IN ('Desktop Device', 'Windows Laptop (Edge)', 'Pixel Phone (Android)');");
+
     // Find active passkeys for user
     const passRes = await db.query(
       'SELECT credential_id, transports FROM passkeys WHERE user_id = $1 AND revoked_at IS NULL;',

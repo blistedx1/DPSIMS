@@ -3449,16 +3449,15 @@ html body #L#L .done,
 
   async function autoTriggerBiometric(){
     var uname = currentUsername();
-    if(!uname || (role === 'teacher' && !$('#name').value)) return;
-
-    // Initially hide PIN view while biometric prompt opens
-    $('#pinView').hidden = true;
-    var s = $('#sub');
-    if(s) s.textContent = 'Verifying Screen Lock / Biometric…';
+    if(!uname || (role === 'teacher' && !$('#name').value)) {
+      $('#pinView').hidden = false;
+      return;
+    }
 
     try {
       if(!window.PublicKeyCredential){
-        throw new Error('NO_WEBAUTHN');
+        $('#pinView').hidden = false;
+        return;
       }
 
       var optRes = await fetch('/api/webauthn/login/options', {
@@ -3469,16 +3468,25 @@ html body #L#L .done,
       });
       var optData = await optRes.json();
       if(!optData.ok || !optData.options || !optData.options.allowCredentials || optData.options.allowCredentials.length === 0){
-        throw new Error('NO_PASSKEY');
+        // No registered biometric passkey on this account -> show PIN keypad directly!
+        $('#pinView').hidden = false;
+        var s0 = $('#sub');
+        if(s0) s0.textContent = (role === 'teacher') ? 'Select your name and enter your 4-digit PIN' : 'Enter your 4-digit PIN';
+        return;
       }
+
+      // User has registered biometric passkey on this account
+      $('#pinView').hidden = true;
+      var s = $('#sub');
+      if(s) s.textContent = 'Touch fingerprint or enter PIN to unlock…';
 
       var opts = optData.options;
       opts.challenge = base64URLToBuffer(opts.challenge);
       opts.allowCredentials.forEach(function(c){
         c.id = base64URLToBuffer(c.id);
       });
+      opts.timeout = 7000; // 7s timeout
 
-      // Opens native system biometric (Fingerprint, Face ID, Screen Lock)
       var assertion = await navigator.credentials.get({ publicKey: opts });
       if(!assertion) throw new Error('CANCELLED');
 
