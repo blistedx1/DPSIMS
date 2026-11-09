@@ -3227,9 +3227,12 @@ html body #L#L .done,
       <p id="lockStatus" style="margin:0 0 16px;font-size:13px;opacity:0.8;">Screen lock verified on this device</p>
       <button class="btn" id="lockBtn" type="button" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;">
         <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 0-10 10c0 5.523 4.477 10 10 10s10-4.477 10-10A10 10 0 0 0 12 2z"/><path d="M7 12a5 5 0 0 1 5-5"/><path d="M12 17a5 5 0 0 1-5-5"/><circle cx="12" cy="12" r="1"/></svg>
-        <span>Unlock with Screen Lock</span>
+        <span>Unlock with Fingerprint / Screen Lock</span>
       </button>
-      <div style="margin-top:12px;">
+      <div style="margin-top:10px;">
+        <button class="link" id="lockUsePin" type="button" style="font-size:13.5px;font-weight:600;opacity:0.9;cursor:pointer;">Enter PIN instead</button>
+      </div>
+      <div style="margin-top:8px;">
         <button class="link" id="lockReset" type="button" style="font-size:12px;opacity:0.75;text-decoration:underline;">Lost access to device lock?</button>
       </div>
     </div>
@@ -3765,15 +3768,24 @@ html body #L#L .done,
       return success();
     } catch(err) {
       console.error('[WebAuthn unlock error]', err);
-      if(st) st.textContent = err.message || 'Screen lock failed. Try again.';
+      if(st) st.textContent = 'Biometric cancelled or failed. Please enter your PIN.';
       shake($('#lockView'));
-      notify(err.message || 'Screen lock verification failed.');
+      notify('Biometric cancelled. Please enter your PIN.');
+      setTimeout(function(){ window.__dlLockOn(false); }, 600);
     } finally {
       if(btn) btn.disabled = false;
     }
   }
 
   $('#lockBtn').addEventListener('click', unlock);
+
+  var lup = $('#lockUsePin');
+  if(lup) {
+    lup.addEventListener('click', function(){
+      window.__dlLockOn(false);
+      reset();
+    });
+  }
 
   // ---- Server-Verified WebAuthn Enrollment (Register Screen Lock) ----
   function enroll(targetUser, userRole, note){

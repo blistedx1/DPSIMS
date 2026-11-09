@@ -82,41 +82,7 @@ module.exports = async (req, res) => {
     );
     const hasActivePasskey = passkeyRes.rows && passkeyRes.rows.length > 0;
 
-    // Issue limited session token for WebAuthn calls
-    const limitedToken = signToken({
-      userId: user.id,
-      username: user.username,
-      role: user.role,
-      displayName: user.display_name,
-      scope: 'register_only'
-    }, 10 * 60 * 1000);
-    const limitedCookie = formatCookie('dps_limited_sess', limitedToken, 600, true);
-
-    if (hasActivePasskey) {
-      // User has fingerprint saved -> Biometric prompt opens automatically to verify
-      res.setHeader('Set-Cookie', limitedCookie);
-
-      await db.query(
-        'INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5, $6);',
-        [user.id, username, 'pin_verified_biometric_required', { role }, clientIp, req.headers['user-agent'] || '']
-      );
-
-      return res.status(200).json({
-        ok: true,
-        status: 'BIO_VERIFY_REQUIRED',
-        hasActivePasskey: true,
-        user: {
-          id: user.id,
-          username: user.username,
-          role: user.role,
-          displayName: user.display_name
-        },
-        message: 'PIN verified. Verify with saved fingerprint / screen lock.'
-      });
-    }
-
-    // Agar fingerprint save nahi hai -> PIN HI CHALEGA!
-    // Issue full session cookie directly
+    // Issue full session cookie directly on valid PIN - PIN ALWAYS WORKS!
     const fullToken = signToken({
       userId: user.id,
       username: user.username,
@@ -124,26 +90,37 @@ module.exports = async (req, res) => {
       displayName: user.display_name,
       scope: 'full'
     }, 8 * 60 * 60 * 1000);
-    const fullCookie = formatCookie('dps_session', fullToken, 28800, true);
+    const fullCookie = formatCookie('dps_session', fullToken, 28800, false);
 
+    // Also issue limited session token for WebAuthn calls if needed
+    const limitedToken = signToken({
+      userId: user.id,
+      username: user.username,
+      role: user.role,
+      displayName: user.display_name,
+      scope: 'register_only'
+    }, 10 * 60 * 1000);
+    const limitedCookie = formatCookie('dps_limited_sess', limitedToken, 600, false);
+
+    // Set full session cookie immediately so user is authenticated
     res.setHeader('Set-Cookie', [fullCookie, limitedCookie]);
 
     await db.query(
       'INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5, $6);',
-      [user.id, username, 'pin_login_success', { role }, clientIp, req.headers['user-agent'] || '']
+      [user.id, username, 'pin_login_success', { role, hasActivePasskey }, clientIp, req.headers['user-agent'] || '']
     );
 
     return res.status(200).json({
       ok: true,
       status: 'LOGGED_IN_PIN',
-      hasActivePasskey: false,
+      hasActivePasskey: hasActivePasskey,
       user: {
         id: user.id,
         username: user.username,
         role: user.role,
         displayName: user.display_name
       },
-      message: 'Signed in with PIN.'
+      message: 'PIN verified successfully.'
     });
   } catch (err) {
     console.error('[API/AUTH/LOGIN] Error:', err.message);
