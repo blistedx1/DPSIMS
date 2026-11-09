@@ -3619,6 +3619,8 @@ html body #L#L .done,
         s.textContent=(role==='teacher')?'Select your name and enter your 4-digit PIN':'Enter your 4-digit PIN';
       }
     }
+    var pInp = $('#pw');
+    if(pInp) pInp.placeholder = (role==='principal' ? 'Principal Password' : role==='teacher' ? 'Teacher Password' : 'Admin Password');
     dots();
   }
 
@@ -3634,14 +3636,11 @@ html body #L#L .done,
 
   $('#name').addEventListener('change', function(){
     reset();
-    if($('#name').value){
-      autoTriggerBiometric();
-    }
   });
 
   $('#seg').addEventListener('click',function(e){
     var b=e.target.closest('button');if(!b||busy)return;
-    role=b.dataset.role;method='pin';sfx('tap');
+    role=b.dataset.role;method=(role==='admin'?'pin':'pw');sfx('tap');
     this.dataset.i=role==='admin'?0:role==='principal'?1:2;
     this.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-selected',x===b)});
     reset();
