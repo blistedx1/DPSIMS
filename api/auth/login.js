@@ -52,9 +52,9 @@ module.exports = async (req, res) => {
       // Log failed login
       await db.query(
         'INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5, $6);',
-        [user.id, username, 'failed_pin_login', { role }, clientIp, req.headers['user-agent'] || '']
+        [user.id, username, pin ? 'failed_pin_login' : 'failed_pw_login', { role }, clientIp, req.headers['user-agent'] || '']
       );
-      return res.status(401).json({ ok: false, error: 'Incorrect PIN. Please try again.' });
+      return res.status(401).json({ ok: false, error: pin ? 'Incorrect PIN. Please try again.' : 'Incorrect password. Please try again.' });
     }
 
     // Check teacher initial PIN change requirement

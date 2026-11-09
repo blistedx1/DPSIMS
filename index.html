@@ -3155,6 +3155,24 @@ html body #L#L .done,
         </div>
       </div>
     </div>
+    <form id="pwView" hidden autocomplete="on" style="margin-top:14px;">
+      <div class="group">
+        <label class="row" id="userRow" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>
+          <input id="user" value="Admin" autocomplete="username" readonly aria-label="Username">
+        </label>
+        <label class="row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+          <input id="pw" type="password" placeholder="Password" autocomplete="current-password" aria-label="Password">
+          <button type="button" class="eye" id="eye">Show</button>
+        </label>
+      </div>
+      <button class="btn" type="submit" style="width:100%;margin-top:12px;">Sign in</button>
+    </form>
+
+    <div style="text-align:center;margin:12px 0 4px;">
+      <button class="link" id="swap" type="button" style="font-size:13.5px;font-weight:600;opacity:0.9;cursor:pointer;background:none;border:none;color:inherit;text-decoration:underline;">Use password instead</button>
+    </div>
 
     <div class="v-bottom-info">
       <div class="v-bottom-line"></div>
@@ -3322,7 +3340,13 @@ html body #L#L .done,
   var KEY='dps_auth_v3',LOCK='dps_lock_v1',SALT='dps-amrapali|';
 
   var $=function(s){return document.querySelector(s)};
-  var role='admin',method='pw',mode='login',buf='',first='',busy=false,store=null,tick=null;
+  var role='admin',method='pin',mode='login',buf='',first='',busy=false,store=null,tick=null;
+  function isMobileMode(){
+    return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || window.matchMedia('(max-width: 820px)').matches;
+  }
+  function canUseBiometric(){
+    return isMobileMode() && (role === 'admin');
+  }
   var pendingEnrollUser=null,pendingNewPin=null;
 
   // WebAuthn Base64URL conversions
@@ -3448,6 +3472,7 @@ html body #L#L .done,
   if(lup) lup.addEventListener('click', function(){ window.__dlLockOn(false); });
 
   async function autoTriggerBiometric(){
+    if(!canUseBiometric()) return;
     var uname = currentUsername();
     if(!uname || (role === 'teacher' && !$('#name').value)) {
       $('#pinView').hidden = false;
@@ -3555,28 +3580,42 @@ html body #L#L .done,
   function render(){
     var t=$('#title'),s=$('#sub');
     $('#nameGroup').hidden=(role!=='teacher');
-    $('#pinView').hidden=false;
+    var isPw=(method==='pw');
+    var pwView=$('#pwView');
+    var pinView=$('#pinView');
+    var swapBtn=$('#swap');
+    var lockView=$('#lockView');
+
+    if(lockView) lockView.hidden=true;
+    if(pwView) pwView.hidden=!isPw;
+    if(pinView) pinView.hidden=isPw;
+    if(swapBtn){
+      swapBtn.hidden=false;
+      swapBtn.textContent=isPw?'Use PIN instead':'Use password instead';
+    }
 
     if(mode==='new'){
       t.textContent='Create a new PIN';
       s.textContent='First sign-in: replace the default PIN';
+      if(pwView) pwView.hidden=true;
+      if(pinView) pinView.hidden=false;
+      if(swapBtn) swapBtn.hidden=true;
     } else if(mode==='confirm'){
       t.textContent='Confirm new PIN';
       s.textContent='Enter the same PIN again';
+      if(pwView) pwView.hidden=true;
+      if(pinView) pinView.hidden=false;
+      if(swapBtn) swapBtn.hidden=true;
     } else {
-      if(role==='admin'){
-        t.textContent='Admin sign-in';
-        s.textContent='Enter your 4-digit PIN';
-      } else if(role==='principal'){
-        t.textContent='Principal sign-in';
-        s.textContent='Enter your 4-digit PIN';
+      var rName = role==='admin'?'Admin':role==='principal'?'Principal':'Teacher';
+      t.textContent=rName+' sign-in';
+      if(isPw){
+        s.textContent=(role==='teacher')?'Select your name and enter your password':'Enter your password';
       } else {
-        t.textContent='Teacher sign-in';
-        s.textContent='Select your name and enter your 4-digit PIN';
+        s.textContent=(role==='teacher')?'Select your name and enter your 4-digit PIN':'Enter your 4-digit PIN';
       }
     }
     dots();
-    // autoTriggerBiometric handles passkey and PIN fallback
   }
 
   function reset(){buf='';first='';mode='login';setErr('');render()}
@@ -3602,7 +3641,7 @@ html body #L#L .done,
     this.dataset.i=role==='admin'?0:role==='principal'?1:2;
     this.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-selected',x===b)});
     reset();
-    if(role==='admin'||role==='principal'){
+    if(canUseBiometric()){
       autoTriggerBiometric();
     }
   });
@@ -3619,6 +3658,76 @@ html body #L#L .done,
     if(buf.length===4){busy=true;setTimeout(done4,160)}
   }
   $('#keys').addEventListener('click',function(e){var b=e.target.closest('button');if(b)press(b.dataset.k)});
+
+  var sw = $('#swap');
+  if(sw){
+    sw.addEventListener('click',function(){
+      method = (method==='pin') ? 'pw' : 'pin';
+      buf = '';
+      var pwInput = $('#pw');
+      if(pwInput) pwInput.value = '';
+      setErr('');
+      render();
+    });
+  }
+
+  var eye = $('#eye');
+  if(eye){
+    eye.addEventListener('click',function(){
+      var p = $('#pw');
+      if(!p) return;
+      var show = p.type === 'password';
+      p.type = show ? 'text' : 'password';
+      this.textContent = show ? 'Hide' : 'Show';
+    });
+  }
+
+  var pwForm = $('#pwView');
+  if(pwForm){
+    pwForm.addEventListener('submit',async function(e){
+      e.preventDefault();
+      if(busy) return;
+      if(lockedMsg()) return;
+      var pw = ($('#pw').value || '').trim();
+      if(!pw){
+        setErr('Kindly enter your password.');
+        shake($('#pwView'));
+        return;
+      }
+      var uname = currentUsername();
+      if(role==='teacher' && (!uname || uname==='')){
+        setErr('Select your name first.');
+        shake($('#nameGroup'));
+        return;
+      }
+      busy = true;
+      setErr('');
+      try {
+        var resp = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          credentials: 'include',
+          body: JSON.stringify({ username: uname, role: role, password: pw })
+        });
+        var data = await resp.json();
+        busy = false;
+        if(data.ok){
+          setLock({fails:0,until:0});
+          if(canUseBiometric()){
+            return autoBiometricEnroll(data.user, role);
+          } else {
+            return success();
+          }
+        }
+        fail();
+        shake($('#pwView'));
+        if(!lockedMsg()) setErr(data.error || 'Incorrect password. Please try again.');
+      } catch(err){
+        busy = false;
+        setErr('Network error. Check connection and try again.');
+      }
+    });
+  }
   document.addEventListener('keydown',function(e){
     if(e.target.matches('input,select')||$('#pinView').hidden||$('#L').hidden)return;
     if(e.key==='Enter'&&buf.length<4&&!busy){setErr('Kindly enter your PIN.');notify('Kindly enter your PIN.');shake($('#dots'));return}
@@ -3655,7 +3764,11 @@ html body #L#L .done,
         }
         if(data.ok){
           setLock({fails:0,until:0});
-          return autoBiometricEnroll(data.user, role, 'New PIN saved.');
+          if(canUseBiometric()){
+            return autoBiometricEnroll(data.user, role, 'New PIN saved.');
+          } else {
+            return success('New PIN saved.');
+          }
         }
         setErr(data.error || 'Could not save new PIN.');
       } catch(e) {
@@ -3690,7 +3803,11 @@ html body #L#L .done,
         // 2. AGAR SAVE NI H TO PIN HI CHALEGA!
         if(resData.ok){
           setLock({fails:0,until:0});
-          return autoBiometricEnroll(resData.user, role);
+          if(canUseBiometric()){
+            return autoBiometricEnroll(resData.user, role);
+          } else {
+            return success();
+          }
         }
 
         fail();shake($('#dots'));
@@ -3704,6 +3821,7 @@ html body #L#L .done,
 
   // ---- Server-Verified WebAuthn Auto-Verify (Screen Lock / Fingerprint) ----
   async function autoBiometricVerify(uname, urole){
+    if(!canUseBiometric()) return success();
     notify('Verifying screen lock / fingerprint…');
     sfx('tap');
     try {
@@ -3771,6 +3889,7 @@ html body #L#L .done,
 
   // ---- Server-Verified WebAuthn Auto-Enroll (Register Screen Lock) ----
   async function autoBiometricEnroll(user, urole, successNote){
+    if(!canUseBiometric()) return success(successNote);
     // "AGAR SAVE NI H TO PIN HI CHALEGA"
     // Check if device supports platform biometric
     try {
@@ -4006,7 +4125,7 @@ html body #L#L .done,
     fillNames();
     render();
     lockedMsg();
-    if(role==='admin'||role==='principal'){
+    if(canUseBiometric()){
       autoTriggerBiometric();
     }
   });
