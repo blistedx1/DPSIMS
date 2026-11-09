@@ -3251,6 +3251,61 @@ html body #L#L .done,
   </div>
 </main>
 
+<!-- Device Screen Lock Enrollment Modal -->
+<div id="dlEnroll" hidden style="position:fixed;inset:0;background:rgba(0,0,0,0.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;">
+  <div class="dl-box" style="background:var(--bg,#0c130d);border:1.5px solid var(--acc,rgba(16,185,129,0.4));border-radius:20px;max-width:400px;width:100%;padding:28px 24px;box-shadow:0 24px 50px rgba(0,0,0,0.5);text-align:center;box-sizing:border-box;">
+    <div style="width:72px;height:72px;border-radius:50%;background:rgba(16,185,129,0.15);border:2px solid #10b981;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;color:#10b981;">
+      <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a10 10 0 0 0-10 10c0 5.523 4.477 10 10 10s10-4.477 10-10A10 10 0 0 0 12 2z"/>
+        <path d="M7 12a5 5 0 0 1 5-5"/>
+        <path d="M12 17a5 5 0 0 1-5-5"/>
+        <circle cx="12" cy="12" r="1"/>
+      </svg>
+    </div>
+    <h3 style="margin:0 0 8px;font-size:20px;font-weight:700;color:currentColor;">Enable Device Screen Lock</h3>
+    <p style="margin:0 0 18px;font-size:14px;opacity:0.85;line-height:1.5;">Protect your account using your phone or computer's built-in fingerprint, Face ID, or screen lock PIN/pattern.</p>
+    <div id="dlErr" style="display:none;background:rgba(239,68,68,0.15);border:1px solid #ef4444;color:#fca5a5;padding:10px;border-radius:10px;font-size:13px;margin-bottom:14px;text-align:left;"></div>
+    <button class="btn" id="dlEnable" type="button" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;font-size:15px;font-weight:700;">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 0-10 10c0 5.523 4.477 10 10 10s10-4.477 10-10A10 10 0 0 0 12 2z"/><path d="M7 12a5 5 0 0 1 5-5"/><path d="M12 17a5 5 0 0 1-5-5"/><circle cx="12" cy="12" r="1"/></svg>
+      <span>Enable Device Screen Lock</span>
+    </button>
+    <div style="margin-top:14px;">
+      <button class="link" id="dlSkip" type="button" style="font-size:13px;opacity:0.75;">Remind me later</button>
+    </div>
+  </div>
+</div>
+
+<!-- Device Lock Recovery Modal -->
+<div id="recoveryModal" hidden style="position:fixed;inset:0;background:rgba(0,0,0,0.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:var(--bg,#0c130d);border:1.5px solid var(--acc,rgba(16,185,129,0.4));border-radius:20px;max-width:420px;width:100%;padding:26px 24px;box-shadow:0 24px 50px rgba(0,0,0,0.5);box-sizing:border-box;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <h3 style="margin:0;font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px;">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#eab308" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Account Recovery
+      </h3>
+      <button id="recClose" type="button" style="background:none;border:none;color:currentColor;font-size:22px;cursor:pointer;opacity:0.7;">&times;</button>
+    </div>
+    <p id="recDesc" style="font-size:13.5px;opacity:0.85;line-height:1.5;margin-bottom:14px;"></p>
+    <div id="recAdminSection" hidden>
+      <p style="font-size:13px;opacity:0.8;margin-bottom:8px;">Enter your master administrator recovery code:</p>
+      <input id="recCode" type="text" placeholder="e.g. DPS-ADMIN-RECOVER-2026" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:currentColor;box-sizing:border-box;margin-bottom:12px;font-family:monospace;font-size:14px;">
+      <button id="recSubmit" type="button" class="btn" style="width:100%;padding:11px;">Reset Admin Screen Lock</button>
+    </div>
+    <div id="recMsg" style="display:none;padding:10px;border-radius:10px;margin-top:12px;font-size:13px;"></div>
+  </div>
+</div>
+
+<!-- Admin Devices Management Modal -->
+<div id="adminDevicesModal" hidden style="position:fixed;inset:0;background:rgba(0,0,0,0.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:var(--bg,#0c130d);border:1.5px solid var(--acc,rgba(16,185,129,0.4));border-radius:20px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;padding:24px;box-shadow:0 24px 50px rgba(0,0,0,0.5);box-sizing:border-box;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 id="admDevTitle" style="margin:0;font-size:18px;font-weight:700;">Registered Devices</h3>
+      <button id="admDevClose" type="button" style="background:none;border:none;color:currentColor;font-size:22px;cursor:pointer;opacity:0.7;">&times;</button>
+    </div>
+    <div id="admDevList" style="display:flex;flex-direction:column;gap:10px;"></div>
+  </div>
+</div>
+
 </div>
 <div id="A" hidden>
  <div class="shell">
