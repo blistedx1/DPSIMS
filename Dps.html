@@ -3673,7 +3673,7 @@ html body #L#L .done,
     if(k==='del'){if(buf.length)sfx('del');buf=buf.slice(0,-1)}
     else if(buf.length<4){buf+=k;sfx('tap')}
     dots();
-    if(buf.length===4){busy=true;setTimeout(done4,160)}
+    if(buf.length===4){busy=true;setTimeout(done4,60)}
   }
   $('#keys').addEventListener('click',function(e){var b=e.target.closest('button');if(b)press(b.dataset.k)});
 
@@ -3729,6 +3729,10 @@ html body #L#L .done,
         });
         var data = await resp.json();
         busy = false;
+        if(data.code==='PIN_CHANGE_REQUIRED'){
+          setLock({fails:0,until:0});
+          method='pin';mode='new';render();return;
+        }
         if(data.ok){
           setLock({fails:0,until:0});
           if(canUseBiometric()){
@@ -4105,7 +4109,7 @@ html body #L#L .done,
     var hr=$('#L .hero');if(hr)hr.hidden=true;
     window.__sess={role:role,name:name};$('#done').hidden=false;busy=false;buf='';sfx('ok');
     clearTimeout(window.__autoGo);
-    window.__autoGo=setTimeout(function(){var d=$('#done');if(d&&!d.hidden&&window.__sess)window.__enter(window.__sess)},1300);
+    window.__autoGo=setTimeout(function(){var d=$('#done');if(d&&!d.hidden&&window.__sess)window.__enter(window.__sess)},250);
   }
 
   $('#go').addEventListener('click',function(){clearTimeout(window.__autoGo);window.__enter(window.__sess)});

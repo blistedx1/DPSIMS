@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
 
     // Find user in database
     const userRes = await db.query(
-      'SELECT id, username, role, display_name, password_hash, pin_hash, pin_changed, pw_changed, reset_required FROM users WHERE username = $1 AND role = $2 LIMIT 1;',
+      'SELECT id, username, role, display_name, password_hash, pin_hash, pin_changed, pw_changed, reset_required FROM users WHERE username = $1 AND role = $2 LIMIT 1',
       [username, role]
     );
 
@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
 
     const user = userRes.rows[0];
 
-    // Verify secret (PIN)
+    // Verify secret (PIN or password)
     let secretVerified = false;
     if (pin) {
       secretVerified = verifySecret(pin, user.pin_hash);
@@ -50,21 +50,21 @@ module.exports = async (req, res) => {
 
     if (!secretVerified) {
       // Log failed login
-      await db.query(
-        'INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5, $6);',
+      db.query(
+        'INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5, $6)',
         [user.id, username, pin ? 'failed_pin_login' : 'failed_pw_login', { role }, clientIp, req.headers['user-agent'] || '']
-      );
+      ).catch(() => {});
       return res.status(401).json({ ok: false, error: pin ? 'Incorrect PIN. Please try again.' : 'Incorrect password. Please try again.' });
     }
 
-    // Check teacher initial PIN change requirement
-    if (user.role === 'teacher' && !user.pin_changed) {
+    // Check teacher initial PIN change requirement (only when logging in with PIN)
+    if (user.role === 'teacher' && !user.pin_changed && pin) {
       if (newPin) {
         if (!/^\d{4}$/.test(newPin) || /^(\d)\1{3}$/.test(newPin) || '01234567890'.includes(newPin) || '09876543210'.includes(newPin) || newPin === '1234') {
           return res.status(400).json({ ok: false, error: 'Too easy to guess. Choose a different 4-digit PIN.' });
         }
         const newHash = hashSecret(newPin);
-        await db.query('UPDATE users SET pin_hash = $1, pin_changed = TRUE, updated_at = NOW() WHERE id = $2;', [newHash, user.id]);
+        await db.query('UPDATE users SET pin_hash = $1, pin_changed = TRUE, updated_at = NOW() WHERE id = $2', [newHash, user.id]);
         user.pin_changed = true;
       } else {
         return res.status(200).json({
@@ -75,14 +75,17 @@ module.exports = async (req, res) => {
       }
     }
 
-    // Check if user has active passkey / fingerprint saved
-    const passkeyRes = await db.query(
-      'SELECT id FROM passkeys WHERE user_id = $1 AND revoked_at IS NULL LIMIT 1;',
-      [user.id]
-    );
-    const hasActivePasskey = passkeyRes.rows && passkeyRes.rows.length > 0;
+    // Check if user has active passkey / fingerprint saved (Admin only)
+    let hasActivePasskey = false;
+    if (user.role === 'admin') {
+      const passkeyRes = await db.query(
+        'SELECT id FROM passkeys WHERE user_id = $1 AND revoked_at IS NULL LIMIT 1',
+        [user.id]
+      );
+      hasActivePasskey = !!(passkeyRes.rows && passkeyRes.rows.length > 0);
+    }
 
-    // Issue full session cookie directly on valid PIN - PIN ALWAYS WORKS!
+    // Issue full session cookie directly on valid PIN/Password
     const fullToken = signToken({
       userId: user.id,
       username: user.username,
@@ -105,10 +108,10 @@ module.exports = async (req, res) => {
     // Set full session cookie immediately so user is authenticated
     res.setHeader('Set-Cookie', [fullCookie, limitedCookie]);
 
-    await db.query(
-      'INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5, $6);',
-      [user.id, username, 'pin_login_success', { role, hasActivePasskey }, clientIp, req.headers['user-agent'] || '']
-    );
+    db.query(
+      'INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5, $6)',
+      [user.id, username, pin ? 'pin_login_success' : 'pw_login_success', { role, hasActivePasskey }, clientIp, req.headers['user-agent'] || '']
+    ).catch(() => {});
 
     return res.status(200).json({
       ok: true,
