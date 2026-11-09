@@ -2436,111 +2436,343 @@ html body #L#L#L[data-theme="dgwhite"] .hero>.logo,html body #L#L#L[data-theme="
 </style>
 <style id="dgwhite-green-folders-kpi">
 /* ==========================================================================
-   LIGHT THEME (dgwhite) — refined: green folders, green KPI tiles, white numbers
-   Only applies when data-theme="dgwhite". Dark theme untouched.
+   LIGHT THEME (dgwhite) — REFINED MODERN UI
+   1. Fewer heavy green blocks (White KPI tiles with green numbers + 1 Hero tile)
+   2. Calmer background (Clean off-white, no muddy watermark across data tables)
+   3. Softer cards (Two-layer green-tinted shadow, 16px radius, max-width on 1200px)
+   4. Clearer status tags (Bolder contrast, uniform style across all panels)
+   Dark theme ("obsidian") remains completely untouched.
    ========================================================================== */
 
-/* ---- page + section headings ---- */
-#A[data-theme="dgwhite"] .main{background:#eef4f0}
-#A[data-theme="dgwhite"] h2.s{color:#0a3d2e!important;position:relative;padding-left:12px;letter-spacing:-.2px}
-#A[data-theme="dgwhite"] h2.s::before{content:"";position:absolute;left:0;top:15%;bottom:15%;width:4px;border-radius:4px;background:linear-gradient(#10b981,#0e5640)}
+/* ---- Calmer background: hide full-screen watermark on app data screens ---- */
+#A[data-theme="dgwhite"]::after,
+#T[data-theme="dgwhite"]::after {
+  display: none !important;
+}
 
-/* ---- KPI tiles: green, white label + number ---- */
-html body #A#A[data-theme="dgwhite"] .kpi{
-  position:relative;overflow:hidden;
-  background:linear-gradient(145deg,#0b4a37 0%,#0f6e52 60%,#12805f 100%)!important;
-  border:1px solid #0a4332!important;border-radius:16px!important;
-  box-shadow:0 4px 14px rgba(6,40,29,.20),inset 0 1px 0 rgba(255,255,255,.14)!important;
-  transition:transform .2s,box-shadow .2s!important;
+#A[data-theme="dgwhite"],
+#T[data-theme="dgwhite"],
+#A[data-theme="dgwhite"] .shell,
+#A[data-theme="dgwhite"] .main,
+#T[data-theme="dgwhite"] .t-content {
+  background: #f6f9f7 !important;
 }
-html body #A#A[data-theme="dgwhite"] .kpi::after{
-  content:"";position:absolute;right:-26px;top:-26px;width:92px;height:92px;border-radius:50%;
-  background:rgba(255,255,255,.08);pointer-events:none;
-}
-html body #A#A[data-theme="dgwhite"] .kpi:hover{
-  background:linear-gradient(145deg,#0d5640 0%,#118060 60%,#149a72 100%)!important;
-  border-color:#10b981!important;transform:translateY(-3px)!important;
-  box-shadow:0 10px 22px rgba(6,40,29,.28),inset 0 1px 0 rgba(255,255,255,.18)!important;
-}
-html body #A#A[data-theme="dgwhite"] .kpi small{
-  color:rgba(255,255,255,.86)!important;font-size:11.5px!important;font-weight:700!important;
-  letter-spacing:.7px;text-transform:uppercase;position:relative;z-index:1;
-}
-html body #A#A[data-theme="dgwhite"] .kpi div{
-  color:#ffffff!important;font-weight:800!important;font-size:30px!important;
-  letter-spacing:-.8px!important;position:relative;z-index:1;
-  font-variant-numeric:tabular-nums;text-shadow:0 1px 2px rgba(0,0,0,.18);
-}
-/* warning dots on Low / Out tiles (tile stays green) */
-html body #A#A[data-theme="dgwhite"] .kpi[data-t="low"] small::before,
-html body #A#A[data-theme="dgwhite"] .kpi[data-t="out"] small::before{
-  content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:1px;
-}
-html body #A#A[data-theme="dgwhite"] .kpi[data-t="low"] small::before{background:#fbbf24;box-shadow:0 0 0 3px rgba(251,191,36,.25)}
-html body #A#A[data-theme="dgwhite"] .kpi[data-t="out"] small::before{background:#fca5a5;box-shadow:0 0 0 3px rgba(252,165,165,.25)}
 
-/* ---- Folder cards: white card, green folder, white number ---- */
-#A[data-theme="dgwhite"] .sp-card,
-html body #A#A[data-theme="dgwhite"] .fcard.fd{
-  background:#ffffff!important;border:1px solid #d3e2da!important;border-radius:16px!important;
-  box-shadow:0 1px 3px rgba(6,40,29,.06)!important;
-  transition:transform .2s,box-shadow .2s,border-color .2s!important;
+/* Wide screen containment (cards don't stretch excessively at 1200px+) */
+@media (min-width: 1200px) {
+  #A[data-theme="dgwhite"] .main,
+  #T[data-theme="dgwhite"] .t-content {
+    max-width: 1240px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 100% !important;
+  }
 }
-#A[data-theme="dgwhite"] .sp-card:hover,
-html body #A#A[data-theme="dgwhite"] .fcard.fd:hover{
-  border-color:#10b981!important;transform:translateY(-4px)!important;
-  box-shadow:0 12px 26px rgba(6,40,29,.14)!important;
-}
-#A[data-theme="dgwhite"] .sp-cb h3,#A[data-theme="dgwhite"] .fd .nm{color:#0a3d2e!important;font-weight:800!important}
-#A[data-theme="dgwhite"] .sp-cb small{color:#5a7167!important;text-transform:uppercase;letter-spacing:.6px;font-size:10.5px!important;font-weight:600}
-#A[data-theme="dgwhite"] .sp-bal b{color:#0e5640!important}
 
+/* ---- Section headings ---- */
+#A[data-theme="dgwhite"] h2.s {
+  color: #0a3d2e !important;
+  position: relative;
+  padding-left: 14px;
+  letter-spacing: -0.2px;
+  font-weight: 800;
+}
+#A[data-theme="dgwhite"] h2.s::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 4px;
+  border-radius: 4px;
+  background: linear-gradient(#10b981, #0e5640);
+}
+
+/* ---- KPI tiles: crisp white cards with dark-green numbers + small icon chip ---- */
+html body #A#A[data-theme="dgwhite"] .kpi {
+  position: relative;
+  overflow: hidden;
+  background: #ffffff !important;
+  border: 1px solid rgba(14, 86, 64, 0.12) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 1px 3px rgba(10, 61, 46, 0.04), 0 8px 20px -4px rgba(10, 61, 46, 0.07) !important;
+  padding: 16px 20px !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+html body #A#A[data-theme="dgwhite"] .kpi::after {
+  display: none !important;
+}
+html body #A#A[data-theme="dgwhite"] .kpi:hover {
+  background: #ffffff !important;
+  border-color: rgba(16, 185, 129, 0.45) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 2px 6px rgba(10, 61, 46, 0.06), 0 12px 28px -4px rgba(10, 61, 46, 0.12) !important;
+}
+html body #A#A[data-theme="dgwhite"] .kpi small {
+  color: #5a7167 !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+html body #A#A[data-theme="dgwhite"] .kpi small::after {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  opacity: 0.75;
+}
+html body #A#A[data-theme="dgwhite"] .kpi div {
+  color: #0a3d2e !important;
+  font-weight: 800 !important;
+  font-size: 30px !important;
+  letter-spacing: -0.6px !important;
+  position: relative;
+  z-index: 1;
+  font-variant-numeric: tabular-nums;
+  text-shadow: none !important;
+  margin-top: 4px;
+}
+
+/* Warning & Alert states for Low Stock / Out of Stock KPI tiles */
+html body #A#A[data-theme="dgwhite"] .kpi[data-t="low"] {
+  border-color: rgba(217, 119, 6, 0.28) !important;
+}
+html body #A#A[data-theme="dgwhite"] .kpi[data-t="low"] div {
+  color: #b45309 !important;
+}
+html body #A#A[data-theme="dgwhite"] .kpi[data-t="low"] small::after {
+  background: #f59e0b !important;
+  opacity: 1 !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+html body #A#A[data-theme="dgwhite"] .kpi[data-t="out"] {
+  border-color: rgba(220, 38, 38, 0.28) !important;
+}
+html body #A#A[data-theme="dgwhite"] .kpi[data-t="out"] div {
+  color: #b91c1c !important;
+}
+html body #A#A[data-theme="dgwhite"] .kpi[data-t="out"] small::after {
+  background: #ef4444 !important;
+  opacity: 1 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+/* ---- Hero KPI tile (First tile per screen keeps the signature dark gradient) ---- */
+html body #A#A[data-theme="dgwhite"] .kpi:first-child {
+  background: linear-gradient(145deg, #0b4a37 0%, #0f6e52 60%, #12805f 100%) !important;
+  border: 1px solid #0a4332 !important;
+  box-shadow: 0 4px 16px rgba(6, 40, 29, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+}
+html body #A#A[data-theme="dgwhite"] .kpi:first-child:hover {
+  background: linear-gradient(145deg, #0d5640 0%, #118060 60%, #149a72 100%) !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 8px 24px rgba(6, 40, 29, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.20) !important;
+}
+html body #A#A[data-theme="dgwhite"] .kpi:first-child small {
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+html body #A#A[data-theme="dgwhite"] .kpi:first-child small::after {
+  background: #34d399 !important;
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.65);
+}
+html body #A#A[data-theme="dgwhite"] .kpi:first-child div {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+/* ---- Softer cards with two-layer green-tinted shadow and 16px radius ---- */
+#A[data-theme="dgwhite"] .fcard,
+#A[data-theme="dgwhite"] .form,
+#A[data-theme="dgwhite"] .flt,
+#A[data-theme="dgwhite"] table,
+#A[data-theme="dgwhite"] .bl,
+#A[data-theme="dgwhite"] .bd-hero,
+#A[data-theme="dgwhite"] .bd-lines,
+#A[data-theme="dgwhite"] .bd-tot,
+#A[data-theme="dgwhite"] .eb-card,
+#A[data-theme="dgwhite"] .rq-slip,
+#A[data-theme="dgwhite"] .dc-card,
+#T[data-theme="dgwhite"] .t-card,
+#T[data-theme="dgwhite"] .sp-card,
+#T[data-theme="dgwhite"] .t-slip-card,
+#T[data-theme="dgwhite"] .t-slip-box,
+#T[data-theme="dgwhite"] .sp-modal,
+#T[data-theme="dgwhite"] .sp-drawer,
+#T[data-theme="dgwhite"] .sp-sent,
+html[data-theme="dgwhite"] .settings-window,
+html[data-theme="dgwhite"] .settings-card,
+html[data-theme="dgwhite"] .kite-sheet {
+  background: #ffffff !important;
+  border-radius: 16px !important;
+  box-shadow: 0 1px 3px rgba(10, 61, 46, 0.04), 0 8px 24px -4px rgba(10, 61, 46, 0.08) !important;
+  border: 1px solid rgba(14, 86, 64, 0.09) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Card hover effect */
+#A[data-theme="dgwhite"] .fcard:hover,
+#A[data-theme="dgwhite"] .bl:hover,
+#T[data-theme="dgwhite"] .sp-card:hover,
+#T[data-theme="dgwhite"] .t-slip-card:hover {
+  border-color: rgba(16, 185, 129, 0.45) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 2px 6px rgba(10, 61, 46, 0.06), 0 14px 30px -4px rgba(10, 61, 46, 0.12) !important;
+}
+
+/* ---- Folder cards ---- */
+#A[data-theme="dgwhite"] .sp-cb h3,
+#A[data-theme="dgwhite"] .fd .nm {
+  color: #0a3d2e !important;
+  font-weight: 800 !important;
+}
+#A[data-theme="dgwhite"] .sp-cb small {
+  color: #5a7167 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-size: 10.5px !important;
+  font-weight: 600;
+}
+#A[data-theme="dgwhite"] .sp-bal b {
+  color: #0e5640 !important;
+}
 #A[data-theme="dgwhite"] .fold .bk,
 #A[data-theme="dgwhite"] .fd .fold .bk,
 #A[data-theme="dgwhite"] .spf .fold .bk,
-#T[data-theme="dgwhite"] .spf .fold .bk{background:#0a4332!important}
+#T[data-theme="dgwhite"] .spf .fold .bk {
+  background: #0a4332 !important;
+}
 #A[data-theme="dgwhite"] .fold .bk::before,
 #A[data-theme="dgwhite"] .fd .fold .bk::before,
 #A[data-theme="dgwhite"] .spf .fold .bk::before,
-#T[data-theme="dgwhite"] .spf .fold .bk::before{background:#0a4332!important}
-
-/* papers peeking out of the folder */
+#T[data-theme="dgwhite"] .spf .fold .bk::before {
+  background: #0a4332 !important;
+}
 #A[data-theme="dgwhite"] .fold .pp,
 #A[data-theme="dgwhite"] .fd .fold .pp,
 #A[data-theme="dgwhite"] .spf .fold .pp,
-#T[data-theme="dgwhite"] .spf .fold .pp{
-  background:#ffffff repeating-linear-gradient(to bottom,transparent 0 6px,#dfeae4 6px 7px)!important;
-  border:1px solid #cfdcd5!important;
+#T[data-theme="dgwhite"] .spf .fold .pp {
+  background: #ffffff repeating-linear-gradient(to bottom, transparent 0 6px, #dfeae4 6px 7px) !important;
+  border: 1px solid #cfdcd5 !important;
 }
 #A[data-theme="dgwhite"] .fold .pp+.pp,
 #A[data-theme="dgwhite"] .fd .fold .pp+.pp,
 #A[data-theme="dgwhite"] .spf .fold .pp+.pp,
-#T[data-theme="dgwhite"] .spf .fold .pp+.pp{background:#e7f1ec!important}
-
-/* folder front with white number */
+#T[data-theme="dgwhite"] .spf .fold .pp+.pp {
+  background: #e7f1ec !important;
+}
 #A[data-theme="dgwhite"] .fold .fr,
 #A[data-theme="dgwhite"] .fd .fold .fr,
 #A[data-theme="dgwhite"] .spf .fold .fr,
-#T[data-theme="dgwhite"] .spf .fold .fr{
-  background:linear-gradient(180deg,#15966f 0%,#0e5640 100%)!important;
-  border:1px solid #0a4332!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 6px 12px rgba(6,40,29,.18)!important;
-  color:#ffffff!important;font-weight:800!important;
-  text-shadow:0 1px 2px rgba(0,0,0,.25);
+#T[data-theme="dgwhite"] .spf .fold .fr {
+  background: linear-gradient(180deg, #15966f 0%, #0e5640 100%) !important;
+  border: 1px solid #0a4332 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 6px 12px rgba(6, 40, 29, 0.18) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+/* ---- Clearer Status Tags: High contrast, uniform across stock, requisitions, reports ---- */
+#A[data-theme="dgwhite"] .rq-tag,
+#A[data-theme="dgwhite"] .tag,
+#T[data-theme="dgwhite"] .t-st,
+#T[data-theme="dgwhite"] .t-slip-badge,
+#T[data-theme="dgwhite"] .sp-inslip,
+#A[data-theme="dgwhite"] .ac-st,
+#A[data-theme="dgwhite"] .bl-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  padding: 4px 11px !important;
+  border-radius: 7px !important;
+  letter-spacing: 0.2px !important;
+  white-space: nowrap !important;
+  text-transform: none !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* In Stock / Active / Issued / Approved (Emerald Green) */
+#A[data-theme="dgwhite"] .tag.in,
+#T[data-theme="dgwhite"] .t-st.st-ok,
+#T[data-theme="dgwhite"] .t-st.st-approved,
+#T[data-theme="dgwhite"] .t-slip-badge,
+#T[data-theme="dgwhite"] .sp-inslip,
+#A[data-theme="dgwhite"] .ac-st:not(.low):not(.out),
+#A[data-theme="dgwhite"] .bl-chip.g,
+#A[data-theme="dgwhite"] .rq-tag.i {
+  background: #dcfce7 !important;
+  color: #14532d !important;
+  border: 1px solid #86efac !important;
+}
+
+/* Pending / In Review (Warm Amber) */
+#A[data-theme="dgwhite"] .rq-tag.p,
+#T[data-theme="dgwhite"] .t-st.st-pending,
+#A[data-theme="dgwhite"] .bl-chip.w {
+  background: #fef3c7 !important;
+  color: #92400e !important;
+  border: 1px solid #fcd34d !important;
+}
+
+/* Verified (Sky Blue) */
+#T[data-theme="dgwhite"] .t-st.st-verified,
+#A[data-theme="dgwhite"] .rq-tag.v {
+  background: #e0f2fe !important;
+  color: #0369a1 !important;
+  border: 1px solid #7dd3fc !important;
+}
+
+/* Low Stock (Amber Orange) */
+#A[data-theme="dgwhite"] .tag.low,
+#T[data-theme="dgwhite"] .t-st.st-low,
+#A[data-theme="dgwhite"] .ac-st.low {
+  background: #ffedd5 !important;
+  color: #9a3412 !important;
+  border: 1px solid #fdba74 !important;
+}
+
+/* Out of Stock / Declined / Rejected (Rose Red) */
+#A[data-theme="dgwhite"] .tag.out,
+#T[data-theme="dgwhite"] .t-st.st-out,
+#T[data-theme="dgwhite"] .t-st.st-declined,
+#A[data-theme="dgwhite"] .rq-tag.d,
+#A[data-theme="dgwhite"] .ac-st.out {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+  border: 1px solid #fca5a5 !important;
 }
 
 /* ---- Sidebar category list ---- */
-#A[data-theme="dgwhite"] .side h3{color:#0a3d2e}
-#A[data-theme="dgwhite"] .node{color:#46604f}
-#A[data-theme="dgwhite"] .node:hover{background:#e3efe8}
-#A[data-theme="dgwhite"] .node.on{background:#d7ebe0!important;color:#0a3d2e!important;font-weight:700}
-#A[data-theme="dgwhite"] .node span.n{background:#e3efe8;color:#0e5640;font-weight:700}
-#A[data-theme="dgwhite"] .node.on span.n{background:#0e5640;color:#ffffff}
+#A[data-theme="dgwhite"] .side h3 { color: #0a3d2e; }
+#A[data-theme="dgwhite"] .node { color: #46604f; }
+#A[data-theme="dgwhite"] .node:hover { background: #e3efe8; }
+#A[data-theme="dgwhite"] .node.on { background: #d7ebe0 !important; color: #0a3d2e !important; font-weight: 700; }
+#A[data-theme="dgwhite"] .node span.n { background: #e3efe8; color: #0e5640; font-weight: 700; }
+#A[data-theme="dgwhite"] .node.on span.n { background: #0e5640; color: #ffffff; }
 
 /* ---- Tables ---- */
-#A[data-theme="dgwhite"] table th{background:#e9f2ed!important;color:#2f4a3d!important;font-weight:700!important;font-size:11.5px!important;letter-spacing:.5px;text-transform:uppercase}
-#A[data-theme="dgwhite"] table td{color:#12281f}
-#A[data-theme="dgwhite"] tr.lk:hover td{background:#f1f8f4!important}
+#A[data-theme="dgwhite"] table th {
+  background: #e9f2ed !important;
+  color: #2f4a3d !important;
+  font-weight: 700 !important;
+  font-size: 11.5px !important;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+#A[data-theme="dgwhite"] table td { color: #12281f; }
+#A[data-theme="dgwhite"] tr.lk:hover td { background: #f1f8f4 !important; }
 </style>
 
 <style id="report-chart-styles">
