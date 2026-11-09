@@ -158,6 +158,18 @@ const server = http.createServer((req, res) => {
 
   // Shared data persistence endpoint (Dual-layer: PostgreSQL + local data.json fallback)
   if (urlPath === '/api/data') {
+    const { parseCookies, verifyToken } = require('./lib/auth');
+    const cookies = parseCookies(req.headers.cookie);
+    if (cookies.dps_limited_sess && !cookies.dps_session) {
+      const limited = verifyToken(cookies.dps_limited_sess);
+      if (limited && limited.scope === 'register_only') {
+        res.writeHead(403, { 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({
+          ok: false,
+          error: 'Forbidden: Full session required. Please complete device screen lock registration.'
+        }));
+      }
+    }
     const fallbackLocalRead = () => {
       fs.readFile(DATA_FILE, 'utf8', (err, data) => {
         res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
@@ -272,6 +284,53 @@ const server = http.createServer((req, res) => {
         } catch (e) {
           res.writeHead(400, { 'Content-Type': 'text/plain' });
           res.end('Invalid JSON');
+        }
+      });
+      return;
+    }
+  }
+
+  // Generic /api/* handler for modular serverless functions (Auth & WebAuthn)
+  if (urlPath.startsWith('/api/')) {
+    const relApi = urlPath.slice(5); // e.g. "auth/login", "webauthn/login/options"
+    const apiFile = path.join(__dirname, 'api', relApi + '.js');
+    if (fs.existsSync(apiFile)) {
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk;
+        if (body.length > 5 * 1024 * 1024) req.destroy();
+      });
+      req.on('end', async () => {
+        try {
+          req.body = body ? JSON.parse(body) : {};
+        } catch(e) {
+          req.body = body;
+        }
+        req.query = Object.fromEntries(parsedUrl.searchParams.entries());
+        
+        // Polyfill Vercel response helper methods
+        res.status = function(code) { this.statusCode = code; return this; };
+        res.json = function(data) {
+          this.setHeader('Content-Type', 'application/json; charset=utf-8');
+          this.end(JSON.stringify(data));
+          return this;
+        };
+        res.send = function(data) {
+          this.end(data);
+          return this;
+        };
+
+        try {
+          // Clear require cache in dev so code edits reload
+          delete require.cache[require.resolve(apiFile)];
+          const handler = require(apiFile);
+          await handler(req, res);
+        } catch(err) {
+          console.error(`[SERVER API ERROR ${urlPath}]`, err);
+          if (!res.headersSent) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: err.message }));
+          }
         }
       });
       return;

@@ -6,14 +6,22 @@
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
   "background_color": "#0f5b3a",
   "theme_color": "#0f5b3a",
   "orientation": "any",
   "lang": "en",
   "dir": "ltr",
   "prefer_related_applications": false,
-  "categories": ["education", "productivity", "business"],
+  "categories": [
+    "education",
+    "productivity",
+    "business"
+  ],
   "icons": [
     {
       "src": "/icon-192.png",
@@ -62,14 +70,24 @@
       "short_name": "Stock",
       "description": "View inventory stock levels",
       "url": "/#stock",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Requisition Slips",
       "short_name": "Slips",
       "description": "View and print requisition slips",
       "url": "/#req",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }

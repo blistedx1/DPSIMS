@@ -1,14 +1,28 @@
 const db = require('../db');
 const fs = require('fs');
 const path = require('path');
+const { parseCookies, verifyToken } = require('../lib/auth');
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
+  }
+
+  // Block calls made with only a limited session
+  const cookies = parseCookies(req.headers.cookie);
+  if (cookies.dps_limited_sess && !cookies.dps_session) {
+    const limited = verifyToken(cookies.dps_limited_sess);
+    if (limited && limited.scope === 'register_only') {
+      return res.status(403).json({
+        ok: false,
+        error: 'Forbidden: Full session required. Please complete device screen lock registration.'
+      });
+    }
   }
 
   // GET: Read data from Neon DB, fallback to data.json
