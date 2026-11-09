@@ -3974,10 +3974,27 @@ html body #L#L .done,
 
   window.__loginReset=function(){
     clearTimeout(window.__autoGo);
-    $('#done').hidden=true;
+    window.__sess=null;
+    var d=$('#done');if(d)d.hidden=true;
     var sh=$('#L .sheet');if(sh)sh.hidden=false;
     var hr=$('#L .hero');if(hr)hr.hidden=false;
-    busy=false;buf='';first='';mode='login';method='pin';$('#pw').value='';setErr('');render();
+    var lv=$('#lockView');if(lv)lv.hidden=true;
+    var pv=$('#pinView');if(pv)pv.hidden=false;
+    var en=$('#dlEnroll');if(en)en.hidden=true;
+    var rm=$('#recoveryModal');if(rm)rm.hidden=true;
+    var ad=$('#adminDevicesModal');if(ad)ad.hidden=true;
+    busy=false;buf='';first='';mode='login';method='pin';
+    var pwEl=$('#pw');if(pwEl)pwEl.value='';
+    setErr('');
+    role='admin';
+    var seg=$('#seg');
+    if(seg){
+      seg.dataset.i='0';
+      seg.querySelectorAll('button').forEach(function(b,idx){
+        b.setAttribute('aria-selected',idx===0?'true':'false');
+      });
+    }
+    render();
   };
 
   window.__unlock = unlock;
@@ -4146,7 +4163,7 @@ html body #L#L .done,
 
   var view='stock',mode='f',cat='All',tag=null,openId=null,billId=null,editingBillId=null,facName=null,query='',addTab='issue',dmgItem=null;
   var rowsI=[{id:0,v:'',q:''}],rowsB=[{id:0,v:'',q:'',r:''}],rowsEB=[];
-  function getRole(){try{var s=JSON.parse(sessionStorage.getItem('dps_session'));return(s&&s.role)?s.role:'guest'}catch(e){return 'guest'}}
+  function getRole(){try{var s=JSON.parse(sessionStorage.getItem('dps_session'));return(s&&s.role)?s.role:''}catch(e){return ''}}
   var rf={type:'out',item:'',cat:'',fac:'',st:'',from:'',to:'',grp:'none'},ff={from:'',to:''};
 
   function tot(it){return it.v.reduce(function(a,x){return a+x[1]},0)}
@@ -6597,20 +6614,35 @@ Minimum version required to store current data is: `+i+`.
   window.__enter=function(s){
     if(!s)return;
     if(s.role==='admin'||s.role==='principal'){
+      if(L){L.hidden=true;L.style.display='none';}
+      if(T){T.hidden=true;T.style.display='none';}
+      if(A){A.hidden=false;A.style.display='';}
       window.__adminReset&&window.__adminReset();
-      swap(L,A);
     }else{
+      if(L){L.hidden=true;L.style.display='none';}
+      if(A){A.hidden=true;A.style.display='none';}
+      if(T){T.hidden=false;T.style.display='';}
       window.__renderTeacherPanel&&window.__renderTeacherPanel(s.name);
-      swap(L,T);
     }
   };
   window.__logout=function(){
     try{sessionStorage.removeItem('dps_session')}catch(e){}
+    try{sessionStorage.clear()}catch(e){}
     try{fetch('/api/auth/logout',{method:'POST',credentials:'include'}).catch(function(){})}catch(e){}
-    var cur=A.hidden?T:A;
-    window.__loginReset&&window.__loginReset();
-    swap(cur,L);
+    window.__sess=null;
+    if(A){A.hidden=true;A.style.display='none';A.classList.remove('leave','enter');}
+    if(T){T.hidden=true;T.style.display='none';T.classList.remove('leave','enter');}
+    if(L){L.hidden=false;L.style.display='';L.classList.remove('leave','enter');}
+    if(typeof window.__loginReset==='function')window.__loginReset();
   };
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('.a-out,[data-v="out"],[data-t-action="logout"]');
+    if(b){
+      e.preventDefault();
+      e.stopPropagation();
+      if(typeof window.__logout==='function')window.__logout();
+    }
+  },true);
   try{
     var s=JSON.parse(sessionStorage.getItem('dps_session'));
     if(s&&Date.now()-s.t<288e5){
