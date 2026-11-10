@@ -1,5 +1,5 @@
 const db = require('../../../db');
-const { parseCookies, verifyToken } = require('../../../lib/auth');
+const { parseCookies, verifyToken, hashSecret } = require('../../../lib/auth');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
@@ -124,6 +124,93 @@ module.exports = async (req, res) => {
           ok: true,
           message: `Screen lock for ${target.username} has been reset. They may now sign in once with their PIN/password and register a new device.`
         });
+      }
+
+      if (action === 'reset_credentials') {
+        const { username, role } = body || {};
+        if (!username) {
+          return res.status(400).json({ ok: false, error: 'username is required.' });
+        }
+        const userRes = await db.query('SELECT id, username, role FROM users WHERE LOWER(username) = LOWER($1) LIMIT 1;', [username]);
+        if (!userRes.rows || !userRes.rows.length) {
+          return res.status(404).json({ ok: false, error: 'User not found in database.' });
+        }
+        const u = userRes.rows[0];
+        const isPrincipal = u.role === 'principal' || (role && role === 'principal') || u.username.toLowerCase() === 'principal';
+        const defaultPin = isPrincipal ? '2025' : '1234';
+        const defaultPw = isPrincipal ? 'Principal@DPS26' : 'Teacher@DPS26';
+        const pinHash = hashSecret(defaultPin);
+        const pwHash = hashSecret(defaultPw);
+
+        await db.query(`
+          UPDATE users
+          SET pin_hash = $1,
+              password_hash = $2,
+              pin_changed = FALSE,
+              pw_changed = FALSE,
+              reset_required = FALSE,
+              updated_at = NOW()
+          WHERE id = $3;
+        `, [pinHash, pwHash, u.id]);
+
+        await db.query('UPDATE passkeys SET revoked_at = NOW() WHERE user_id = $1;', [u.id]);
+
+        await db.query(`
+          INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent)
+          VALUES ($1, $2, 'admin_reset_credentials', $3, $4, $5);
+        `, [u.id, session.username, { targetUsername: u.username, role: u.role, defaultPin }, clientIp, req.headers['user-agent'] || '']).catch(() => {});
+
+        return res.status(200).json({
+          ok: true,
+          message: `${u.username} credentials reset to default PIN (${defaultPin}). User must change PIN at next sign-in.`
+        });
+      }
+
+      if (action === 'delete_user') {
+        const { username } = body || {};
+        if (!username) {
+          return res.status(400).json({ ok: false, error: 'username is required.' });
+        }
+        const userRes = await db.query('SELECT id, username, role FROM users WHERE LOWER(username) = LOWER($1) LIMIT 1;', [username]);
+        if (!userRes.rows || !userRes.rows.length) {
+          return res.status(200).json({ ok: true, message: 'User not in database or already deleted.' });
+        }
+        const u = userRes.rows[0];
+        if (u.role === 'admin' || u.role === 'principal') {
+          return res.status(400).json({ ok: false, error: 'Cannot delete Admin or Principal account.' });
+        }
+
+        await db.query('DELETE FROM passkeys WHERE user_id = $1;', [u.id]);
+        await db.query('DELETE FROM auth_audit_log WHERE user_id = $1;', [u.id]);
+        await db.query('DELETE FROM users WHERE id = $1;', [u.id]);
+
+        return res.status(200).json({ ok: true, message: `Faculty ${u.username} deleted from database.` });
+      }
+
+      if (action === 'add_user') {
+        const { username, displayName, role } = body || {};
+        if (!username) {
+          return res.status(400).json({ ok: false, error: 'username is required.' });
+        }
+        const userRole = role || 'teacher';
+        const dispName = displayName || username;
+        const defaultPin = userRole === 'principal' ? '2025' : '1234';
+        const defaultPw = userRole === 'principal' ? 'Principal@DPS26' : 'Teacher@DPS26';
+        const pinHash = hashSecret(defaultPin);
+        const pwHash = hashSecret(defaultPw);
+
+        const checkRes = await db.query('SELECT id FROM users WHERE LOWER(username) = LOWER($1) LIMIT 1;', [username]);
+        if (checkRes.rows && checkRes.rows.length) {
+          return res.status(200).json({ ok: true, message: 'User already exists in database.' });
+        }
+
+        await db.query(`
+          INSERT INTO users (username, role, display_name, password_hash, pin_hash, pin_changed, pw_changed, reset_required, created_at, updated_at)
+          VALUES ($1, $2, $3, $4, $5, FALSE, FALSE, FALSE, NOW(), NOW())
+          ON CONFLICT (username) DO NOTHING;
+        `, [username, userRole, dispName, pwHash, pinHash]);
+
+        return res.status(200).json({ ok: true, message: `Faculty ${username} registered in database.` });
       }
 
       return res.status(400).json({ ok: false, error: 'Unknown action.' });

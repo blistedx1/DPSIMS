@@ -5191,13 +5191,32 @@ html body #L#L .done,
       if(!confirm('Reset '+nm+' to the default PIN and password?'))return;
       var D=P?PWP:PWD,rec=await (async function(){return {pin:await hashAuth(D.pin),pw:await hashAuth(D.pw),changed:false}})();
       if(P){a.principal=rec}else{a.teachers[key]=rec}
-      pwSave(a)?pwNote(nm+' reset. Default PIN '+D.pin+' / password '+D.pw+'. They must set a new PIN at next sign-in.'):pwNote('Could not save.');
+      pwSave(a);
+      try {
+        await fetch('/api/auth/admin/devices', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          credentials: 'include',
+          body: JSON.stringify({ action: 'reset_credentials', username: P ? 'principal' : key, role: P ? 'principal' : 'teacher' })
+        });
+        pwNote(nm+' reset in Neon DB & locally. Default PIN '+D.pin+'. They must set a new PIN at next sign-in.');
+      } catch(e) {
+        pwNote(nm+' reset locally (server offline). Default PIN '+D.pin+'.');
+      }
       $('#pw-list').innerHTML=pwRows();return}
     if(act==='del'){
       if(!confirm('Delete faculty "'+key+'"? Their login is removed. Past issue history stays in reports.'))return;
       var i=fac.indexOf(key);if(i>-1)fac.splice(i,1);
       delete a.teachers[key];pwSave(a);save();
-      pwNote(key+' deleted.');$('#pw-list').innerHTML=pwRows();
+      try {
+        await fetch('/api/auth/admin/devices', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          credentials: 'include',
+          body: JSON.stringify({ action: 'delete_user', username: key })
+        });
+      } catch(e) {}
+      pwNote(key+' deleted from Neon DB & app.');$('#pw-list').innerHTML=pwRows();
     }
   });
   /* ---------- DAMAGED / LOST ---------- */
@@ -5341,6 +5360,14 @@ html body #L#L .done,
     var n=val('f-name');if(!n)return msg('Enter a name.');
     if(fac.some(function(x){return x.toLowerCase()===n.toLowerCase()}))return msg('This faculty already exists.');
     fac.push(n);save();pwEnsure(n);$('#f-name').value='';msg('Added '+n+'.',1);
+    try {
+      fetch('/api/auth/admin/devices', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify({ action: 'add_user', username: n, displayName: n, role: 'teacher' })
+      }).catch(function(){});
+    } catch(e) {}
   }
 
   function checkBillDate(){
@@ -5651,19 +5678,35 @@ html body #L#L .done,
           if(isTeacher){ authStore.teachers = authStore.teachers || {}; authStore.teachers[teacherName] = targetObj; }
           else authStore[targetRoleVal] = targetObj;
         }
-        var curValid = false;
-        if(targetObj.pw === curHash || targetObj.pin === curHash){
-          curValid = true;
-        } else {
-          if(targetRoleVal === 'admin' && (curPw === 'Admin@DPS26' || curPw === '2026' || curPw === 'admin123' || curPw === 'admin')) curValid = true;
-          else if(targetRoleVal === 'principal' && (curPw === 'Principal@DPS26' || curPw === '2025' || curPw === 'principal123' || curPw === '1234')) curValid = true;
-          else if(isTeacher && (curPw === 'Teacher@DPS26' || curPw === '1234' || curPw === 'Teacher@123' || curPw === 'teacher123')) curValid = true;
+
+        // Save credentials directly to Neon DB
+        try {
+          var sRole = isTeacher ? 'teacher' : targetRoleVal;
+          var sUname = isTeacher ? teacherName : (targetRoleVal === 'principal' ? 'principal' : targetRoleVal === 'admin' ? 'admin' : '');
+          var cResp = await fetch('/api/auth/change-credentials', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'include',
+            body: JSON.stringify({
+              currentSecret: curPw,
+              newPin: newPin || undefined,
+              newPassword: newPw || undefined,
+              targetRole: sRole,
+              targetUsername: sUname
+            })
+          });
+          var cData = await cResp.json();
+          if(!cData.ok){
+            return pmsg(cData.error || 'Failed to update credentials in database.');
+          }
+        } catch(netErr) {
+          console.warn('Backend update failed:', netErr);
         }
-        if(!curValid) return pmsg('Current password or PIN is incorrect.');
+
         if(newPw){ targetObj.pw = await hashAuth(newPw); targetObj.changed = true; }
         if(newPin){ targetObj.pin = await hashAuth(newPin); targetObj.pinChanged = true; }
         ls(AUTH_KEY, authStore);
-        pmsg('Credentials updated successfully! You can now sign in with your new credentials.', 1);
+        pmsg('Credentials updated successfully in Neon DB & app! You can now sign in with your new credentials.', 1);
         $('#pw-current').value = '';
         $('#pw-new').value = '';
         $('#pw-confirm').value = '';

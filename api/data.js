@@ -202,12 +202,18 @@ module.exports = async (req, res) => {
         } catch (e) {
           console.error('[API/DATA] Notification diff error:', e.message);
         }
+      }
 
-        // Save updated state to PostgreSQL
-        await db.query(
-          "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', $1, NOW()) ON CONFLICT (key) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW();",
-          [body]
-        );
+      // Always save updated state directly to Neon PostgreSQL
+      if (db.isConnected()) {
+        try {
+          await db.query(
+            "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', $1, NOW()) ON CONFLICT (key) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW();",
+            [body]
+          );
+        } catch (dbErr) {
+          console.error('[API/DATA] DB write error:', dbErr.message);
+        }
       }
 
       try {

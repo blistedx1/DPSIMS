@@ -305,6 +305,7 @@ const API_HANDLERS = {
   'auth/logout': require('./api/auth/logout'),
   'auth/me': require('./api/auth/me'),
   'auth/recover': require('./api/auth/recover'),
+  'auth/change-credentials': require('./api/auth/change-credentials'),
   'auth/admin/devices': require('./api/auth/admin/devices'),
   'webauthn/login/options': require('./api/webauthn/login/options'),
   'webauthn/login/verify': require('./api/webauthn/login/verify'),
