@@ -2582,10 +2582,19 @@ html body #A#A[data-theme="dgwhite"] .fcard.fd:hover{
       </div>
     </div>
 
-    <div id="lockView" hidden>
-      <button type="button" class="lock-btn" id="lockBtn" aria-label="Unlock with screen lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10a2 2 0 0 0-2 2c0 1.020-.1 2.510-.26 4"/><path d="M14 13.120c0 2.380 0 6.380-1 8.880"/><path d="M17.290 21.020c.12-.6.43-2.300.5-3.020"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.800 16c.2-2 .131-5.354 0-6"/><path d="M5 19.500C5.500 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.650 22c.21-.66.45-1.320.57-2"/><path d="M9 6.800a6 6 0 0 1 9 5.200v2"/></svg></button>
-      <p class="lock-hint">Tap to unlock with your fingerprint, face or phone screen-lock PIN / pattern</p>
-      <button type="button" class="link" id="lockReset">Lost access? Reset with password</button>
+    <div id="lockView" hidden style="text-align:center;padding:10px 0 6px;">
+      <button type="button" class="lock-btn" id="lockBtn" aria-label="Unlock Administrator with fingerprint or face" style="margin:0 auto 10px;width:76px;height:76px;border-radius:50%;background:rgba(46,139,87,0.12);border:2px solid #2e8b57;display:flex;align-items:center;justify-content:center;color:#2e8b57;cursor:pointer;transition:transform .15s, box-shadow .15s;">
+        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10a2 2 0 0 0-2 2c0 1.020-.1 2.510-.26 4"/><path d="M14 13.120c0 2.380 0 6.380-1 8.880"/><path d="M17.290 21.020c.12-.6.43-2.300.5-3.020"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.800 16c.2-2 .131-5.354 0-6"/><path d="M5 19.500C5.500 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.650 22c.21-.66.45-1.320.57-2"/><path d="M9 6.800a6 6 0 0 1 9 5.200v2"/></svg>
+      </button>
+      <p class="lock-hint" style="font-size:13.5px;font-weight:700;margin:0 0 3px;color:currentColor;">Administrator Biometric Access</p>
+      <p style="font-size:12px;opacity:0.75;margin:0 0 12px;">Fingerprint, Face ID or Windows Hello</p>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:center;max-width:280px;margin:0 auto;">
+        <button type="button" class="btn" id="lockBtnDirect" style="width:100%;height:42px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 0-10 10c0 5.523 4.477 10 10 10s10-4.477 10-10A10 10 0 0 0 12 2z"/><path d="M7 12a5 5 0 0 1 5-5"/><path d="M12 17a5 5 0 0 1-5-5"/><circle cx="12" cy="12" r="1"/></svg>
+          <span>Unlock with Biometrics</span>
+        </button>
+        <button type="button" class="link" id="adminPinFallback" style="font-size:13px;font-weight:600;color:#2e8b57;cursor:pointer;background:none;border:none;margin-top:2px;">Enter Admin PIN instead</button>
+      </div>
     </div>
 
     <p class="msg" id="msg" role="alert"></p>
@@ -2717,15 +2726,25 @@ html body #A#A[data-theme="dgwhite"] .fcard.fd:hover{
     var t=$('#title'),s=$('#sub');
     $('#nameGroup').hidden=(role!=='teacher');
     var isPw=(method==='pw');
-    var lock=!!(window.__dlLockOn&&window.__dlLockOn());
-    $('#pwView').hidden=!isPw||lock;
-    $('#pinView').hidden=isPw||lock;
-    $('#lockView').hidden=!lock;
-    $('#userRow').hidden=(role==='teacher');
-    $('#user').value=role==='admin'?'Admin':role==='principal'?'Principal':'';
-    $('#swap').hidden=false;
-    $('#swap').textContent=isPw?'Use PIN instead':'Use password instead';
-    if(lock)$('#swap').hidden=true;
+    var isAdm=(role==='admin');
+    // Lock/Biometrics is STRICTLY for Admin only!
+    var lock = isAdm && !!(window.__dlLockOn && window.__dlLockOn());
+
+    $('#lockView').hidden = !lock;
+    $('#pwView').hidden = lock || !isPw;
+    $('#pinView').hidden = lock || isPw;
+    $('#userRow').hidden = (role==='teacher');
+    $('#user').value = role==='admin'?'Admin':role==='principal'?'Principal':'';
+
+    $('#swap').hidden = lock;
+    if (!lock) {
+      if (isAdm && window.__adminBioEnrolled && window.__adminBioEnrolled()) {
+        $('#swap').textContent = isPw ? 'Use PIN or Biometrics' : 'Use Biometrics instead';
+      } else {
+        $('#swap').textContent = isPw ? 'Use PIN instead' : 'Use password instead';
+      }
+    }
+
     if(mode==='new'){
       t.textContent='Create a new PIN';
       s.textContent='First sign-in: replace the default PIN';
@@ -2735,7 +2754,7 @@ html body #A#A[data-theme="dgwhite"] .fcard.fd:hover{
     } else {
       if(role==='admin'){
         t.textContent='Admin sign-in';
-        s.textContent=isPw?'Enter your admin password':'Enter your 4-digit PIN';
+        s.textContent = lock ? 'Touch fingerprint or Windows Hello to unlock' : (isPw ? 'Enter your admin password' : 'Enter your 4-digit PIN');
       } else if(role==='principal'){
         t.textContent='Principal sign-in';
         s.textContent=isPw?'Enter your principal password':'Enter your 4-digit PIN';
@@ -2744,7 +2763,6 @@ html body #A#A[data-theme="dgwhite"] .fcard.fd:hover{
         s.textContent=isPw?'Select your name and enter your password':'Select your name and enter your PIN';
       }
     }
-    if(lock){t.textContent=(role==='teacher'?'Teacher':role==='admin'?'Admin':'Principal')+' sign-in';s.textContent='Unlock with your screen lock';}
     dots();
   }
   function reset(){buf='';first='';mode='login';setErr('');render()}
@@ -2753,7 +2771,10 @@ html body #A#A[data-theme="dgwhite"] .fcard.fd:hover{
   fillNames();
   $('#seg').addEventListener('click',function(e){
     var b=e.target.closest('button');if(!b||busy)return;
-    role=b.dataset.role;method='pw';sfx('tap');
+    role=b.dataset.role;
+    method='pw';
+    window.__adminForcePin=false;
+    sfx('tap');
     this.dataset.i=role==='admin'?0:role==='principal'?1:2;
     this.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-selected',x===b)});
     reset();
@@ -2872,83 +2893,180 @@ html body #A#A[data-theme="dgwhite"] .fcard.fd:hover{
     window.__autoGo=setTimeout(function(){var d=$('#done');if(d&&!d.hidden&&window.__sess)window.__enter(window.__sess)},1300);
   }
   $('#go').addEventListener('click',function(){clearTimeout(window.__autoGo);window.__enter(window.__sess)});
-  /* ---------- Screen-lock sign-in (WebAuthn platform authenticator) ---------- */
+  /* ---------- Screen-lock sign-in (Dedicated Admin Biometrics - Zero Latency) ---------- */
   (function(){
-    var KEY='dps_devlock_v1',ok=false,force={},fails=0;
-    function st(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){return {}}}
-    function put(o){try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}
-    function acct(){return role==='teacher'?('teacher|'+($('#name').value||'')):role}
-    function label(){return role==='teacher'?($('#name').value||'Teacher'):(role==='admin'?'Administrator':'Principal')}
-    function enrolled(a){return !!st()[a||acct()]}
-    function supported(){return !!(window.PublicKeyCredential&&navigator.credentials&&navigator.credentials.create&&crypto&&crypto.subtle&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'))}
+    var KEY='dps_devlock_v1';
+    window.__adminForcePin = false;
+
+    function st(){
+      try{ return JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ return {}; }
+    }
+    function put(o){
+      try{ localStorage.setItem(KEY,JSON.stringify(o)); }catch(e){}
+    }
+    function isSupported(){
+      return !!(window.PublicKeyCredential && navigator.credentials && navigator.credentials.create && crypto && crypto.subtle && (location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'));
+    }
+    function isEnrolled(){
+      return !!(st()['admin'] && st()['admin'].cid);
+    }
+    window.__adminBioEnrolled = isEnrolled;
+
     function b64(buf){var b=new Uint8Array(buf),s='';for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
     function unb64(t){t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';var s=atob(t),b=new Uint8Array(s.length);for(var i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b.buffer}
     function rnd(n){return crypto.getRandomValues(new Uint8Array(n))}
-    window.__dlLockOn=function(){return ok&&mode==='login'&&role&&enrolled()&&!force[acct()]};
-    if(supported()){try{PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(v){ok=!!v;if(ok)render()}).catch(function(){})}catch(e){}}
 
-    async function unlock(){
-      if(busy)return;var a=acct(),rec=st()[a];if(!rec)return;
-      busy=true;setErr('');
-      try{
-        var ch=rnd(32);
-        var cred=await navigator.credentials.get({publicKey:{challenge:ch,rpId:location.hostname,timeout:60000,userVerification:'required',allowCredentials:[{type:'public-key',id:unb64(rec.cid),transports:['internal']}]}});
-        var cd=JSON.parse(new TextDecoder().decode(cred.response.clientDataJSON));
-        var ad=new Uint8Array(cred.response.authenticatorData);
-        if(cd.type!=='webauthn.get'||cd.origin!==location.origin||cd.challenge!==b64(ch)||b64(cred.rawId)!==rec.cid||(ad[32]&4)!==4)throw new Error('verify');
-        busy=false;success();
-      }catch(e){
-        busy=false;
-        setErr(e&&e.name==='NotAllowedError'?'Screen lock was cancelled. Please try again.':'Could not verify your screen lock. Please try again.');
-        shake($('#lockBtn'));
-      }
-    }
-    async function enroll(){
-      var a=acct(),ch=rnd(32);
-      var uid=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('dps|'+a));
-      var cred=await navigator.credentials.create({publicKey:{challenge:ch,rp:{name:'DPS Amrapali Inventory',id:location.hostname},user:{id:uid,name:label(),displayName:label()},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},timeout:60000,attestation:'none'}});
-      var cd=JSON.parse(new TextDecoder().decode(cred.response.clientDataJSON));
-      if(cd.type!=='webauthn.create'||cd.origin!==location.origin||cd.challenge!==b64(ch))throw new Error('verify');
-      if(cred.response.getAuthenticatorData){var ad=new Uint8Array(cred.response.getAuthenticatorData());if((ad[32]&4)!==4)throw new Error('uv')}
-      var o=st();o[a]={cid:b64(cred.rawId),t:Date.now()};put(o);
-    }
-    function showEnroll(){
-      fails=0;$('#go').hidden=true;$('#dlEnroll').hidden=false;$('#dlSkip').hidden=true;
-    }
-    function hideEnroll(){$('#dlEnroll').hidden=true;$('#go').hidden=false}
-    /* called by success(): returns true when the screen-lock set-up step is shown (so no auto-open) */
-    window.__dlAfterLogin=function(){
-      var a=acct();
-      if(force[a]){var o=st();delete o[a];put(o);delete force[a]}
-      if(ok&&!enrolled(a)){showEnroll();return true}
-      hideEnroll();return false;
+    // Synchronous check! Immediate 0ms rendering - STRICTLY FOR ADMIN ONLY
+    window.__dlLockOn = function(){
+      return role === 'admin' && mode === 'login' && isSupported() && isEnrolled() && !window.__adminForcePin;
     };
-    window.__dlReset=function(){hideEnroll();fails=0};
-    $('#lockBtn').addEventListener('click',unlock);
-    $('#lockReset').addEventListener('click',function(){
-      force[acct()]=true;method='pw';buf='';render();
-      setErr('Enter your password to reset the screen lock for this account.');
-    });
-    $('#dlEnable').addEventListener('click',async function(){
-      var btn=this;btn.disabled=true;
-      try{
-        await enroll();
-        $('#doneP').textContent='Screen lock is on. Next time, unlock with your fingerprint, face or screen lock.';
-        sfx('ok');hideEnroll();
-        clearTimeout(window.__autoGo);
-        window.__autoGo=setTimeout(function(){var d=$('#done');if(d&&!d.hidden&&window.__sess)window.__enter(window.__sess)},1400);
-      }catch(e){
-        fails++;
-        setErr(e&&e.name==='NotAllowedError'?'Screen lock set-up was cancelled. Please try again.':'Could not set up the screen lock. Make sure a screen lock is set on this device.');
-        shake($('#dlEnroll'));
-        if(fails>=2)$('#dlSkip').hidden=false;
+
+    // Fast check in background without delaying UI
+    if (isSupported()) {
+      try {
+        PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(avail){
+          window.__bioAvailable = !!avail;
+          if (role === 'admin') render();
+        }).catch(function(){});
+      } catch(e){}
+    }
+
+    async function unlockAdmin(){
+      if (busy) return;
+      var rec = st()['admin'];
+      if (!rec) {
+        setErr('No biometric registered for Admin. Please use PIN.');
+        return;
       }
-      btn.disabled=false;
-    });
-    $('#dlSkip').addEventListener('click',function(){
-      hideEnroll();clearTimeout(window.__autoGo);
-      window.__autoGo=setTimeout(function(){var d=$('#done');if(d&&!d.hidden&&window.__sess)window.__enter(window.__sess)},300);
-    });
+      busy = true; setErr('');
+      // Enforce Admin role explicitly
+      role = 'admin';
+      try {
+        var ch = rnd(32);
+        var cred = await navigator.credentials.get({
+          publicKey: {
+            challenge: ch,
+            rpId: location.hostname,
+            timeout: 60000,
+            userVerification: 'required',
+            allowCredentials: [{ type: 'public-key', id: unb64(rec.cid), transports: ['internal'] }]
+          }
+        });
+        var cd = JSON.parse(new TextDecoder().decode(cred.response.clientDataJSON));
+        var ad = new Uint8Array(cred.response.authenticatorData);
+        if (cd.type !== 'webauthn.get' || cd.origin !== location.origin || cd.challenge !== b64(ch) || b64(cred.rawId) !== rec.cid || (ad[32]&4) !== 4) {
+          throw new Error('verify');
+        }
+        busy = false;
+        // Absolute guarantee: Admin session created, can NEVER be principal
+        role = 'admin';
+        var adminSess = { role: 'admin', name: 'Administrator', t: Date.now() };
+        try { sessionStorage.setItem('dps_session', JSON.stringify(adminSess)); } catch(e){}
+        window.__sess = adminSess;
+        success();
+      } catch(e) {
+        busy = false;
+        setErr(e && e.name === 'NotAllowedError' ? 'Biometric scan was cancelled. Tap again or enter PIN.' : 'Biometric verification failed. Please enter your Admin PIN.');
+        var lb = $('#lockBtn'); if (lb) shake(lb);
+      }
+    }
+
+    async function enrollAdmin(){
+      var ch = rnd(32);
+      var uid = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('dps|admin'));
+      var cred = await navigator.credentials.create({
+        publicKey: {
+          challenge: ch,
+          rp: { name: 'DPS Amrapali Inventory', id: location.hostname },
+          user: { id: uid, name: 'Administrator', displayName: 'DPS Administrator' },
+          pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+          authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'discouraged' },
+          timeout: 60000,
+          attestation: 'none'
+        }
+      });
+      var cd = JSON.parse(new TextDecoder().decode(cred.response.clientDataJSON));
+      if (cd.type !== 'webauthn.create' || cd.origin !== location.origin || cd.challenge !== b64(ch)) throw new Error('verify');
+      if (cred.response.getAuthenticatorData) {
+        var ad = new Uint8Array(cred.response.getAuthenticatorData());
+        if ((ad[32]&4) !== 4) throw new Error('uv');
+      }
+      var o = st();
+      o['admin'] = { cid: b64(cred.rawId), t: Date.now() };
+      put(o);
+      window.__adminForcePin = false;
+    }
+    window.__enrollAdminBio = enrollAdmin;
+
+    // After login: prompt enrollment ONLY for admin if not yet enrolled
+    window.__dlAfterLogin = function(){
+      if (role !== 'admin') {
+        hideEnroll();
+        return false;
+      }
+      if (isSupported() && !isEnrolled()) {
+        showEnroll();
+        return true;
+      }
+      hideEnroll();
+      return false;
+    };
+
+    function showEnroll(){
+      var go = $('#go'); if (go) go.hidden = true;
+      var en = $('#dlEnroll'); if (en) en.hidden = false;
+      var sk = $('#dlSkip'); if (sk) sk.hidden = false;
+    }
+    function hideEnroll(){
+      var en = $('#dlEnroll'); if (en) en.hidden = true;
+      var go = $('#go'); if (go) go.hidden = false;
+    }
+    window.__dlReset = function(){ hideEnroll(); };
+
+    var lBtn = $('#lockBtn'); if (lBtn) lBtn.addEventListener('click', unlockAdmin);
+    var lBtnD = $('#lockBtnDirect'); if (lBtnD) lBtnD.addEventListener('click', unlockAdmin);
+
+    var fbBtn = $('#adminPinFallback');
+    if (fbBtn) {
+      fbBtn.addEventListener('click', function(){
+        window.__adminForcePin = true;
+        method = 'pin';
+        buf = '';
+        render();
+      });
+    }
+
+    var enBtn = $('#dlEnable');
+    if (enBtn) {
+      enBtn.addEventListener('click', async function(){
+        var btn = this; btn.disabled = true;
+        try {
+          await enrollAdmin();
+          $('#doneP').textContent = 'Admin Biometrics enabled! Next time, unlock instantly with fingerprint / face.';
+          sfx('ok'); hideEnroll();
+          clearTimeout(window.__autoGo);
+          window.__autoGo = setTimeout(function(){
+            var d = $('#done'); if (d && !d.hidden && window.__sess) window.__enter(window.__sess);
+          }, 1400);
+        } catch(e) {
+          setErr(e && e.name === 'NotAllowedError' ? 'Biometric setup was cancelled.' : 'Could not set up biometrics on this device.');
+          var de = $('#dlEnroll'); if (de) shake(de);
+          var sk = $('#dlSkip'); if (sk) sk.hidden = false;
+        }
+        btn.disabled = false;
+      });
+    }
+
+    var skipBtn = $('#dlSkip');
+    if (skipBtn) {
+      skipBtn.addEventListener('click', function(){
+        hideEnroll();
+        clearTimeout(window.__autoGo);
+        window.__autoGo = setTimeout(function(){
+          var d = $('#done'); if (d && !d.hidden && window.__sess) window.__enter(window.__sess);
+        }, 200);
+      });
+    }
   })();
 
   window.__loginReset=function(){clearTimeout(window.__autoGo);if(window.__dlReset)window.__dlReset();$('#done').hidden=true;busy=false;buf='';first='';mode='login';method='pw';$('#pw').value='';setErr('');render()};
@@ -3336,6 +3454,7 @@ html body #A#A[data-theme="dgwhite"] .fcard.fd:hover{
           + '</div>'
           + '<div style="display:flex;gap:10px;align-items:center;margin-top:16px">'
             + '<button class="btn" data-a="save-new-password">Update Credentials</button>'
+          + '<button class="btn ghost" type="button" data-a="admin-setup-bio" style="margin-left:8px;border:1px solid #2e8b57;color:#2e8b57;font-weight:600;">Setup / Update Admin Biometrics</button>'
           + '</div>'
           + '<div id="pw-change-msg" style="margin-top:12px;min-height:22px;font-size:13.5px;font-weight:600"></div>'
         + '</div>';
