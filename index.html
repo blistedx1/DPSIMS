@@ -1368,7 +1368,7 @@ html[data-theme="dgwhite"] .kb-row.tot b{color:var(--g-darker)!important}
 #A .a-tools .a-search{display:none}
 #A .a-sbtn{position:relative}
 #A .a-sbtn.has::after{content:"";position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--warn);border:1.5px solid var(--card)}
-#A .a-searchpop{position:absolute;right:clamp(16px,2vw,36px);top:calc(100% + 8px);width:min(340px,calc(100vw - 28px));z-index:60;padding:8px;border-radius:12px;background:var(--side,#101810);border:1px solid rgba(155,171,132,.35);box-shadow:0 16px 40px rgba(0,0,0,.5);animation:spPop .18s ease both}
+#A .a-searchpop{position:absolute;right:clamp(16px,2vw,36px);top:calc(100% + 8px);width:min(340px,calc(100vw - 28px));z-index:60;padding:8px;border-radius:12px;background:var(--side,#101810);border:1px solid rgba(155,171,132,.35);box-shadow:0 16px 40px rgba(0,0,0,.5);animation:aSearchPop .18s ease both}
 #A .a-searchpop[hidden]{display:none}
 #A .a-searchpop .a-search{display:flex;width:100%;margin:0;height:42px;background:var(--card);border:1px solid var(--line);border-radius:8px;color:var(--muted)}
 #A .a-searchpop .a-search input{color:var(--text);font-size:14px}
@@ -1378,7 +1378,7 @@ html[data-theme="dgwhite"] .kb-row.tot b{color:var(--g-darker)!important}
 #A[data-theme="dgwhite"] .a-searchpop .a-search svg{color:var(--g-dark)!important}
 #A[data-theme="dgwhite"] .a-sbtn.has::after{border-color:var(--surface-w)!important}
 @media (max-width:820px){#A .a-searchpop{right:14px;left:14px;width:auto}}
-@keyframes spPop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@keyframes aSearchPop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 
 /* ===== Requisitions: teacher-wise cards + slip detail ===== */
 #T .t-st.st-verified{background:rgba(110,170,220,.14);border:1px solid rgba(110,170,220,.35);color:#8fc2ea}
