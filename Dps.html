@@ -5666,7 +5666,15 @@ return}
     }else{
       h+='<div class="sp-note">'+(stockV<=0?'This option is out of stock right now.':'All available stock of this option is already in your slip.')+'</div>';
     }
-    h+='<button class="sp-add" data-sp-add="1"'+(max<=0?' disabled':'')+'><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add to Requisition Slip</span></button>';
+    var hasVariants = it.v && it.v.length > 1;
+    if(hasVariants){
+      h+='<div style="display:flex;gap:10px;align-items:center;margin-top:14px">';
+      h+='<button class="sp-add" style="flex:1" data-sp-add="1"'+(max<=0?' disabled':'')+'><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add to Slip</span></button>';
+      h+='<button class="sp-ghost" style="padding:0 18px;height:44px;border-radius:12px;border:1px solid rgba(155,171,132,.3);background:rgba(255,255,255,.05);color:var(--text);font-weight:600;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center" data-sp-close="modal" type="button">Done ✕</button>';
+      h+='</div>';
+    }else{
+      h+='<button class="sp-add" data-sp-add="1"'+(max<=0?' disabled':'')+'><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add to Requisition Slip</span></button>';
+    }
     h+='</div></div></div>';
     return h;
   }
@@ -5678,10 +5686,34 @@ return}
     var l=tCart.filter(function(x){return x.id===tModal.id&&x.v===tModal.v})[0];
     if(l)l.q+=q;else tCart.push({id:tModal.id,v:tModal.v,q:q});
     saveCart();
-    var label=it.name+' – '+tModal.v+' × '+q;
-    tModal=null;
-    rerender();renderLayer();updateCartBtn(true);
-    showToast('Added to slip: '+label);
+    var label=it.name+(tModal.v?' – '+tModal.v:'')+' × '+q;
+
+    var hasVariants=Array.isArray(it.v)&&it.v.length>1;
+    if(hasVariants){
+      // Items with variants (Chart Paper, Crape Paper, etc.): DO NOT AUTO-CLOSE!
+      // Keep window open so user can easily add multiple colors/variants.
+      var rem=Math.max(0,getVarStock(it.id,tModal.v)-cartQty(it.id,tModal.v));
+      tModal.q=rem>0?1:0;
+      tAnimModal=false;
+      renderLayer();
+      updateCartBtn(true);
+      showToast('Added '+label+' ✓');
+      if(window.EnterpriseAnim){
+        EnterpriseAnim.vibrate([15, 20]);
+        EnterpriseAnim.playChime('soft');
+      }
+    }else{
+      // Single items: auto-close immediately upon adding to slip
+      tModal=null;
+      rerender();
+      renderLayer();
+      updateCartBtn(true);
+      showToast('Added to slip: '+label);
+      if(window.EnterpriseAnim){
+        EnterpriseAnim.vibrate([20, 30, 20]);
+        EnterpriseAnim.playChime('stock');
+      }
+    }
   }
 
   /* ---------- cart drawer ---------- */
@@ -5881,14 +5913,14 @@ return}
       var cl=t.closest('[data-sp-close]');
       if(cl){
         var w=cl.dataset.spClose;
-        if(w==='modal')tModal=null;
+        if(w==='modal'){tModal=null;rerender();}
         else if(w==='cart'){tCartOpen=false;rerender()}
         else if(w==='sent')tSent=null;
         renderLayer();return;
       }
       if(t.classList&&t.classList.contains('sp-backdrop')){
         var bd=t.dataset.spBd;
-        if(bd==='modal')tModal=null;
+        if(bd==='modal'){tModal=null;rerender();}
         else if(bd==='cart'){tCartOpen=false;rerender()}
         else if(bd==='sent')tSent=null;
         renderLayer();return;
