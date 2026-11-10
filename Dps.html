@@ -2441,6 +2441,25 @@ html body #A#A[data-theme="dgwhite"] .fcard.fd:hover{
 })();
 
 </script>
+<style id="desktop-hero-logo-show">
+/* Show official transparent DPS logo above login box in desktop mode */
+@media (min-width: 900px) {
+  html body #L#L#L .hero > .logo,
+  html body #L#L#L .hero .logo {
+    display: block !important;
+    width: 60px !important;
+    height: 78px !important;
+    margin: 0 0 14px 0 !important;
+    background: var(--logo-nobg) center / contain no-repeat !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    -webkit-mask: none !important;
+    mask: none !important;
+    filter: drop-shadow(0 2px 6px rgba(15, 91, 58, 0.18)) !important;
+  }
+}
+</style>
 </head>
 <body>
 <div id="L">
