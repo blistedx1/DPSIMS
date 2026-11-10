@@ -2442,21 +2442,104 @@ html body #A#A[data-theme="dgwhite"] .fcard.fd:hover{
 
 </script>
 <style id="desktop-hero-logo-show">
-/* Show official transparent DPS logo above login box in desktop mode */
+/* ==========================================================================
+   Centered Login Layout & Adaptive Theme Logo
+   ========================================================================== */
+
+/* Universal logo dimensions & centering */
+#L .hero > .logo,
+#L .hero .logo,
+html body #L#L#L .hero > .logo,
+html body #L#L#L .hero .logo {
+  display: block !important;
+  width: 60px !important;
+  height: 78px !important;
+  margin: 0 auto 14px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+/* Dark theme logo: high-contrast cream-sage emblem with luminous aura */
+#L:not([data-theme="dgwhite"]) .hero > .logo,
+#L:not([data-theme="dgwhite"]) .hero .logo,
+html body #L#L#L:not([data-theme="dgwhite"]) .hero > .logo,
+html body #L#L#L:not([data-theme="dgwhite"]) .hero .logo,
+html body #L#L#L:not([data-theme="dgwhite"]) .logo {
+  background: #eef4e4 !important;
+  -webkit-mask: var(--logo-nobg) center / contain no-repeat !important;
+  mask: var(--logo-nobg) center / contain no-repeat !important;
+  filter: drop-shadow(0 0 14px rgba(155, 171, 132, 0.45)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6)) !important;
+}
+
+/* Light theme (dgwhite) logo: official transparent green/colored DPS crest */
+#L[data-theme="dgwhite"] .hero > .logo,
+#L[data-theme="dgwhite"] .hero .logo,
+html body #L#L#L[data-theme="dgwhite"] .hero > .logo,
+html body #L#L#L[data-theme="dgwhite"] .hero .logo,
+html body #L#L#L[data-theme="dgwhite"] .logo {
+  background: var(--logo-nobg) center / contain no-repeat !important;
+  -webkit-mask: none !important;
+  mask: none !important;
+  filter: drop-shadow(0 3px 8px rgba(15, 91, 58, 0.18)) !important;
+}
+
+/* Common text alignment */
+#L .hero,
+#L .hero h1,
+#L .hero p {
+  text-align: center !important;
+}
+
+/* Desktop layout: locked vertical/horizontal centering with cohesive spacing */
 @media (min-width: 900px) {
-  html body #L#L#L .hero > .logo,
-  html body #L#L#L .hero .logo {
-    display: block !important;
-    width: 60px !important;
-    height: 78px !important;
-    margin: 0 0 14px 0 !important;
-    background: var(--logo-nobg) center / contain no-repeat !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    -webkit-mask: none !important;
-    mask: none !important;
-    filter: drop-shadow(0 2px 6px rgba(15, 91, 58, 0.18)) !important;
+  #L .app {
+    grid-template-columns: minmax(420px, 1.2fr) minmax(380px, .85fr) !important;
+    grid-template-rows: minmax(20px, 1fr) auto auto minmax(20px, 1fr) !important;
+    grid-template-areas:
+      "v ."
+      "v h"
+      "v s"
+      "v ." !important;
+  }
+
+  #L .hero {
+    grid-area: h !important;
+    width: 100% !important;
+    max-width: clamp(380px, 28vw, 440px) !important;
+    justify-self: center !important;
+    align-self: end !important;
+    margin: 0 auto !important;
+    padding: 0 20px 14px 20px !important;
+    text-align: center !important;
+  }
+
+  #L .hero h1 {
+    text-align: center !important;
+    margin: 0 auto !important;
+    font-size: clamp(26px, 2vw, 32px) !important;
+    letter-spacing: -0.5px !important;
+  }
+
+  #L .hero p {
+    text-align: center !important;
+    margin: 6px auto 0 !important;
+    font-size: clamp(13px, 0.95vw, 15px) !important;
+  }
+
+  #L .sheet {
+    grid-area: s !important;
+    width: 100% !important;
+    max-width: clamp(380px, 28vw, 440px) !important;
+    justify-self: center !important;
+    align-self: start !important;
+    margin: 0 auto !important;
+    padding: clamp(14px, 1.8vh, 24px) clamp(20px, 2vw, 32px) clamp(18px, 2.2vh, 28px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    overflow-y: auto !important;
   }
 }
 </style>
