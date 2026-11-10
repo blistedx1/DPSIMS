@@ -5747,8 +5747,8 @@ html body #L#L .done,
               type: 'req_verified',
               targetTeacher: r.by,
               targetRole: ['admin'],
-              title: '✅ Requisition Approved by Principal',
-              body: 'Requisition #' + slipNo(r.id) + ' for ' + r.by + ' has been approved by Principal and forwarded to Admin to issue.',
+              title: '✅ Requisition Slip Approved by Principal',
+              body: 'Principal approved Requisition Slip #' + slipNo(r.id) + ' for ' + r.by + '. Please issue the requested items.',
               tag: 'req-verified-' + r.id,
               slipId: r.id
             });
@@ -5786,9 +5786,10 @@ html body #L#L .done,
             window.DPS_NOTIFY.send({
               id: 'req_app_' + r.id + '_' + Date.now(),
               type: 'req_approved',
+              targetRole: ['teacher'],
               targetTeacher: r.by,
-              title: '🎉 Requisition Approved & Issued!',
-              body: 'Your requisition #' + slipNo(r.id) + ' has been approved and issued by Store Admin. Please collect your items.',
+              title: '📦 Requested Items Ready for Collection',
+              body: 'Your Requisition Slip #' + slipNo(r.id) + ' has been approved. You can collect your requested items from Admin.',
               tag: 'req-approved-' + r.id,
               slipId: r.id
             });
@@ -5802,9 +5803,10 @@ html body #L#L .done,
           window.DPS_NOTIFY.send({
             id: 'req_dec_' + r.id + '_' + Date.now(),
             type: 'req_declined',
+            targetRole: ['teacher'],
             targetTeacher: r.by,
-            title: '❌ Requisition Declined',
-            body: 'Requisition #' + slipNo(r.id) + ' was declined by ' + (role === 'principal' ? 'Principal' : 'Store Admin') + '.',
+            title: '❌ Requisition Slip Declined',
+            body: 'Your Requisition Slip #' + slipNo(r.id) + ' was declined by ' + (role === 'principal' ? 'Principal' : 'Store Admin') + '.',
             tag: 'req-declined-' + r.id,
             slipId: r.id
           });
@@ -6134,14 +6136,12 @@ html body #L#L .done,
     var cartCopy = tCart.slice();
     reqs.unshift({id:id,by:teacherSubmitting,it:tCart.map(function(l){return [l.id,l.v,l.q]}),st:'Pending',date:iso(),purpose:purpose});
     if(window.DPS_NOTIFY){
-      var summaryList = cartCopy.map(function(l){var it=find(l.id);return (it?it.name:'Item')+' ('+l.q+')'}).slice(0,3).join(', ');
-      if(cartCopy.length>3) summaryList += ' +'+(cartCopy.length-3)+' more';
       window.DPS_NOTIFY.send({
         id: 'req_new_' + id + '_' + Date.now(),
         type: 'req_created',
         targetRole: ['principal', 'admin'],
         title: '📋 New Requisition Slip Raised',
-        body: teacherSubmitting + ' raised slip #' + slipNo(id) + ' (' + cartCopy.length + ' items: ' + summaryList + '). Awaiting approval.',
+        body: teacherSubmitting + ' has filled Requisition Slip #' + slipNo(id) + ' (' + cartCopy.length + ' item' + (cartCopy.length === 1 ? '' : 's') + '). Awaiting approval.',
         tag: 'req-slip-' + id,
         slipId: id
       });

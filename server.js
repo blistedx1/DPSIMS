@@ -228,7 +228,7 @@ const server = http.createServer((req, res) => {
                   type: 'req_created',
                   targetRole: ['principal', 'admin'],
                   title: '📋 New Requisition Slip Raised',
-                  body: `${r.by || 'Teacher'} raised requisition #${String(r.id).padStart(3, '0')} (${count} items). Awaiting approval.`,
+                  body: `${r.by || 'Teacher'} has filled Requisition Slip #REQ-${String(r.id).padStart(3, '0')} (${count} items). Awaiting approval.`,
                   tag: `req-slip-${r.id}`,
                   slipId: r.id
                 });
@@ -240,8 +240,8 @@ const server = http.createServer((req, res) => {
                   type: 'req_verified',
                   targetTeacher: r.by,
                   targetRole: ['admin'],
-                  title: '✅ Requisition Approved by Principal',
-                  body: `Requisition #${String(r.id).padStart(3, '0')} for ${r.by} has been approved by Principal and forwarded to Admin.`,
+                  title: '✅ Requisition Slip Approved by Principal',
+                  body: `Principal approved Requisition Slip #REQ-${String(r.id).padStart(3, '0')} for ${r.by}. Please issue the requested items.`,
                   tag: `req-verified-${r.id}`,
                   slipId: r.id
                 });
@@ -251,9 +251,10 @@ const server = http.createServer((req, res) => {
                 broadcastNotification({
                   id: `req_app_${r.id}_${Date.now()}`,
                   type: 'req_approved',
+                  targetRole: ['teacher'],
                   targetTeacher: r.by,
-                  title: '🎉 Stationery Requisition Issued!',
-                  body: `Your requisition #${String(r.id).padStart(3, '0')} has been approved & issued by Store Admin. Please collect items.`,
+                  title: '📦 Requested Items Ready for Collection',
+                  body: `Your Requisition Slip #REQ-${String(r.id).padStart(3, '0')} has been approved. You can collect your requested items from Admin.`,
                   tag: `req-approved-${r.id}`,
                   slipId: r.id
                 });
@@ -263,9 +264,10 @@ const server = http.createServer((req, res) => {
                 broadcastNotification({
                   id: `req_dec_${r.id}_${Date.now()}`,
                   type: 'req_declined',
+                  targetRole: ['teacher'],
                   targetTeacher: r.by,
-                  title: '❌ Requisition Declined',
-                  body: `Your requisition #${String(r.id).padStart(3, '0')} was declined by ${r.declBy === 'principal' ? 'Principal' : 'Store Admin'}.`,
+                  title: '❌ Requisition Slip Declined',
+                  body: `Your Requisition Slip #REQ-${String(r.id).padStart(3, '0')} was declined by ${r.declBy === 'principal' ? 'Principal' : 'Store Admin'}.`,
                   tag: `req-declined-${r.id}`,
                   slipId: r.id
                 });
