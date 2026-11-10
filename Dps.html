@@ -2913,7 +2913,7 @@ html body #L#L#L[data-theme="dgwhite"] .logo {
         if(!ok&&(!store.admin||!store.admin.pinChanged)) ok=(pin===DEMO.adminPin);
       } else if(role==='principal'){
         ok=(store.principal&&store.principal.pin===h);
-        if(!ok&&(!store.principal||!store.principal.pinChanged)) ok=(pin===DEMO.principalPin||pin==='2025'||pin==='1234'||pin==='2026');
+        if(!ok&&(!store.principal||!store.principal.pinChanged)) ok=(pin===DEMO.principalPin);
       } else {
         var rec=store.teachers&&store.teachers[$('#name').value];
         ok=(rec&&rec.pin===h);
@@ -2970,7 +2970,7 @@ html body #L#L#L[data-theme="dgwhite"] .logo {
       if(!ok&&(!store.admin||!store.admin.changed)) ok=(v===DEMO.adminPw||v==='admin123'||v==='admin');
     } else if(role==='principal'){
       ok=(store.principal&&store.principal.pw===h);
-      if(!ok&&(!store.principal||!store.principal.changed)) ok=(v===DEMO.principalPw||v==='principal123'||v==='principal'||v==='Principal@DPS26'||v==='1234'||v==='admin123');
+      if(!ok&&(!store.principal||!store.principal.changed)) ok=(v===DEMO.principalPw||v==='principal123'||v==='principal'||v==='Principal@DPS26');
     } else if(role==='teacher'){
       var tRec=store.teachers&&store.teachers[$('#name').value];
       ok=(tRec&&tRec.pw===h);
@@ -4644,7 +4644,7 @@ html body #L#L#L[data-theme="dgwhite"] .logo {
           curValid = true;
         } else {
           if(targetRoleVal === 'admin' && (curPw === 'Admin@DPS26' || curPw === '2026' || curPw === 'admin123' || curPw === 'admin')) curValid = true;
-          else if(targetRoleVal === 'principal' && (curPw === 'Principal@DPS26' || curPw === '2025' || curPw === 'principal123' || curPw === '1234')) curValid = true;
+          else if(targetRoleVal === 'principal' && (curPw === 'Principal@DPS26' || curPw === '2025' || curPw === 'principal123')) curValid = true;
           else if(isTeacher && (curPw === 'Teacher@DPS26' || curPw === '1234' || curPw === 'Teacher@123' || curPw === 'teacher123')) curValid = true;
         }
         if(!curValid) return pmsg('Current password or PIN is incorrect.');
