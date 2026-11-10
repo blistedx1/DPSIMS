@@ -1814,36 +1814,44 @@ html body #L#L .done{
   #L[data-theme="dgwhite"] .done{border-radius:0;border:none;box-shadow:none}
 }
 
-/* Premium Dark Green Flat Visual Showcase Card */
-#L[data-theme="dgwhite"] .visual{
-  background:#063124!important;
-  border-radius:16px!important;
-  border:1px solid rgba(255,255,255,.1)!important;
-  box-shadow:var(--shadow-card)!important;
-  color:#ffffff!important;
+/* Illustrated Mint Showcase Card (matches requested design) */
+#L .visual,
+#L[data-theme="dgwhite"] .visual {
+  background: #eaf3ee !important;
+  border-radius: clamp(16px, 1.8vw, 24px) !important;
+  border: 1px solid rgba(18, 71, 52, 0.12) !important;
+  box-shadow: 0 12px 36px rgba(18, 71, 52, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+  overflow: hidden !important;
+  position: relative !important;
 }
-#L[data-theme="dgwhite"] .v-bg-aurora{background:
-  radial-gradient(circle at 30% 20%,rgba(52,211,153,.15),transparent 55%),
-  radial-gradient(circle at 75% 70%,rgba(16,185,129,.15),transparent 60%),
-  radial-gradient(circle at 50% 100%,rgba(3,28,21,.4),transparent 60%)}
-#L[data-theme="dgwhite"] .v-grid-pattern{background-image:radial-gradient(rgba(255,255,255,.08) 1px,transparent 1px)}
-#L[data-theme="dgwhite"] .v-glow-top{background:none}
-#L[data-theme="dgwhite"] .v-glow-bottom{background:none}
-#L[data-theme="dgwhite"] .v-inst-tag{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:20px;box-shadow:none;color:#e6f5ec}
-#L[data-theme="dgwhite"] .v-live-dot{background:var(--g-mint);box-shadow:none}
-#L[data-theme="dgwhite"] .v-portal-badge{color:rgba(255,255,255,.75);font-weight:700}
-#L[data-theme="dgwhite"] .v-orbit-ring{border-color:rgba(255,255,255,.25)}
-#L[data-theme="dgwhite"] .v-emblem-badge{box-shadow:0 8px 20px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.2)}
-#L[data-theme="dgwhite"] .v-brand-title{color:#fff;font-family:'Plus Jakarta Sans',system-ui,sans-serif!important;font-weight:800;letter-spacing:-0.02em}
-#L[data-theme="dgwhite"] .v-brand-sub{color:rgba(255,255,255,.85)}
-#L[data-theme="dgwhite"] .v-pillar{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;box-shadow:none;transition:background .18s ease}
-#L[data-theme="dgwhite"] .v-pillar:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);transform:none;box-shadow:none}
-#L[data-theme="dgwhite"] .v-pillar-icon{background:#0f7a58;border:1px solid rgba(255,255,255,.18);border-radius:8px;box-shadow:none;color:#ffffff}
-#L[data-theme="dgwhite"] .v-pillar-text b{color:#fff}
-#L[data-theme="dgwhite"] .v-pillar-text small{color:rgba(255,255,255,.8)}
-#L[data-theme="dgwhite"] .v-bottom-line{background:rgba(255,255,255,.2)}
-#L[data-theme="dgwhite"] .v-bottom-title{color:#e6f5ec}
-#L[data-theme="dgwhite"] .v-bottom-addr{color:rgba(255,255,255,.7)}
+#L .v-panel-content {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #eaf3ee !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+#L .v-panel-content picture {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+#L .v-panel-img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  display: block !important;
+  pointer-events: none !important;
+  user-select: none !important;
+}
 
 /* Login PIN pad delete button & Teacher name select option styling */
 #L .keys .ghost {
@@ -2840,14 +2848,17 @@ html body #L#L .done,
     display: flex !important;
     grid-area: v !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
-    align-items: stretch !important;
+    justify-content: center !important;
+    align-items: center !important;
     position: relative !important;
-    border-radius: clamp(16px, 1.6vw, 24px) !important;
+    border-radius: clamp(16px, 1.8vw, 24px) !important;
     margin: clamp(12px, 1.2vw, 20px) !important;
     overflow: hidden !important;
-    padding: clamp(18px, 2.4vh, 32px) clamp(20px, 2.2vw, 36px) !important;
+    padding: 0 !important;
     box-sizing: border-box !important;
+    background: #eaf3ee !important;
+    border: 1px solid rgba(18, 71, 52, 0.12) !important;
+    box-shadow: 0 12px 36px rgba(18, 71, 52, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04) !important;
   }
   #L .v-deco {
     position: absolute !important;
@@ -3075,92 +3086,12 @@ html body #L#L .done,
     </button>
   </div>
 <main class="app" id="app">
-  <aside class="visual" aria-hidden="true">
-    <div class="v-bg-aurora"></div>
-    <div class="v-grid-pattern"></div>
-    <div class="v-glow v-glow-top"></div>
-    <div class="v-glow v-glow-bottom"></div>
-    <div class="v-deco" aria-hidden="true">
-      <svg class="v-rings" viewBox="0 0 900 900" fill="none">
-        <g stroke="currentColor">
-          <circle cx="450" cy="450" r="118" stroke-opacity=".22"/>
-          <circle cx="450" cy="450" r="176" stroke-opacity=".16" stroke-dasharray="2 7"/>
-          <circle cx="450" cy="450" r="244" stroke-opacity=".11"/>
-          <circle cx="450" cy="450" r="322" stroke-opacity=".08" stroke-dasharray="1 9"/>
-          <circle cx="450" cy="450" r="410" stroke-opacity=".06"/>
-        </g>
-        <g fill="rgb(var(--dg))"><circle cx="626" cy="450" r="3.200" fill-opacity=".9"/><circle cx="326" cy="325" r="2.600" fill-opacity=".7"/><circle cx="572" cy="240" r="2.800" fill-opacity=".75"/><circle cx="318" cy="640" r="2.400" fill-opacity=".55"/></g>
-      </svg>
-      <div class="v-wm"></div>
-      <i class="v-corner tl"></i><i class="v-corner tr"></i><i class="v-corner bl"></i><i class="v-corner br"></i>
-      <svg class="v-ico i1" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.500 3.500a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-      <svg class="v-ico i2" viewBox="0 0 24 24"><path d="M21.300 15.300a2.400 2.400 0 0 1 0 3.400l-2.600 2.600a2.400 2.400 0 0 1-3.400 0L2.700 8.700a2.410 2.410 0 0 1 0-3.400l2.600-2.600a2.410 2.410 0 0 1 3.400 0Z"/><path d="m14.500 12.500 2-2"/><path d="m11.500 9.500 2-2"/><path d="m8.500 6.500 2-2"/><path d="m17.500 15.500 2-2"/></svg>
-      <svg class="v-ico i3" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-      <svg class="v-ico i4" viewBox="0 0 24 24"><path d="m21.440 11.050-9.190 9.190a6 6 0 0 1-8.490-8.490l8.570-8.570A4 4 0 1 1 18 8.840l-8.590 8.570a2 2 0 0 1-2.830-2.830l8.490-8.480"/></svg>
-    </div>
-
-    <div class="v-top-bar">
-      <div class="v-inst-tag">
-        <span class="v-live-dot"></span>
-        <span>DELHI PUBLIC SCHOOL SOCIETY</span>
-      </div>
-      <div class="v-portal-badge">EST. AMRAPALI</div>
-    </div>
-
-    <div class="v-center-showcase">
-      <div class="v-crest-container">
-        <div class="v-orbit-ring">
-          <span class="v-orbit-dot"></span>
-        </div>
-        <div class="v-emblem-badge">
-          <div class="v-emblem-img"></div>
-        </div>
-      </div>
-
-      <h1 class="v-brand-title">Delhi Public School</h1>
-      <p class="v-brand-sub">Amrapali Yojana · Lucknow</p>
-      <div class="v-motto">“Service Before Self”</div>
-      <div class="v-orn"><i></i><b></b><i></i></div>
-      <div class="v-chips"><span>Role-based access</span><span>Live stock</span><span>Print-ready slips</span></div>
-    </div>
-
-    <div class="v-pillars-grid">
-      <div class="v-pillar">
-        <div class="v-pillar-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        </div>
-        <div class="v-pillar-text">
-          <b>Examination &amp; Academic Stock</b>
-          <small>Question papers, booklets &amp; records</small>
-        </div>
-      </div>
-
-      <div class="v-pillar">
-        <div class="v-pillar-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-        </div>
-        <div class="v-pillar-text">
-          <b>Stationery &amp; Faculty Assets</b>
-          <small>Registers, paper reams &amp; supplies</small>
-        </div>
-      </div>
-
-      <div class="v-pillar">
-        <div class="v-pillar-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-        </div>
-        <div class="v-pillar-text">
-          <b>Digital Indents &amp; Live Audit</b>
-          <small>Real-time requisitions &amp; gate-pass</small>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="v-bottom-info">
-      <div class="v-bottom-line"></div>
-      <p class="v-bottom-title">Resource Management &amp; Institutional Logistics</p>
-      <p class="v-bottom-addr">E/3, PS2, Amrapali Yojna, Dubagga, Hardoi Bypass, Adjacent Amrapali Hospital, Lucknow, Uttar Pradesh</p>
+  <aside class="visual" aria-label="Manage Stationery Inventory Smartly - Delhi Public School">
+    <div class="v-panel-content">
+      <picture>
+        <source srcset="login-panel.png" type="image/png">
+        <img src="login-panel.jpg" alt="Manage Stationery Inventory Smartly - Delhi Public School Stationery Inventory" class="v-panel-img" loading="eager" decoding="async">
+      </picture>
     </div>
   </aside>
   <header class="hero">

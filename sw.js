@@ -1,5 +1,5 @@
-// DPS Stationery - Service Worker v7 (Silent Auto-Update & Real-Time Push)
-const CACHE_NAME = 'dps-stationery-v7';
+// DPS Stationery - Service Worker v8 (Silent Auto-Update & Real-Time Push)
+const CACHE_NAME = 'dps-stationery-v8';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -8,7 +8,9 @@ const STATIC_ASSETS = [
   '/icon-192.png',
   '/icon-512.png',
   '/icon-maskable-512.png',
-  '/icon.svg'
+  '/icon.svg',
+  '/login-panel.png',
+  '/login-panel.jpg'
 ];
 
 // Install: Pre-cache core shell & immediately take over (skipWaiting)
