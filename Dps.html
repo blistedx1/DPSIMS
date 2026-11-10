@@ -2441,362 +2441,6 @@ html body #A#A[data-theme="dgwhite"] .fcard.fd:hover{
 })();
 
 </script>
-
-<style id="login-box-card-only">
-/* ========================================================
-   MODERN FLOATING LOGIN CARD ONLY
-   Preserves original animated visual panel & background
-   Updates ONLY the right-side login box (.sheet)
-   ======================================================== */
-html body #L#L .sheet {
-  background: #ffffff !important;
-  border-radius: 28px !important;
-  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.28), 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  padding: 32px 30px 26px !important;
-  width: 100% !important;
-  max-width: 410px !important;
-  box-sizing: border-box !important;
-  margin: auto !important;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  position: relative !important;
-  z-index: 10 !important;
-  color: #1e293b !important;
-}
-
-/* Card header with emblem & typography */
-html body #L#L .login-card-head {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  text-align: center !important;
-  margin-bottom: 4px !important;
-}
-
-html body #L#L .login-crest {
-  width: 70px !important;
-  height: 70px !important;
-  margin: 0 auto 8px !important;
-  background: var(--logo-nobg) center / contain no-repeat !important;
-  filter: drop-shadow(0 2px 6px rgba(22, 101, 52, 0.15)) !important;
-}
-
-html body #L#L .school-name {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
-  font-size: 18.5px !important;
-  font-weight: 800 !important;
-  color: #123826 !important;
-  letter-spacing: 0.6px !important;
-  text-transform: uppercase !important;
-  margin: 0 0 2px !important;
-  line-height: 1.2 !important;
-}
-
-html body #L#L .school-subhead {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
-  font-size: 12.5px !important;
-  font-weight: 600 !important;
-  color: #406d57 !important;
-  letter-spacing: 1.8px !important;
-  text-transform: uppercase !important;
-  margin: 0 0 14px !important;
-  line-height: 1.2 !important;
-}
-
-html body #L#L .title {
-  font-size: 21px !important;
-  font-weight: 700 !important;
-  color: #1e293b !important;
-  margin: 0 0 3px !important;
-  line-height: 1.2 !important;
-  text-align: center !important;
-}
-
-html body #L#L .sub {
-  font-size: 13px !important;
-  color: #64748b !important;
-  margin: 0 0 14px !important;
-  line-height: 1.3 !important;
-  text-align: center !important;
-}
-
-/* Segmented role switch */
-html body #L#L .seg {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr 1fr !important;
-  background: #f1f5f3 !important;
-  border: 1px solid #e2ebe6 !important;
-  border-radius: 10px !important;
-  padding: 3px !important;
-  margin-bottom: 14px !important;
-  position: relative !important;
-}
-
-html body #L#L .seg .thumb {
-  background: #1a5638 !important;
-  border-radius: 8px !important;
-  box-shadow: 0 2px 6px rgba(26, 86, 56, 0.25) !important;
-}
-
-html body #L#L .seg button {
-  font: 600 13px/1 'Plus Jakarta Sans', system-ui, sans-serif !important;
-  color: #64748b !important;
-  min-height: 32px !important;
-  height: 32px !important;
-  border: 0 !important;
-  background: none !important;
-  border-radius: 8px !important;
-  cursor: pointer !important;
-  z-index: 1 !important;
-  transition: color .2s !important;
-}
-
-html body #L#L .seg button[aria-selected="true"] {
-  color: #ffffff !important;
-}
-
-/* Form rows & inputs */
-html body #L#L .group {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 0 !important;
-  margin-bottom: 0 !important;
-}
-
-html body #L#L .row {
-  display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-  height: 48px !important;
-  padding: 0 14px !important;
-  background: #ffffff !important;
-  border: 1.5px solid #e2e8f0 !important;
-  border-radius: 10px !important;
-  margin-bottom: 12px !important;
-  transition: border-color .18s, box-shadow .18s !important;
-  position: relative !important;
-  box-sizing: border-box !important;
-}
-
-html body #L#L .row:focus-within {
-  border-color: #2e8b57 !important;
-  box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.12) !important;
-}
-
-html body #L#L .row svg {
-  width: 19px !important;
-  height: 19px !important;
-  color: #64748b !important;
-  flex: none !important;
-}
-
-html body #L#L .row input, html body #L#L .row select {
-  flex: 1 !important;
-  min-width: 0 !important;
-  height: 100% !important;
-  border: 0 !important;
-  background: none !important;
-  outline: 0 !important;
-  font: 400 14.5px/1.4 'Plus Jakarta Sans', system-ui, sans-serif !important;
-  color: #1e293b !important;
-  padding: 0 !important;
-}
-
-html body #L#L .row input::placeholder {
-  color: #94a3b8 !important;
-}
-
-html body #L#L #pwView .row .eye {
-  position: static !important;
-  transform: none !important;
-  background: none !important;
-  border: 0 !important;
-  color: #64748b !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  padding: 0 4px !important;
-  margin: 0 !important;
-  width: auto !important;
-  height: auto !important;
-}
-
-html body #L#L #pwView #pw {
-  padding-right: 0 !important;
-}
-
-/* Auxiliary options row: Remember Me & Forgot Password */
-html body #L#L .login-options-row {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  margin-top: 2px !important;
-  margin-bottom: 14px !important;
-  font-size: 13px !important;
-}
-
-html body #L#L .remember-label {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 7px !important;
-  color: #475569 !important;
-  cursor: pointer !important;
-  user-select: none !important;
-}
-
-html body #L#L .remember-label input[type="checkbox"] {
-  accent-color: #2e8b57 !important;
-  width: 15px !important;
-  height: 15px !important;
-  cursor: pointer !important;
-  margin: 0 !important;
-}
-
-html body #L#L .forgot-link {
-  color: #2e8b57 !important;
-  font-weight: 600 !important;
-  text-decoration: none !important;
-  cursor: pointer !important;
-  transition: opacity .15s !important;
-}
-
-html body #L#L .forgot-link:hover {
-  text-decoration: underline !important;
-  opacity: .85 !important;
-}
-
-/* Login submit button */
-html body #L#L .btn[type="submit"], html body #L#L #pwView .btn {
-  width: 100% !important;
-  height: 46px !important;
-  border-radius: 10px !important;
-  border: 0 !important;
-  background: linear-gradient(135deg, #2e8b57 0%, #1e7040 100%) !important;
-  color: #ffffff !important;
-  font: 700 15px/1 'Plus Jakarta Sans', system-ui, sans-serif !important;
-  cursor: pointer !important;
-  box-shadow: 0 4px 14px rgba(46, 139, 87, 0.28) !important;
-  transition: transform .15s, box-shadow .15s !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  margin-top: 4px !important;
-}
-
-html body #L#L .btn[type="submit"]:hover, html body #L#L #pwView .btn:hover {
-  transform: translateY(-1px) !important;
-  box-shadow: 0 6px 18px rgba(46, 139, 87, 0.36) !important;
-}
-
-/* PIN view keys and dots */
-html body #L#L .dots {
-  display: flex !important;
-  justify-content: center !important;
-  gap: 16px !important;
-  margin: 8px 0 16px !important;
-}
-
-html body #L#L .dots i {
-  width: 14px !important;
-  height: 14px !important;
-  border-radius: 50% !important;
-  border: 2px solid #a3b8ad !important;
-  background: transparent !important;
-  transition: all .15s !important;
-}
-
-html body #L#L .dots i.on {
-  background: #1a5638 !important;
-  border-color: #1a5638 !important;
-  transform: scale(1.15) !important;
-}
-
-html body #L#L .keys {
-  display: grid !important;
-  grid-template-columns: repeat(3, 68px) !important;
-  grid-auto-rows: 50px !important;
-  gap: 10px 18px !important;
-  justify-content: center !important;
-  margin: 0 auto 10px !important;
-}
-
-html body #L#L .keys button {
-  border-radius: 10px !important;
-  background: #f1f5f3 !important;
-  border: 1px solid #e2ebe6 !important;
-  font: 700 18px/1 'Plus Jakarta Sans', system-ui, sans-serif !important;
-  color: #1e293b !important;
-  cursor: pointer !important;
-  transition: background .12s, transform .1s !important;
-}
-
-html body #L#L .keys button:active {
-  background: #e2ede7 !important;
-  transform: scale(0.96) !important;
-}
-
-html body #L#L .keys button.ghost {
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  background: transparent !important;
-  border: 0 !important;
-  color: #64748b !important;
-}
-
-/* Use PIN instead swap button */
-html body #L#L #swap {
-  display: block !important;
-  margin: 12px auto 0 !important;
-  background: none !important;
-  border: 0 !important;
-  color: #2e8b57 !important;
-  font: 600 13px var(--font) !important;
-  cursor: pointer !important;
-  text-align: center !important;
-}
-
-html body #L#L #swap:hover {
-  text-decoration: underline !important;
-}
-
-/* Card footer */
-html body #L#L .card-footer {
-  margin-top: 16px !important;
-  text-align: center !important;
-  font-size: 13px !important;
-  color: #64748b !important;
-}
-
-html body #L#L .card-footer .help-text {
-  margin: 0 !important;
-  font-size: 13px !important;
-  color: #64748b !important;
-}
-
-html body #L#L .card-footer a {
-  color: #123826 !important;
-  font-weight: 700 !important;
-  text-decoration: none !important;
-}
-
-html body #L#L .card-footer a:hover {
-  text-decoration: underline !important;
-}
-
-html body #L#L .version-tag {
-  margin: 6px 0 0 !important;
-  font-size: 12px !important;
-  color: #94a3b8 !important;
-  letter-spacing: 0.3px !important;
-}
-
-html body #L#L .foot {
-  display: none !important;
-}
-</style>
-
 </head>
 <body>
 <div id="L">
@@ -2895,20 +2539,15 @@ html body #L#L .foot {
   </header>
 
   <section class="sheet">
-    <div class="login-card-head">
-      <div class="login-crest" aria-hidden="true"></div>
-      <h1 class="school-name">DELHI PUBLIC SCHOOL</h1>
-      <p class="school-subhead">AMRAPALI YOJNA</p>
-      <h2 class="title" id="title">Welcome Back</h2>
-      <p class="sub" id="sub">Login to Stationery Inventory</p>
-    </div>
-
     <div class="seg" id="seg" data-i="0" role="tablist" aria-label="Sign in as">
       <span class="thumb"></span>
       <button role="tab" aria-selected="true" data-role="admin">Admin</button>
       <button role="tab" aria-selected="false" data-role="principal">Principal</button>
       <button role="tab" aria-selected="false" data-role="teacher">Teacher</button>
     </div>
+
+    <h2 class="title" id="title">Admin sign-in</h2>
+    <p class="sub" id="sub">Enter your admin password</p>
 
     <div class="group" id="nameGroup" hidden>
       <label class="row">
@@ -2920,25 +2559,16 @@ html body #L#L .foot {
     <form id="pwView" autocomplete="on">
       <div class="group">
         <label class="row" id="userRow">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <input id="user" value="Admin" placeholder="Employee ID / Email" autocomplete="username" readonly aria-label="Username">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>
+          <input id="user" value="Admin" autocomplete="username" readonly aria-label="Username">
         </label>
-        <label class="row" id="pwRow">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <label class="row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
           <input id="pw" type="password" placeholder="Password" autocomplete="current-password" aria-label="Password">
-          <button type="button" class="eye" id="eye" aria-label="Toggle password visibility">Show</button>
+          <button type="button" class="eye" id="eye">Show</button>
         </label>
       </div>
-
-      <div class="login-options-row">
-        <label class="remember-label">
-          <input type="checkbox" id="rememberMe" checked>
-          <span>Remember Me</span>
-        </label>
-        <a href="javascript:void(0)" class="forgot-link" id="forgotLink">Forgot Password?</a>
-      </div>
-
-      <button class="btn login-btn" type="submit">Login</button>
+      <button class="btn" type="submit">Sign In</button>
     </form>
 
     <div id="pinView" hidden>
@@ -2960,13 +2590,7 @@ html body #L#L .foot {
 
     <p class="msg" id="msg" role="alert"></p>
     <button class="link" id="swap" type="button">Use PIN instead</button>
-
-    <div class="card-footer">
-      <p class="help-text">Need help? <a href="javascript:void(0)" id="contactAdmin">Contact Admin</a></p>
-      <p class="version-tag">v2.1.0 Secure Login</p>
-    </div>
-
-    <div class="foot" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Protected sign-in · Authorised staff only</div>
+    <div class="foot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Protected sign-in · Authorised staff only</div>
   </section>
 
   <div class="done" id="done" hidden>
@@ -3109,8 +2733,16 @@ html body #L#L .foot {
       t.textContent='Confirm new PIN';
       s.textContent='Enter the same PIN again';
     } else {
-      t.textContent='Welcome Back';
-      s.textContent=isPw?'Login to Stationery Inventory':'Enter 4-digit PIN to sign in';
+      if(role==='admin'){
+        t.textContent='Admin sign-in';
+        s.textContent=isPw?'Enter your admin password':'Enter your 4-digit PIN';
+      } else if(role==='principal'){
+        t.textContent='Principal sign-in';
+        s.textContent=isPw?'Enter your principal password':'Enter your 4-digit PIN';
+      } else {
+        t.textContent='Teacher sign-in';
+        s.textContent=isPw?'Select your name and enter your password':'Select your name and enter your PIN';
+      }
     }
     if(lock){t.textContent=(role==='teacher'?'Teacher':role==='admin'?'Admin':'Principal')+' sign-in';s.textContent='Unlock with your screen lock';}
     dots();
@@ -3119,17 +2751,7 @@ html body #L#L .foot {
 
   function fillNames(){var L=(store&&store.teachers)?Object.keys(store.teachers):TEACHERS;$('#name').innerHTML='<option value="">Select your name</option>'+L.map(function(n){return '<option>'+String(n).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</option>'}).join('')}
   fillNames();
-  var fLink = document.getElementById('forgotLink');
-    if(fLink && !fLink._bound){
-      fLink._bound = true;
-      fLink.onclick = function(e){ e.preventDefault(); notify('To reset password, contact Admin office: admin@dpsamrapali.com'); };
-    }
-    var cAdmin = document.getElementById('contactAdmin');
-    if(cAdmin && !cAdmin._bound){
-      cAdmin._bound = true;
-      cAdmin.onclick = function(e){ e.preventDefault(); notify('Helpline: admin@dpsamrapali.com | Ext: 204'); };
-    }
-    $('#seg').addEventListener('click',function(e){
+  $('#seg').addEventListener('click',function(e){
     var b=e.target.closest('button');if(!b||busy)return;
     role=b.dataset.role;method='pw';sfx('tap');
     this.dataset.i=role==='admin'?0:role==='principal'?1:2;
