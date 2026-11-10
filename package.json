@@ -9,6 +9,7 @@
     "jsqr": "^1.4.0",
     "pg": "^8.23.1",
     "qrcode": "^1.5.4",
+    "web-push": "^4.0.0",
     "ws": "^8.22.1"
   },
   "devDependencies": {

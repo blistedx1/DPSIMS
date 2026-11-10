@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const db = require('./db');
+const push = require('./lib/push');
 
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data.json');
@@ -65,6 +66,11 @@ function broadcastNotification(notif) {
       notif.timestamp
     ]).catch(err => console.error('[DB] Notif insert error:', err.message));
   }
+
+  // Trigger Web Push via VAPID keys asynchronously
+  push.sendPushToSubscribers(notif).catch(err => {
+    console.warn('[Push] broadcast trigger warning:', err.message);
+  });
 
   const eventPayload = `data: ${JSON.stringify(notif)}\n\n`;
   notificationClients.forEach(client => {
@@ -301,7 +307,8 @@ const API_HANDLERS = {
   'webauthn/login/options': require('./api/webauthn/login/options'),
   'webauthn/login/verify': require('./api/webauthn/login/verify'),
   'webauthn/register/options': require('./api/webauthn/register/options'),
-  'webauthn/register/verify': require('./api/webauthn/register/verify')
+  'webauthn/register/verify': require('./api/webauthn/register/verify'),
+  'push/subscribe': require('./api/push/subscribe')
 };
 
   // Generic /api/* handler for modular serverless functions (Auth & WebAuthn)

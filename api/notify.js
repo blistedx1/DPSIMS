@@ -1,4 +1,5 @@
 const db = require('../db');
+const push = require('../lib/push');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -34,6 +35,11 @@ module.exports = async (req, res) => {
         ]);
       }
 
+      // Trigger Web Push via VAPID keys asynchronously
+      push.sendPushToSubscribers(notif).catch(err => {
+        console.warn('[API/NOTIFY] Push trigger warning:', err.message);
+      });
+
       return res.status(200).json({ ok: true, id: id });
     } catch (e) {
       console.error('[API/NOTIFY] Error:', e.message);
@@ -43,4 +49,3 @@ module.exports = async (req, res) => {
 
   return res.status(405).send('Method Not Allowed');
 };
-

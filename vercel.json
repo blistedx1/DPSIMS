@@ -24,6 +24,7 @@
     }
   ],
   "rewrites": [
+    { "source": "/api/push/subscribe", "destination": "/api/push/subscribe" },
     { "source": "/api/notifications/stream", "destination": "/api/notifications" },
     { "source": "/api/notify", "destination": "/api/notify" },
     { "source": "/api/notifications", "destination": "/api/notifications" },

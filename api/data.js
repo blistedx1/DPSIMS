@@ -1,4 +1,5 @@
 const db = require('../db');
+const push = require('../lib/push');
 const fs = require('fs');
 const path = require('path');
 const { parseCookies, verifyToken } = require('../lib/auth');
@@ -79,75 +80,123 @@ module.exports = async (req, res) => {
             // 1. Teacher submitted new requisition -> Notify Principal & Admin
             if (prevSt === undefined && r.st === 'Pending') {
               const count = Array.isArray(r.it) ? r.it.length : 0;
+              const notifData = {
+                id: `req_new_${r.id}_${Date.now()}`,
+                type: 'req_created',
+                title: '📋 New Requisition Slip Raised',
+                body: `${r.by || 'Teacher'} raised slip #${slipNo} (${count} items). Awaiting approval.`,
+                targetRole: ['principal', 'admin'],
+                targetTeacher: null,
+                tag: `req-slip-${r.id}`,
+                slipId: r.id,
+                timestamp: Date.now()
+              };
               await db.query(`
                 INSERT INTO dps_notifications (id, type, title, body, target_role, target_teacher, tag, slip_id, created_at)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 ON CONFLICT (id) DO NOTHING;
               `, [
-                `req_new_${r.id}_${Date.now()}`,
-                'req_created',
-                '📋 New Requisition Slip Raised',
-                `${r.by || 'Teacher'} raised slip #${slipNo} (${count} items). Awaiting approval.`,
-                ['principal', 'admin'],
-                null,
-                `req-slip-${r.id}`,
-                r.id,
-                Date.now()
+                notifData.id,
+                notifData.type,
+                notifData.title,
+                notifData.body,
+                notifData.targetRole,
+                notifData.targetTeacher,
+                notifData.tag,
+                notifData.slipId,
+                notifData.timestamp
               ]);
+              push.sendPushToSubscribers(notifData).catch(() => {});
             }
             // 2. Principal verified -> Notify Teacher & Admin
             else if (prevSt === 'Pending' && r.st === 'Verified') {
+              const notifData = {
+                id: `req_ver_${r.id}_${Date.now()}`,
+                type: 'req_verified',
+                title: '✅ Requisition Approved by Principal',
+                body: `Requisition #${slipNo} for ${r.by} has been approved by Principal and forwarded to Admin to issue.`,
+                targetRole: ['admin'],
+                targetTeacher: r.by,
+                tag: `req-verified-${r.id}`,
+                slipId: r.id,
+                timestamp: Date.now()
+              };
               await db.query(`
                 INSERT INTO dps_notifications (id, type, title, body, target_role, target_teacher, tag, slip_id, created_at)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 ON CONFLICT (id) DO NOTHING;
               `, [
-                `req_ver_${r.id}_${Date.now()}`,
-                'req_verified',
-                '✅ Requisition Approved by Principal',
-                `Requisition #${slipNo} for ${r.by} has been approved by Principal and forwarded to Admin to issue.`,
-                ['admin'],
-                r.by,
-                `req-verified-${r.id}`,
-                r.id,
-                Date.now()
+                notifData.id,
+                notifData.type,
+                notifData.title,
+                notifData.body,
+                notifData.targetRole,
+                notifData.targetTeacher,
+                notifData.tag,
+                notifData.slipId,
+                notifData.timestamp
               ]);
+              push.sendPushToSubscribers(notifData).catch(() => {});
             }
             // 3. Admin issued/approved -> Notify Teacher
             else if (prevSt === 'Verified' && r.st === 'Approved') {
+              const notifData = {
+                id: `req_app_${r.id}_${Date.now()}`,
+                type: 'req_approved',
+                title: '🎉 Stationery Requisition Issued!',
+                body: `Your requisition #${slipNo} has been approved & issued by Store Admin. Please collect items.`,
+                targetRole: null,
+                targetTeacher: r.by,
+                tag: `req-approved-${r.id}`,
+                slipId: r.id,
+                timestamp: Date.now()
+              };
               await db.query(`
                 INSERT INTO dps_notifications (id, type, title, body, target_role, target_teacher, tag, slip_id, created_at)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 ON CONFLICT (id) DO NOTHING;
               `, [
-                `req_app_${r.id}_${Date.now()}`,
-                'req_approved',
-                '🎉 Stationery Requisition Issued!',
-                `Your requisition #${slipNo} has been approved & issued by Store Admin. Please collect items.`,
-                null,
-                r.by,
-                `req-approved-${r.id}`,
-                r.id,
-                Date.now()
+                notifData.id,
+                notifData.type,
+                notifData.title,
+                notifData.body,
+                notifData.targetRole,
+                notifData.targetTeacher,
+                notifData.tag,
+                notifData.slipId,
+                notifData.timestamp
               ]);
+              push.sendPushToSubscribers(notifData).catch(() => {});
             }
             // 4. Declined -> Notify Teacher
             else if (prevSt && prevSt !== 'Declined' && r.st === 'Declined') {
+              const notifData = {
+                id: `req_dec_${r.id}_${Date.now()}`,
+                type: 'req_declined',
+                title: '❌ Requisition Declined',
+                body: `Your requisition #${slipNo} was declined by ${r.declBy === 'principal' ? 'Principal' : 'Store Admin'}.`,
+                targetRole: null,
+                targetTeacher: r.by,
+                tag: `req-declined-${r.id}`,
+                slipId: r.id,
+                timestamp: Date.now()
+              };
               await db.query(`
                 INSERT INTO dps_notifications (id, type, title, body, target_role, target_teacher, tag, slip_id, created_at)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 ON CONFLICT (id) DO NOTHING;
               `, [
-                `req_dec_${r.id}_${Date.now()}`,
-                'req_declined',
-                '❌ Requisition Declined',
-                `Your requisition #${slipNo} was declined by ${r.declBy === 'principal' ? 'Principal' : 'Store Admin'}.`,
-                null,
-                r.by,
-                `req-declined-${r.id}`,
-                r.id,
-                Date.now()
+                notifData.id,
+                notifData.type,
+                notifData.title,
+                notifData.body,
+                notifData.targetRole,
+                notifData.targetTeacher,
+                notifData.tag,
+                notifData.slipId,
+                notifData.timestamp
               ]);
+              push.sendPushToSubscribers(notifData).catch(() => {});
             }
           }
         } catch (e) {

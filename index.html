@@ -6755,6 +6755,9 @@ Minimum version required to store current data is: `+i+`.
   function swap(from,to){from.classList.add('leave');setTimeout(function(){from.hidden=true;from.classList.remove('leave');to.hidden=false;to.classList.add('enter');setTimeout(function(){to.classList.remove('enter')},650)},420)}
   window.__enter=function(s){
     if(!s)return;
+    if(window.DPS_PUSH&&typeof window.DPS_PUSH.subscribe==='function'){
+      window.DPS_PUSH.subscribe(s.role,s.name);
+    }
     if(s.role==='admin'||s.role==='principal'){
       if(L){L.hidden=true;L.style.display='none';}
       if(T){T.hidden=true;T.style.display='none';}
@@ -6768,6 +6771,9 @@ Minimum version required to store current data is: `+i+`.
     }
   };
   window.__logout=function(){
+    if(window.DPS_PUSH&&typeof window.DPS_PUSH.unsubscribe==='function'){
+      window.DPS_PUSH.unsubscribe();
+    }
     try{sessionStorage.removeItem('dps_session')}catch(e){}
     try{sessionStorage.clear()}catch(e){}
     try{fetch('/api/auth/logout',{method:'POST',credentials:'include'}).catch(function(){})}catch(e){}
@@ -7747,6 +7753,74 @@ html[data-theme="obsidian"] #dps-exit .bar{background:#9bab84}
     document.body.appendChild(toastBox);
   }
 
+  // Web Push VAPID Client Subscription
+  function urlBase64ToUint8Array(base64String) {
+    var padding = '='.repeat((4 - base64String.length % 4) % 4);
+    var base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+    var rawData = window.atob(base64);
+    var outputArray = new Uint8Array(rawData.length);
+    for (var i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
+
+  var VAPID_PUBLIC_KEY = 'BF3cX2csEiIZBBnQzAe-0WgiEVZRsQGEY3YTfnUgqahC6UpMCY_G6tibogmIDAhS8CHlcX7shNiI2MM1BdW5hTk';
+
+  function subscribePushManager(overrideRole, overrideName) {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+    navigator.serviceWorker.ready.then(function(reg) {
+      return reg.pushManager.getSubscription().then(function(sub) {
+        if (sub) return sub;
+        return reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+        });
+      }).then(function(sub) {
+        if (!sub) return;
+        var r = overrideRole || (window.__sess && window.__sess.role) || (typeof role !== 'undefined' ? role : 'teacher');
+        var u = overrideName || (window.__sess && window.__sess.name) || (typeof currentUsername === 'function' ? currentUsername() : '');
+
+        return fetch('/api/push/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            subscription: sub.toJSON(),
+            role: r,
+            username: u
+          })
+        });
+      });
+    }).then(function() {
+      console.log('[WebPush] Device registered with VAPID key');
+    }).catch(function(err) {
+      console.warn('[WebPush] Subscription note:', err.message);
+    });
+  }
+
+  function unsubscribePushManager() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    navigator.serviceWorker.ready.then(function(reg) {
+      return reg.pushManager.getSubscription();
+    }).then(function(sub) {
+      if (!sub) return;
+      var endpoint = sub.endpoint;
+      sub.unsubscribe().catch(function() {});
+      fetch('/api/push/subscribe', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endpoint: endpoint })
+      }).catch(function() {});
+    }).catch(function() {});
+  }
+
+  window.DPS_PUSH = {
+    subscribe: subscribePushManager,
+    unsubscribe: unsubscribePushManager
+  };
+
   // Request browser Notification Permission
   function requestPermission(cb) {
     if (!('Notification' in window)) {
@@ -7755,6 +7829,7 @@ html[data-theme="obsidian"] #dps-exit .bar{background:#9bab84}
     }
     Notification.requestPermission().then(function(perm) {
       if (perm === 'granted') {
+        subscribePushManager();
         showInAppToast({
           title: '🔔 Push Notifications Active',
           body: 'You will receive instant alerts when requisitions are raised or approved.',
@@ -7974,8 +8049,11 @@ html[data-theme="obsidian"] #dps-exit .bar{background:#9bab84}
     }
   });
 
-  // Auto-prompt on login if default
+  // Auto-prompt on login if default, or re-sync push subscription if already granted
   window.addEventListener('load', function() {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      subscribePushManager();
+    }
     setTimeout(function() {
       if ('Notification' in window && Notification.permission === 'default') {
         var role = (typeof getRole === 'function') ? getRole() : '';
