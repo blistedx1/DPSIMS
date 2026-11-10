@@ -2955,6 +2955,94 @@ button:active, .btn:active, .rq-prbtn:active, .seg button:active, .kpi:active {
   100% { opacity: 0; transform: scale(0.97) translateY(-8px); filter: blur(4px); }
 }
 </style>
+<style id="select-option-contrast-fix">
+/* ==========================================================================
+   DROPDOWN & SELECT OPTION VISIBILITY FIX
+   Guarantees crystal-clear readability across all OS browsers (Chrome/Edge/Safari)
+   in Dark and Light themes. Prevents white-on-white dropdown rendering.
+   ========================================================================== */
+html {
+  color-scheme: dark;
+}
+
+select {
+  color-scheme: dark !important;
+}
+
+select option,
+datalist option {
+  background-color: #151a14 !important;
+  color: #f3f5ee !important;
+  font-family: inherit;
+  font-size: 15px !important;
+  padding: 8px 12px !important;
+}
+
+select option:checked,
+select option:hover,
+select option:focus {
+  background-color: #273822 !important;
+  color: #ffffff !important;
+}
+
+#L select option {
+  background-color: #141713 !important;
+  color: #f1f2ee !important;
+}
+
+#L .row:has(#name),
+#L #nameGroup .row {
+  position: relative;
+}
+
+#L .row select#name {
+  cursor: pointer;
+  padding-right: 32px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239bab84' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: calc(100% - 10px) center !important;
+  background-size: 16px !important;
+}
+
+/* Light Mode Theme Overrides */
+html[data-theme="dgwhite"],
+html[data-theme="light"],
+#L[data-theme="dgwhite"],
+#A[data-theme="dgwhite"],
+#T[data-theme="dgwhite"] {
+  color-scheme: light !important;
+}
+
+html[data-theme="dgwhite"] select,
+html[data-theme="light"] select,
+#L[data-theme="dgwhite"] select,
+#A[data-theme="dgwhite"] select,
+#T[data-theme="dgwhite"] select {
+  color-scheme: light !important;
+}
+
+html[data-theme="dgwhite"] select option,
+html[data-theme="light"] select option,
+#L[data-theme="dgwhite"] select option,
+#A[data-theme="dgwhite"] select option,
+#T[data-theme="dgwhite"] select option {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+html[data-theme="dgwhite"] select option:checked,
+html[data-theme="light"] select option:checked,
+#L[data-theme="dgwhite"] select option:checked,
+#A[data-theme="dgwhite"] select option:checked,
+#T[data-theme="dgwhite"] select option:checked {
+  background-color: #e5ede7 !important;
+  color: #0e5640 !important;
+}
+
+#L[data-theme="dgwhite"] .row select#name {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230e5640' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+}
+</style>
 </head>
 <body>
 <div id="L">
