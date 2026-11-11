@@ -3433,10 +3433,47 @@ html[data-theme="light"] select option:checked,
       else if(n==='ok'){tone(659,0,.16,'sine',.12);tone(831,.11,.16,'sine',.12);tone(988,.22,.32,'sine',.12)}
     }catch(e){}
   }
-  async function hash(s){
-    try{var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(SALT+s));return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}
-    catch(e){var h=5381;s=SALT+s;for(var i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))|0}return 'f'+h}
+  function sha256Hex(str){
+    var bytes=unescape(encodeURIComponent(str)), K=[
+      1116352408,1899447441,-1245643825,-373957723,961987163,1508970993,-1841331548,-1424204075,
+      -670586216,310598401,607225278,1426881987,1925078388,-2132889090,-1680079193,-1046744716,
+      -459576895,-272742522,264347078,604807628,770255983,1249150122,1555081692,1996064986,
+      -1740746414,-1473132947,-1341970488,-1084653625,-958395405,-710438585,113926993,338241895,
+      666307205,773529912,1294757372,1396182291,1695183700,1986661051,-2117940946,-1838011259,
+      -1564481375,-1474664885,-1035236496,-949202525,-778901479,-694614492,-200395387,275423344,
+      430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,
+      1955562222,2024104815,-2067236844,-1933114872,-1866530822,-1538233109,-1090935817,-965641998
+    ], H=[1779033703,-1150833019,1013904242,-1521486534,1359893119,-1694144372,528734635,1541459225], w=[];
+    for(var i=0;i<bytes.length;i++)w[i>>2]|=(bytes.charCodeAt(i)&255)<<(24-(i%4)*8);
+    var l=bytes.length*8;w[l>>5]|=128<<(24-l%32);w[((l+64>>9)<<4)+15]=l;
+    function r(x,n){return(x>>>n)|(x<<(32-n))}
+    for(var j=0;j<w.length;j+=16){
+      var a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7],W=w.slice(j,j+16);
+      for(var t=0;t<64;t++){
+        if(t>=16){var w15=W[t-15]|0,w2=W[t-2]|0,s0=r(w15,7)^r(w15,18)^(w15>>>3),s1=r(w2,17)^r(w2,19)^(w2>>>10);W[t]=((W[t-16]|0)+s0+(W[t-7]|0)+s1)|0}
+        var ch=(e&f)^((~e)&g),maj=(a&b)^(a&c)^(b&c),S0=r(a,2)^r(a,13)^r(a,22),S1=r(e,6)^r(e,11)^r(e,25);
+        var t1=(h+S1+ch+K[t]+(W[t]|0))|0,t2=(S0+maj)|0;
+        h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0;
+      }
+      H[0]=(H[0]+a)|0;H[1]=(H[1]+b)|0;H[2]=(H[2]+c)|0;H[3]=(H[3]+d)|0;
+      H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;
+    }
+    var hex='';for(var k=0;k<8;k++)hex+=('00000000'+(H[k]>>>0).toString(16)).slice(-8);
+    return hex;
   }
+  function djb2Legacy(s){var h=5381;s=SALT+s;for(var i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))|0}return 'f'+h}
+  function matchHash(stored,raw,sha){return !!(stored&&(stored===sha||(stored.charAt(0)==='f'&&stored===djb2Legacy(raw))))}
+  async function hash(s){
+    try{
+      if(window.crypto&&crypto.subtle&&window.TextEncoder){
+        var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(SALT+s));
+        return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('');
+      }
+    }catch(e){}
+    return sha256Hex(SALT+s);
+  }
+  window.__dpsHash=hash;
+  window.__dpsMatchHash=matchHash;
   async function init(){
     store=ls(KEY);
     if(!store){
@@ -3651,14 +3688,14 @@ html[data-theme="light"] select option:checked,
     if(mode==='login'){
       var h=await hash(pin);
       if(role==='admin'){
-        ok=(store.admin&&store.admin.pin===h);
+        ok=matchHash(store.admin&&store.admin.pin,pin,h);
         if(!ok&&(!store.admin||!store.admin.pinChanged)) ok=(pin===DEMO.adminPin);
       } else if(role==='principal'){
-        ok=(store.principal&&store.principal.pin===h);
+        ok=matchHash(store.principal&&store.principal.pin,pin,h);
         if(!ok&&(!store.principal||!store.principal.pinChanged)) ok=(pin===DEMO.principalPin);
       } else {
         var rec=store.teachers&&store.teachers[$('#name').value];
-        ok=(rec&&rec.pin===h);
+        ok=matchHash(rec&&rec.pin,pin,h);
         if(!ok&&(!rec||!rec.pinChanged)) ok=(pin===DEMO.teacherPin);
         if(ok&&rec&&!rec.changed&&!rec.pinChanged){
           setLock({fails:0,until:0});
@@ -3713,14 +3750,14 @@ html[data-theme="light"] select option:checked,
     var ok=false;
     var h=await hash(v);
     if(role==='admin'){
-      ok=(store.admin&&store.admin.pw===h);
+      ok=matchHash(store.admin&&store.admin.pw,v,h);
       if(!ok&&(!store.admin||!store.admin.changed)) ok=(v===DEMO.adminPw||v==='admin123'||v==='admin');
     } else if(role==='principal'){
-      ok=(store.principal&&store.principal.pw===h);
+      ok=matchHash(store.principal&&store.principal.pw,v,h);
       if(!ok&&(!store.principal||!store.principal.changed)) ok=(v===DEMO.principalPw||v==='principal123'||v==='principal'||v==='Principal@DPS26');
     } else if(role==='teacher'){
       var tRec=store.teachers&&store.teachers[$('#name').value];
-      ok=(tRec&&tRec.pw===h);
+      ok=matchHash(tRec&&tRec.pw,v,h);
       if(!ok&&(!tRec||!tRec.changed)) ok=(v===DEMO.teacherPw||v==='Teacher@123'||v==='teacher123'||v==='teacher'||v==='1234');
     }
     if(ok){
@@ -4371,6 +4408,7 @@ html[data-theme="light"] select option:checked,
   var settingsTab='theme';
   var SALT='dps-amrapali|', AUTH_KEY='dps_auth_v3';
   async function hashAuth(s){
+    if(window.__dpsHash)return window.__dpsHash(s);
     try{
       var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(SALT+s));
       return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('');
@@ -5705,7 +5743,7 @@ return}
           else authStore[targetRoleVal] = targetObj;
         }
         var curValid = false;
-        if(targetObj.pw === curHash || targetObj.pin === curHash){
+        if((window.__dpsMatchHash && (window.__dpsMatchHash(targetObj.pw, curPw, curHash) || window.__dpsMatchHash(targetObj.pin, curPw, curHash))) || targetObj.pw === curHash || targetObj.pin === curHash){
           curValid = true;
         } else {
           if(targetRoleVal === 'admin' && !targetObj.changed && !targetObj.pinChanged && (curPw === 'Admin@DPS26' || curPw === '2026' || curPw === 'admin123' || curPw === 'admin')) curValid = true;
