@@ -28,9 +28,12 @@ module.exports = async (req, res) => {
     }
   }
 
-  const readExisting = async () => {
+  const readExisting = async (client) => {
     if (db.isConnected()) {
-      const r = await db.query("SELECT payload FROM dps_app_state WHERE key = 'current' LIMIT 1;");
+      const qFn = client ? client.query.bind(client) : db.query.bind(db);
+      const r = await qFn(client
+        ? "SELECT payload FROM dps_app_state WHERE key = 'current' FOR UPDATE;"
+        : "SELECT payload FROM dps_app_state WHERE key = 'current' LIMIT 1;");
       if (r.rows && r.rows.length && r.rows[0].payload) {
         return typeof r.rows[0].payload === 'string' ? JSON.parse(r.rows[0].payload) : r.rows[0].payload;
       }
@@ -57,7 +60,7 @@ module.exports = async (req, res) => {
     }
   }
 
-  // POST: Merge & save strictly to Neon DB first
+  // POST: Merge & save atomically inside Neon transaction
   if (req.method === 'POST') {
     try {
       const rawBody = Buffer.isBuffer(req.body) ? req.body.toString('utf8') : req.body;
@@ -65,16 +68,27 @@ module.exports = async (req, res) => {
       if (!parsed || typeof parsed !== 'object') {
         return res.status(400).json({ ok: false, error: 'Invalid request body' });
       }
-      const existing = await readExisting();
-      const { state: merged, assignedId } = mergeAppState(existing, parsed);
-      const mergedStr = JSON.stringify(merged);
+      let existing, merged, assignedId, mergedStr;
 
       if (db.isConnected()) {
         try {
-          await db.query(
-            "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', $1, NOW()) ON CONFLICT (key) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW();",
-            [mergedStr]
-          );
+          const txRes = await db.withTransaction(async (client) => {
+            await client.query(
+              "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', '{}'::jsonb, NOW()) ON CONFLICT (key) DO NOTHING;"
+            );
+            const cur = await readExisting(client);
+            const m = mergeAppState(cur, parsed);
+            const str = JSON.stringify(m.state);
+            await client.query(
+              "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', $1, NOW()) ON CONFLICT (key) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW();",
+              [str]
+            );
+            return { existing: cur, merged: m.state, assignedId: m.assignedId, mergedStr: str };
+          });
+          existing = txRes.existing;
+          merged = txRes.merged;
+          assignedId = txRes.assignedId;
+          mergedStr = txRes.mergedStr;
         } catch (dbErr) {
           console.error('[API/DATA] DB write error:', dbErr.message);
           return res.status(503).json({ ok: false, error: 'Neon DB write failed: ' + dbErr.message });
@@ -107,6 +121,12 @@ module.exports = async (req, res) => {
         } catch (e) {
           console.error('[API/DATA] Notification diff error:', e.message);
         }
+      } else {
+        existing = await readExisting();
+        const m = mergeAppState(existing, parsed);
+        merged = m.state;
+        assignedId = m.assignedId;
+        mergedStr = JSON.stringify(merged);
       }
 
       try {

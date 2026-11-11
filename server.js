@@ -44,6 +44,9 @@ async function readAuthoritativeState(forceFresh) {
     if (r.rows && r.rows.length && r.rows[0].payload) {
       const dbObj = typeof r.rows[0].payload === 'string' ? JSON.parse(r.rows[0].payload) : r.rows[0].payload;
       const str = JSON.stringify(dbObj);
+      if (str !== cachedStateStr) {
+        try { fs.writeFileSync(DATA_FILE, str, 'utf8'); } catch (e) {}
+      }
       cachedStateStr = str;
       cachedStateAt = Date.now();
       return { str, obj: dbObj };
@@ -225,22 +228,45 @@ const server = http.createServer((req, res) => {
       req.on('end', async () => {
         try {
           const parsed = JSON.parse(body);
-          const { obj: existing } = await readAuthoritativeState(true);
-          const { state: merged, assignedId } = mergeAppState(existing, parsed);
-          const mergedStr = JSON.stringify(merged);
+          let existing, merged, assignedId, mergedStr;
 
-          // Strict Neon DB persistence first when DB is configured
           if (db.isConnected()) {
             try {
-              await db.query(
-                "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', $1, NOW()) ON CONFLICT (key) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW();",
-                [mergedStr]
-              );
+              const txRes = await db.withTransaction(async (client) => {
+                await client.query(
+                  "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', '{}'::jsonb, NOW()) ON CONFLICT (key) DO NOTHING;"
+                );
+                const r = await client.query("SELECT payload FROM dps_app_state WHERE key = 'current' FOR UPDATE;");
+                let cur = (r.rows && r.rows.length && r.rows[0].payload)
+                  ? (typeof r.rows[0].payload === 'string' ? JSON.parse(r.rows[0].payload) : r.rows[0].payload)
+                  : null;
+                if (!cur || !Array.isArray(cur.items) || !cur.items.length) {
+                  cur = cur && Object.keys(cur).length ? cur : (readLocalDataObj() || { items: [], reqs: [] });
+                }
+                const m = mergeAppState(cur, parsed);
+                const str = JSON.stringify(m.state);
+                await client.query(
+                  "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', $1, NOW()) ON CONFLICT (key) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW();",
+                  [str]
+                );
+                return { existing: cur, merged: m.state, assignedId: m.assignedId, mergedStr: str };
+              });
+              existing = txRes.existing;
+              merged = txRes.merged;
+              assignedId = txRes.assignedId;
+              mergedStr = txRes.mergedStr;
             } catch (err) {
               console.error('[DB] Cloud sync error:', err.message);
               res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
               return res.end(JSON.stringify({ ok: false, error: 'Neon database write failed: ' + err.message }));
             }
+          } else {
+            const cur = (await readAuthoritativeState(true)).obj;
+            existing = cur;
+            const m = mergeAppState(cur, parsed);
+            merged = m.state;
+            assignedId = m.assignedId;
+            mergedStr = JSON.stringify(merged);
           }
 
           // Update memory cache & local mirror only after Neon write succeeds
