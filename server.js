@@ -112,7 +112,7 @@ const server = http.createServer((req, res) => {
 
   // CORS headers for all API requests
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
@@ -286,7 +286,8 @@ const API_HANDLERS = {
   'webauthn/login/verify': require('./api/webauthn/login/verify'),
   'webauthn/register/options': require('./api/webauthn/register/options'),
   'webauthn/register/verify': require('./api/webauthn/register/verify'),
-  'push/subscribe': require('./api/push/subscribe')
+  'push/subscribe': require('./api/push/subscribe'),
+  'session': require('./api/session')
 };
 
   // Generic /api/* handler for modular serverless functions (Auth & WebAuthn)

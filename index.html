@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f2f7f4">
 <title>DPS Amrapali Inventory</title>
+<link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -3784,15 +3785,17 @@ html[data-theme="light"] select option:checked,
 
   function success(note){
     var name=role==='admin'?'Administrator':role==='principal'?'Principal':$('#name').value;
-    try{sessionStorage.setItem('dps_session',JSON.stringify({role:role,name:name,t:Date.now()}))}catch(e){}
+    var sObj={role:role,name:name,t:Date.now()};
+    if(window.__savePortalSession)window.__savePortalSession(sObj);
+    else{try{sessionStorage.setItem('dps_session',JSON.stringify(sObj))}catch(e){}}
     $('#doneT').textContent='Welcome, '+name; if(window.EnterpriseAnim){ EnterpriseAnim.confetti(); EnterpriseAnim.toast('Welcome Back, ' + name, 'Entering your portal...', 'login'); }
     $('#doneP').textContent=note||(role==='admin'?'Full inventory control: bills, stock management, issuing and settings.':role==='principal'?'Complete oversight: view all stocks, bills & reports. Review and approve teacher requisitions.':'View stock and raise requisitions.');
-    window.__sess={role:role,name:name};$('#done').hidden=false;busy=false;buf='';sfx('ok');
+    window.__sess=sObj;$('#done').hidden=false;busy=false;buf='';sfx('ok');
     clearTimeout(window.__autoGo);
     if(window.__dlAfterLogin&&window.__dlAfterLogin())return;
     window.__autoGo=setTimeout(function(){var d=$('#done');if(d&&!d.hidden&&window.__sess)window.__enter(window.__sess)},1300);
   }
-  $('#go').addEventListener('click',function(){clearTimeout(window.__autoGo);window.__enter(window.__sess)});
+  $('#go').addEventListener('click',function(){clearTimeout(window.__autoGo);if(window.__initPushNotifications&&window.__sess)window.__initPushNotifications(window.__sess,true);window.__enter(window.__sess)});
   /* ---------- Screen-lock sign-in (Dedicated Admin Biometrics - Zero Latency) ---------- */
   (function(){
     var KEY='dps_devlock_v1';
@@ -3864,7 +3867,8 @@ html[data-theme="light"] select option:checked,
         // Absolute guarantee: Admin session created, can NEVER be principal
         role = 'admin';
         var adminSess = { role: 'admin', name: 'Administrator', t: Date.now() };
-        try { sessionStorage.setItem('dps_session', JSON.stringify(adminSess)); } catch(e){}
+        if(window.__savePortalSession)window.__savePortalSession(adminSess);
+        else{try { sessionStorage.setItem('dps_session', JSON.stringify(adminSess)); } catch(e){}}
         window.__sess = adminSess;
         success();
       } catch(e) {
@@ -4157,9 +4161,9 @@ html[data-theme="light"] select option:checked,
     var p={items:items,uid:uid,bills:bills,bid:bid,fac:fac,log:log,reqs:reqs,sessionCfg:sessionCfg};
     var au=readAuthLocal();
     if(au)p.auth=au;
-    if(window.__dpsMemPrefs)p.prefs=window.__dpsMemPrefs;
-    if(window.__dpsMemDevlock)p.devlock=window.__dpsMemDevlock;
-    if(window.__dpsMemCarts)p.carts=window.__dpsMemCarts;
+    p.prefs=window.__dpsMemPrefs||{theme:'dgwhite',sound:1,haptic:1,seenReqIds:[]};
+    p.devlock=window.__dpsMemDevlock||{};
+    p.carts=window.__dpsMemCarts||{};
     return p;
   }
   function stateSig(d){
@@ -4206,13 +4210,14 @@ html[data-theme="light"] select option:checked,
     var Ael=document.getElementById('A'), Tel=document.getElementById('T');
     var ae=document.activeElement;
     if(Ael&&!Ael.hidden){
-      if(typeof rail==='function')rail();
-      if(typeof tree==='function')tree();
       var typingA=ae&&ae.closest&&ae.closest('#main input, #main select, #main textarea');
       if(!typingA&&view!=='add'&&!editingBillId){
         var mn=document.getElementById('main'),sy=mn?mn.scrollTop:0;
         if(typeof go==='function')go();
         var mn2=document.getElementById('main');if(mn2){mn2.style.scrollBehavior='auto';mn2.scrollTop=sy;}
+      }else{
+        if(typeof rail==='function')rail();
+        if(typeof tree==='function')tree();
       }
       if(getRole()==='principal'&&typeof window.__triggerPrincipalReqPopup==='function'){
         var newlyPending=reqs.filter(function(r){return r&&r.st==='Pending'&&!prevPendingMap[r.id]});
@@ -4306,7 +4311,7 @@ html[data-theme="light"] select option:checked,
 
   var view='stock',mode='f',cat='All',tag=null,openId=null,billId=null,editingBillId=null,facName=null,query='',addTab='issue',dmgItem=null;
   var rowsI=[{id:0,v:'',q:''}],rowsB=[{id:0,v:'',q:'',r:''}],rowsEB=[];
-  function getRole(){try{var s=JSON.parse(sessionStorage.getItem('dps_session'));return(s&&s.role)?s.role:'admin'}catch(e){return 'admin'}}
+  function getRole(){try{var s=window.__readPortalSession?window.__readPortalSession():JSON.parse(sessionStorage.getItem('dps_session'));return(s&&s.role)?s.role:'admin'}catch(e){return 'admin'}}
   var rf={type:'out',item:'',cat:'',fac:'',st:'',from:'',to:'',grp:'none'},ff={from:'',to:''};
 
   function tot(it){return it.v.reduce(function(a,x){return a+x[1]},0)}
@@ -4335,18 +4340,21 @@ html[data-theme="light"] select option:checked,
     var b=[['stock','db','Stock'],['bills','bill','Bills'],['fac','users','Faculty'],['rep','chart','Reports']];
     if(role==='admin'){b.push(['add','plus','Add']);b.push(['pw','plus','Passwords'])}
     b.push(['req','swap','Requisitions']);
-    $('#rail').innerHTML=b.map(function(x){
+    var railEl=$('#rail'), railHtml=b.map(function(x){
       var badge=(x[0]==='req'&&pendingReqs)?'<span class="a-badge">'+pendingReqs+'</span>':'';
       return '<button class="a-tab'+(view===x[0]?' on':'')+'" data-v="'+x[0]+'" title="'+x[2]+'"><svg viewBox="0 0 24 24">'+(NAV_IC[x[0]]||IC[x[1]])+'</svg><span>'+x[2]+'</span>'+badge+'</button>';
     }).join('');
+    if(railEl&&railEl._lastH!==railHtml){railEl._lastH=railHtml;railEl.innerHTML=railHtml;}
     var bn=$('#rail-m');
-    if(bn)bn.innerHTML=b.map(function(x){
+    var bnHtml=bn?b.map(function(x){
       var badge=(x[0]==='req'&&pendingReqs)?'<span class="a-badge">'+pendingReqs+'</span>':'';
       return '<button class="a-btab'+(view===x[0]?' on':'')+'" data-v="'+x[0]+'"><span class="a-bi"><svg viewBox="0 0 24 24">'+(NAV_IC[x[0]]||IC[x[1]])+'</svg>'+badge+'</span><span class="a-bl">'+(x[0]==='req'?'Requests':x[2])+'</span></button>';
-    }).join('');
-    var sub=$('#a-sub');if(sub)sub.textContent=(role==='principal'?'Principal Portal':'Admin Portal')+' \u2022 Stationery Store';
-    var ac=$('#a-actions');
-    if(ac)ac.innerHTML='<span class="a-role">'+(role==='principal'?'Principal':'Admin')+'</span><button class="a-gear a-sbtn'+(query?' has':'')+'" data-asearch="1" title="Search items" aria-label="Search items"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.500-3.500"/></svg></button><button class="a-gear" data-a="open-settings" title="Settings">'+ic('gear')+'</button><button class="a-out" data-v="out" title="Sign out">'+ic('out')+'<span>Sign out</span></button>';
+    }).join(''):'';
+    if(bn&&bn._lastH!==bnHtml){bn._lastH=bnHtml;bn.innerHTML=bnHtml;}
+    var sub=$('#a-sub'), subTxt=(role==='principal'?'Principal Portal':'Admin Portal')+' \u2022 Stationery Store';
+    if(sub&&sub.textContent!==subTxt)sub.textContent=subTxt;
+    var ac=$('#a-actions'), acHtml='<span class="a-role">'+(role==='principal'?'Principal':'Admin')+'</span><button class="a-gear a-sbtn'+(query?' has':'')+'" data-asearch="1" title="Search items" aria-label="Search items"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.500-3.500"/></svg></button><button class="a-gear" data-a="open-settings" title="Settings">'+ic('gear')+'</button><button class="a-out" data-v="out" title="Sign out">'+ic('out')+'<span>Sign out</span></button>';
+    if(ac&&ac._lastH!==acHtml){ac._lastH=acHtml;ac.innerHTML=acHtml;}
     updatePrincipalDock(pendingReqs, role);
   }
   function updatePrincipalDock(pendingReqs, role){
@@ -4381,7 +4389,8 @@ html[data-theme="light"] select option:checked,
     }else{
       ['ok','low','out'].forEach(function(s){var n=items.filter(function(i){return stat(i)===s}).length;h+='<button class="node'+(tag===s?' on':'')+'" data-t="'+s+'"><span class="dot" style="margin:0 2px;background:'+(s==='ok'?'var(--acc)':s==='low'?'var(--warn)':'var(--err)')+'"></span>'+SL[s]+'<span class="n">'+n+'</span></button>'});
     }
-    $('#tree').innerHTML=h;
+    var treeEl=$('#tree');
+    if(treeEl&&treeEl._lastH!==h){treeEl._lastH=h;treeEl.innerHTML=h;}
     document.querySelectorAll('#tabs button').forEach(function(b){b.classList.toggle('on',b.dataset.m===mode)});
   }
   function list(){return items.filter(function(i){return (cat==='All'||i.cat===cat)&&(!tag||stat(i)===tag)&&i.name.toLowerCase().indexOf(query)>-1})}
@@ -4498,7 +4507,7 @@ html[data-theme="light"] select option:checked,
       h += '</div>';
 
     } else if(settingsTab==='password'){
-      var sessInfo=JSON.parse(sessionStorage.getItem('dps_session')||'{}');
+      var sessInfo=(window.__readPortalSession?window.__readPortalSession():null)||JSON.parse(sessionStorage.getItem('dps_session')||'{}');
       var userRole = sessInfo.role || role || 'admin';
       var userName = sessInfo.name || (userRole==='admin'?'Administrator':userRole==='principal'?'Principal':'Teacher');
 
@@ -5698,6 +5707,20 @@ html[data-theme="light"] select option:checked,
   function go(){
     checkAutoRollover();
     if((view==='add'||view==='pw')&&getRole()!=='admin'){view='stock'}
+    var vKey=[view,openId||'',billId||'',editingBillId||'',facName||'',reqT||'',view==='add'?addTab:''].join('|');
+    var aRoot=document.getElementById('A');
+    if(aRoot){
+      clearTimeout(window.__nxNavTimer);
+      if(window.__lastAdminViewKey!==undefined && window.__lastAdminViewKey!==vKey){
+        aRoot.classList.remove('nx-nav');
+        void aRoot.offsetWidth;
+        aRoot.classList.add('nx-nav');
+        window.__nxNavTimer=setTimeout(function(){aRoot.classList.remove('nx-nav')},580);
+      }else{
+        aRoot.classList.remove('nx-nav');
+      }
+    }
+    window.__lastAdminViewKey=vKey;
     rail();tree();
     (function(){var tl=$('#a-tools');if(!tl)return;var show=(view==='stock'&&!openId);tl.hidden=!show;if(show)$('#a-chips').innerHTML=chips()})();
     if(view==='stock')openId?detail(openId):stockView();
@@ -6042,7 +6065,7 @@ html[data-theme="light"] select option:checked,
   /* ---------- helpers ---------- */
   function getTeacherName(){
     if(tTeacherName) return tTeacherName;
-    try{var s=JSON.parse(sessionStorage.getItem('dps_session'));if(s&&s.name)tTeacherName=s.name}catch(e){}
+    try{var s=window.__readPortalSession?window.__readPortalSession():JSON.parse(sessionStorage.getItem('dps_session'));if(s&&s.name)tTeacherName=s.name}catch(e){}
     return tTeacherName||'Teacher';
   }
   function getTeacherPendingCount(name){
@@ -6916,9 +6939,173 @@ html[data-theme="light"] select option:checked,
 </script>
 <script>(function(){
   var L=document.getElementById('L'),A=document.getElementById('A'),T=document.getElementById('T');
+  var SESS_CK='dps_portal_sess';
+
+  function readCookieSess(){
+    try{
+      var m=document.cookie.match(new RegExp('(?:^|;\\s*)'+SESS_CK+'=([^;]+)'));
+      if(!m)return null;
+      var s=JSON.parse(decodeURIComponent(m[1]));
+      return (s&&s.role&&s.name)?s:null;
+    }catch(e){return null;}
+  }
+  function writeCookieSess(s){
+    try{
+      var sec=(location.protocol==='https:'?'; Secure':'');
+      document.cookie=SESS_CK+'='+encodeURIComponent(JSON.stringify(s))+'; Path=/; Max-Age=315360000; SameSite=Lax'+sec;
+    }catch(e){}
+  }
+  function clearCookieSess(){
+    try{
+      var sec=(location.protocol==='https:'?'; Secure':'');
+      document.cookie=SESS_CK+'=; Path=/; Max-Age=0; SameSite=Lax'+sec;
+    }catch(e){}
+  }
+
+  window.__readPortalSession=function(){
+    try{
+      var s=JSON.parse(sessionStorage.getItem('dps_session'));
+      if(s&&s.role&&s.name)return s;
+    }catch(e){}
+    var c=readCookieSess();
+    if(c){
+      try{sessionStorage.setItem('dps_session',JSON.stringify(c));}catch(e){}
+      return c;
+    }
+    return null;
+  };
+  window.__savePortalSession=function(s){
+    if(!s||!s.role||!s.name)return;
+    var clean={role:s.role,name:s.name,t:s.t||Date.now()};
+    try{sessionStorage.setItem('dps_session',JSON.stringify(clean));}catch(e){}
+    writeCookieSess(clean);
+    if(window.fetch&&location.protocol!=='file:'){
+      fetch('/api/session',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        credentials:'include',
+        body:JSON.stringify({role:clean.role,name:clean.name})
+      }).catch(function(){});
+    }
+  };
+  window.__clearPortalSession=function(){
+    try{sessionStorage.removeItem('dps_session');}catch(e){}
+    clearCookieSess();
+    if(window.fetch&&location.protocol!=='file:'){
+      fetch('/api/session',{method:'DELETE',credentials:'include'}).catch(function(){});
+    }
+  };
+
+  /* ---------- Service Worker & Background Web Push Notifications ---------- */
+  var swRegPromise=null;
+  function ensureSw(){
+    if(!('serviceWorker' in navigator)||location.protocol==='file:')return Promise.resolve(null);
+    if(!swRegPromise){
+      swRegPromise=navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(function(err){
+        console.warn('[SW] register warning:',err&&err.message);
+        return null;
+      });
+    }
+    return swRegPromise;
+  }
+  ensureSw();
+
+  function urlB64ToU8(b64){
+    var pad='='.repeat((4-(b64.length%4))%4);
+    var raw=(b64+pad).replace(/-/g,'+').replace(/_/g,'/');
+    var out=atob(raw),arr=new Uint8Array(out.length);
+    for(var i=0;i<out.length;i++)arr[i]=out.charCodeAt(i);
+    return arr;
+  }
+  function removePushBanner(){
+    var b=document.getElementById('dps-push-bar');
+    if(b&&b.parentNode)b.parentNode.removeChild(b);
+  }
+  function showPushBanner(sess){
+    if(!sess||!('Notification' in window)||!('PushManager' in window)||Notification.permission!=='default')return;
+    if(document.getElementById('dps-push-bar'))return;
+    var bar=document.createElement('div');
+    bar.id='dps-push-bar';
+    bar.style.cssText='position:fixed;right:16px;bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:9998;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:rgba(15,61,42,0.96);color:#fff;font:600 13px var(--font,system-ui);box-shadow:0 12px 30px rgba(0,0,0,.35);border:1px solid rgba(155,171,132,.35)';
+    bar.innerHTML='<span>Enable background push alerts</span>'
+      +'<button type="button" data-push-go="1" style="border:0;border-radius:9px;padding:6px 12px;background:#7ee2a8;color:#0b241a;font:700 12px inherit;cursor:pointer">Enable</button>'
+      +'<button type="button" data-push-x="1" aria-label="Dismiss" style="border:0;background:transparent;color:rgba(255,255,255,.75);font-size:15px;cursor:pointer;padding:2px 4px">&#10005;</button>';
+    bar.querySelector('[data-push-go]').onclick=function(){
+      window.__initPushNotifications(sess,true).then(removePushBanner);
+    };
+    bar.querySelector('[data-push-x]').onclick=removePushBanner;
+    document.body.appendChild(bar);
+  }
+  window.__initPushNotifications=async function(sess,allowPrompt){
+    try{
+      if(!sess||!sess.role||location.protocol==='file:')return false;
+      if(!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window))return false;
+      if(Notification.permission==='default'){
+        if(!allowPrompt){showPushBanner(sess);return false;}
+        var perm=await Notification.requestPermission();
+        if(perm!=='granted')return false;
+      }
+      if(Notification.permission!=='granted')return false;
+      removePushBanner();
+      var reg=(await ensureSw())||await navigator.serviceWorker.ready;
+      if(!reg||!reg.pushManager)return false;
+      var sub=await reg.pushManager.getSubscription();
+      if(!sub){
+        var kr=await fetch('/api/push/subscribe',{cache:'no-store'});
+        var kd=kr.ok?await kr.json():null;
+        if(!kd||!kd.publicKey)return false;
+        sub=await reg.pushManager.subscribe({
+          userVisibleOnly:true,
+          applicationServerKey:urlB64ToU8(kd.publicKey)
+        });
+      }
+      if(sub){
+        await fetch('/api/push/subscribe',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          credentials:'include',
+          body:JSON.stringify({subscription:sub.toJSON?sub.toJSON():sub,role:sess.role,username:sess.name})
+        });
+        return true;
+      }
+    }catch(e){
+      console.warn('[Push] subscribe warning:',e&&e.message);
+    }
+    return false;
+  };
+  window.__pushUnsubscribe=async function(){
+    removePushBanner();
+    try{
+      if(!('serviceWorker' in navigator)||location.protocol==='file:')return;
+      var reg=await navigator.serviceWorker.getRegistration('/');
+      var sub=reg&&reg.pushManager?await reg.pushManager.getSubscription():null;
+      if(sub){
+        await fetch('/api/push/subscribe',{
+          method:'DELETE',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({endpoint:sub.endpoint})
+        }).catch(function(){});
+      }
+    }catch(e){}
+  };
+
   function swap(from,to){from.classList.add('leave');setTimeout(function(){from.hidden=true;from.classList.remove('leave');to.hidden=false;to.classList.add('enter');setTimeout(function(){to.classList.remove('enter')},650)},420)}
+  function showPortalImmediate(s){
+    window.__sess=s;
+    L.hidden=true;
+    if(s.role==='admin'||s.role==='principal'){
+      window.__adminReset&&window.__adminReset();
+      A.hidden=false;T.hidden=true;
+    }else{
+      window.__renderTeacherPanel&&window.__renderTeacherPanel(s.name);
+      T.hidden=false;A.hidden=true;
+    }
+    window.__initPushNotifications(s,false);
+  }
   window.__enter=function(s){
     if(!s)return;
+    window.__savePortalSession(s);
+    window.__initPushNotifications(s,false);
     if(window.__syncServerData){
       Promise.resolve(window.__syncServerData(true)).then(function(){
         if(s.role==='principal'&&window.__checkPrincipalPendingAlert){
@@ -6936,19 +7123,22 @@ html[data-theme="light"] select option:checked,
       swap(L,T);
     }
   };
-  window.__logout=function(){try{sessionStorage.removeItem('dps_session')}catch(e){} var prPop=document.getElementById('prq-center-popup');if(prPop&&prPop.parentNode)prPop.parentNode.removeChild(prPop); if(window.EnterpriseAnim){ EnterpriseAnim.toast('Signed Out Safely', 'See you next time!', 'login'); } var cur=A.hidden?T:A;window.__loginReset&&window.__loginReset();swap(cur,L)};
-  try{
-    var s=JSON.parse(sessionStorage.getItem('dps_session'));
-    if(s&&Date.now()-s.t<288e5){
-      L.hidden=true;
-      if(s.role==='admin'||s.role==='principal'){
-        A.hidden=false;
-      }else{
-        window.__renderTeacherPanel&&window.__renderTeacherPanel(s.name);
-        T.hidden=false;
-      }
-    }
-  }catch(e){}
+  window.__logout=function(){window.__clearPortalSession();window.__pushUnsubscribe();window.__sess=null;var prPop=document.getElementById('prq-center-popup');if(prPop&&prPop.parentNode)prPop.parentNode.removeChild(prPop); if(window.EnterpriseAnim){ EnterpriseAnim.toast('Signed Out Safely', 'See you next time!', 'login'); } var cur=A.hidden?T:A;window.__loginReset&&window.__loginReset();swap(cur,L)};
+  var restoredSess=window.__readPortalSession();
+  if(restoredSess){
+    showPortalImmediate(restoredSess);
+    window.__savePortalSession(restoredSess);
+  }else if(window.fetch&&location.protocol!=='file:'){
+    fetch('/api/session',{cache:'no-store',credentials:'include'})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(d){
+        if(d&&d.ok&&d.session&&!window.__readPortalSession()){
+          window.__savePortalSession(d.session);
+          showPortalImmediate(d.session);
+          if(window.__syncServerData)window.__syncServerData(true);
+        }
+      }).catch(function(){});
+  }
 })();</script>
 <script>
 (function(){
@@ -6990,10 +7180,10 @@ html[data-theme="light"] select option:checked,
   ['gesturestart','gesturechange'].forEach(function(n){document.addEventListener(n,function(e){e.preventDefault()})});
   // real viewport height var for old browsers
   var vh=function(){de.style.setProperty('--vh',innerHeight*.01+'px')};vh();addEventListener('resize',vh);
-  // PWA manifest (works when hosted over https)
-  try{var o=location.origin==='null'?'':location.href.split('#')[0];
-    var m={name:'DPS Amrapali Inventory',short_name:'DPS Inventory',display:'standalone',orientation:'portrait',background_color:'#f2f7f4',theme_color:'#0f3d2a',start_url:o||'.',scope:o?o.replace(/[^\/]*$/,''):'.'};
-    var l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));document.head.appendChild(l)}catch(e){}
+  // PWA manifest fallback only for local file:// usage (HTTP/HTTPS uses /manifest.json)
+  if(location.protocol==='file:'){try{var o='';
+    var m={name:'DPS Amrapali Inventory',short_name:'DPS Inventory',display:'standalone',orientation:'portrait',background_color:'#f2f7f4',theme_color:'#0f3d2a',start_url:'.',scope:'.'};
+    var l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));document.head.appendChild(l)}catch(e){}}
   // install prompt
   var dp,bar=document.getElementById('m-install');
   addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(!sessionStorage.getItem('mi'))bar.style.display='flex'});
@@ -7719,35 +7909,35 @@ html body #L#L[data-theme="obsidian"] #done .dl-enroll .dl-t{color:#f5f6f2}
 @keyframes nxBar{from{background-position:200% 0}to{background-position:-200% 0}}
 @keyframes nxBlink{0%,100%{opacity:1}50%{opacity:.35}}
 @keyframes nxTop{from{transform:translateY(-100%);opacity:0}to{transform:none;opacity:1}}
-@keyframes nxSwap{from{opacity:0;transform:translateY(10px) scale(.99);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+@keyframes nxSwap{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* page-load: top bar + rails */
-#A .top,#T .t-topbar{animation:nxTop .6s var(--nx-e) backwards}
-#A .rail{animation:nxSlide .6s var(--nx-e) backwards}
-#A .rb{animation:nxPop .5s var(--nx-b) backwards}
-#A .rb:nth-child(2){animation-delay:.12s}#A .rb:nth-child(3){animation-delay:.18s}#A .rb:nth-child(4){animation-delay:.24s}#A .rb:nth-child(5){animation-delay:.3s}#A .rb:nth-child(6){animation-delay:.36s}
+/* page-load: top bar + rails (scoped to .nx-nav / portal entry to prevent re-render flicker) */
+#A.enter .top,#A.nx-nav .top,#T .t-topbar{animation:nxTop .5s var(--nx-e) backwards}
+#A.enter .rail{animation:nxSlide .55s var(--nx-e) backwards}
+#A.enter .rb{animation:nxPop .45s var(--nx-b) backwards}
+#A.enter .rb:nth-child(2){animation-delay:.12s}#A.enter .rb:nth-child(3){animation-delay:.18s}#A.enter .rb:nth-child(4){animation-delay:.24s}#A.enter .rb:nth-child(5){animation-delay:.3s}#A.enter .rb:nth-child(6){animation-delay:.36s}
 #A .rb:hover svg,#T .t-gear:hover svg{animation:nxWiggle .5s ease}
 #A .mark,#T .t-logo{animation:nxFloat 5s ease-in-out infinite}
 
-/* content swaps on every tab/page change */
-#A .main>*,#T .t-content>*{animation:nxSwap .5s var(--nx-e) backwards}
-#A .main>*:nth-child(2),#T .t-content>*:nth-child(2){animation-delay:.06s}
-#A .main>*:nth-child(3),#T .t-content>*:nth-child(3){animation-delay:.12s}
-#A .main>*:nth-child(4),#T .t-content>*:nth-child(4){animation-delay:.18s}
-#A .main>*:nth-child(n+5),#T .t-content>*:nth-child(n+5){animation-delay:.24s}
+/* content swaps only when switching views (.nx-nav) - never on in-place stock updates */
+#A.nx-nav .main>*,#T .t-content>*{animation:nxSwap .38s var(--nx-e) backwards}
+#A.nx-nav .main>*:nth-child(2),#T .t-content>*:nth-child(2){animation-delay:.05s}
+#A.nx-nav .main>*:nth-child(3),#T .t-content>*:nth-child(3){animation-delay:.1s}
+#A.nx-nav .main>*:nth-child(4),#T .t-content>*:nth-child(4){animation-delay:.15s}
+#A.nx-nav .main>*:nth-child(n+5),#T .t-content>*:nth-child(n+5){animation-delay:.2s}
 
-/* tables: rows cascade in */
-#A tbody tr,#T tbody tr{animation:nxFlip .5s var(--nx-e) backwards}
-#A tbody tr:nth-child(1),#T tbody tr:nth-child(1){animation-delay:.02s}
-#A tbody tr:nth-child(2),#T tbody tr:nth-child(2){animation-delay:.05s}
-#A tbody tr:nth-child(3),#T tbody tr:nth-child(3){animation-delay:.08s}
-#A tbody tr:nth-child(4),#T tbody tr:nth-child(4){animation-delay:.11s}
-#A tbody tr:nth-child(5),#T tbody tr:nth-child(5){animation-delay:.14s}
-#A tbody tr:nth-child(6),#T tbody tr:nth-child(6){animation-delay:.17s}
-#A tbody tr:nth-child(7),#T tbody tr:nth-child(7){animation-delay:.2s}
-#A tbody tr:nth-child(8),#T tbody tr:nth-child(8){animation-delay:.23s}
-#A tbody tr:nth-child(n+9),#T tbody tr:nth-child(n+9){animation-delay:.26s}
-#A thead th,#T thead th{animation:nxUp .45s var(--nx-e) backwards}
+/* tables: rows cascade in on navigation */
+#A.nx-nav tbody tr,#T tbody tr{animation:nxFlip .42s var(--nx-e) backwards}
+#A.nx-nav tbody tr:nth-child(1),#T tbody tr:nth-child(1){animation-delay:.02s}
+#A.nx-nav tbody tr:nth-child(2),#T tbody tr:nth-child(2){animation-delay:.05s}
+#A.nx-nav tbody tr:nth-child(3),#T tbody tr:nth-child(3){animation-delay:.08s}
+#A.nx-nav tbody tr:nth-child(4),#T tbody tr:nth-child(4){animation-delay:.11s}
+#A.nx-nav tbody tr:nth-child(5),#T tbody tr:nth-child(5){animation-delay:.14s}
+#A.nx-nav tbody tr:nth-child(6),#T tbody tr:nth-child(6){animation-delay:.17s}
+#A.nx-nav tbody tr:nth-child(7),#T tbody tr:nth-child(7){animation-delay:.2s}
+#A.nx-nav tbody tr:nth-child(8),#T tbody tr:nth-child(8){animation-delay:.23s}
+#A.nx-nav tbody tr:nth-child(n+9),#T tbody tr:nth-child(n+9){animation-delay:.26s}
+#A.nx-nav thead th,#T thead th{animation:nxUp .4s var(--nx-e) backwards}
 #A tr:hover td,#T tr:hover td{transition:background .25s}
 
 /* cards & tiles: staggered grid + lift/tilt on hover */
@@ -7763,8 +7953,8 @@ html body #L#L[data-theme="obsidian"] #done .dl-enroll .dl-t{color:#f5f6f2}
 #A .kpi,#A .fcard,#T .t-card{position:relative;overflow:hidden}
 #A .kpi::after,#A .fcard::after,#T .t-card::after,#T .sp-card::after{content:"";position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.09),transparent);transform:translateX(-120%) skewX(-20deg);pointer-events:none}
 #A .kpi:hover::after,#A .fcard:hover::after,#T .t-card:hover::after,#T .sp-card:hover::after{animation:nxSheen .9s ease}
-#A .kpi div{display:inline-block;animation:nxPop .7s var(--nx-b) .25s backwards}
-#A .big{animation:nxPop .7s var(--nx-b) backwards}
+#A.nx-nav .kpi div{display:inline-block;animation:nxPop .5s var(--nx-b) .15s backwards}
+#A.nx-nav .big{animation:nxPop .5s var(--nx-b) backwards}
 
 /* buttons: sheen, press, ripple */
 #A .btn,#A .pill,#T .t-btn,#T .t-chip,#T .t-tab-btn,#L .btn,#T button.sp-add,#T button.sp-cartbtn,.kite-btn-edit,.kite-btn-del{position:relative;overflow:hidden;transition:transform .2s var(--nx-e),box-shadow .25s,background .2s,filter .2s,border-color .2s}
@@ -7782,19 +7972,19 @@ html body #L#L[data-theme="obsidian"] #done .dl-enroll .dl-t{color:#f5f6f2}
 #A .node.on span.n{animation:nxGlow 2.4s infinite}
 
 /* progress bars fill, live dots blink */
-#A .bar i{transform-origin:left;animation:nxFill 1s var(--nx-e) .3s backwards;background-image:linear-gradient(90deg,transparent 30%,rgba(255,255,255,.28) 50%,transparent 70%);background-size:200% 100%;background-color:var(--acc)}
-#A .bar i{animation:nxFill 1s var(--nx-e) .3s backwards,nxBar 3.2s linear 1.4s infinite}
+#A.nx-nav .bar i{transform-origin:left;animation:nxFill 1s var(--nx-e) .3s backwards;background-image:linear-gradient(90deg,transparent 30%,rgba(255,255,255,.28) 50%,transparent 70%);background-size:200% 100%;background-color:var(--acc)}
+#A.nx-nav .bar i{animation:nxFill 1s var(--nx-e) .3s backwards,nxBar 3.2s linear 1.4s infinite}
 #A .dot{animation:nxBlink 2.2s ease-in-out infinite}
 #A .out .dot{animation-duration:1.1s}
-#A .av{animation:nxPop .6s var(--nx-b) backwards,nxFloat 5s ease-in-out 1s infinite}
+#A.enter .av{animation:nxPop .6s var(--nx-b) backwards,nxFloat 5s ease-in-out 1s infinite}
 
 /* inputs: focus glow, label lift */
 #A input,#A select,#T input,#T select,#T textarea,#L input,#L select{transition:border-color .2s,box-shadow .3s,transform .2s var(--nx-e),background .2s}
 #A input:focus,#A select:focus,#T input:focus,#T select:focus,#T textarea:focus{box-shadow:0 0 0 3px rgba(155,171,132,.22);transform:translateY(-1px)}
-#A .fl,#T .t-field-group{animation:nxUp .45s var(--nx-e) backwards}
-#A .fl:nth-child(2),#T .t-field-group:nth-child(2){animation-delay:.05s}#A .fl:nth-child(3),#T .t-field-group:nth-child(3){animation-delay:.1s}#A .fl:nth-child(n+4),#T .t-field-group:nth-child(n+4){animation-delay:.15s}
-#A .rw{animation:nxSlide .4s var(--nx-e) backwards}
-#A .form,#A .flt,#A .adj{animation:nxUp .5s var(--nx-e) backwards}
+#A.nx-nav .fl,#T .t-field-group{animation:nxUp .4s var(--nx-e) backwards}
+#A.nx-nav .fl:nth-child(2),#T .t-field-group:nth-child(2){animation-delay:.05s}#A.nx-nav .fl:nth-child(3),#T .t-field-group:nth-child(3){animation-delay:.1s}#A.nx-nav .fl:nth-child(n+4),#T .t-field-group:nth-child(n+4){animation-delay:.15s}
+#A.nx-nav .rw{animation:nxSlide .35s var(--nx-e) backwards}
+#A.nx-nav .form,#A.nx-nav .flt,#A.nx-nav .adj{animation:nxUp .4s var(--nx-e) backwards}
 
 /* login extras */
 #L .row{transition:background .2s,transform .2s var(--nx-e)}
@@ -7924,9 +8114,10 @@ html body #L#L[data-theme="obsidian"] #done .dl-enroll .dl-t{color:#f5f6f2}
    var h=t.querySelector('.top,.t-topbar');if(h)h.classList.toggle('nx-stuck',t.scrollTop>6);}
   else if(t===document||t===document.documentElement){var h2=document.querySelector('.t-topbar');if(h2)h2.classList.toggle('nx-stuck',window.scrollY>6)}
  },true);
- /* toasts slide in whenever one is added */
+ /* toasts slide in whenever one is added (exclude ep-toast-container which animates its own cards) */
  new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){
-  if(n.nodeType===1&&/toast|snack|notif/i.test(n.className&&n.className.toString()||''))n.classList.add('nx-toast-in');
+  var cn=n.className&&n.className.toString()||'';
+  if(n.nodeType===1&&/toast|snack|notif/i.test(cn)&&!/ep-toast/.test(cn))n.classList.add('nx-toast-in');
  })})}).observe(document.body,{childList:true});
 })();
 </script>

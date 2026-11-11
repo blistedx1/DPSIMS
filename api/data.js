@@ -82,6 +82,7 @@ module.exports = async (req, res) => {
 
         try {
           const notifs = detectReqNotifications(existing ? existing.reqs : [], merged.reqs);
+          const pushJobs = [];
           for (const notifData of notifs) {
             await db.query(`
               INSERT INTO dps_notifications (id, type, title, body, target_role, target_teacher, tag, slip_id, created_at)
@@ -98,7 +99,10 @@ module.exports = async (req, res) => {
               notifData.slipId,
               notifData.timestamp
             ]);
-            push.sendPushToSubscribers(notifData).catch(() => {});
+            pushJobs.push(push.sendPushToSubscribers(notifData).catch(() => {}));
+          }
+          if (pushJobs.length > 0) {
+            await Promise.race([Promise.allSettled(pushJobs), new Promise(r => setTimeout(r, 2500))]);
           }
         } catch (e) {
           console.error('[API/DATA] Notification diff error:', e.message);
