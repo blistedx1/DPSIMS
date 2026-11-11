@@ -2954,6 +2954,165 @@ button:active, .btn:active, .rq-prbtn:active, .seg button:active, .kpi:active {
   0% { opacity: 1; transform: scale(1); filter: blur(0px); }
   100% { opacity: 0; transform: scale(0.97) translateY(-8px); filter: blur(4px); }
 }
+
+/* 6. Principal Requisition Center Popup (2s) -> Fly to Bottom Icon */
+@keyframes prqPopIn {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.72); filter: blur(4px); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: blur(0px); }
+}
+@keyframes prqDrain {
+  0% { transform: scaleX(1); }
+  100% { transform: scaleX(0); }
+}
+@keyframes prqDockHit {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.26); box-shadow: 0 0 0 12px rgba(16, 185, 129, 0.35), 0 14px 30px rgba(0,0,0,0.4); }
+  70% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+.prq-center-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  width: min(390px, calc(100vw - 32px));
+  background: linear-gradient(145deg, rgba(16, 28, 15, 0.97), rgba(9, 16, 8, 0.98));
+  color: #f4f7f2;
+  border: 1.5px solid rgba(16, 185, 129, 0.65);
+  border-radius: 18px;
+  padding: 18px 18px 16px;
+  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.58), 0 0 0 1px rgba(255,255,255,0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 100020;
+  cursor: pointer;
+  overflow: hidden;
+  will-change: transform, opacity;
+  animation: prqPopIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+#A[data-theme="dgwhite"] ~ .prq-center-popup,
+html[data-theme="dgwhite"] .prq-center-popup {
+  background: #ffffff;
+  color: #052e22;
+  border-color: #0f7a58;
+  box-shadow: 0 24px 56px rgba(5, 46, 34, 0.24), 0 0 0 1px rgba(5, 46, 34, 0.08);
+}
+.prq-center-popup.prq-flying {
+  animation: none !important;
+  pointer-events: none;
+  transition: transform 0.56s cubic-bezier(0.32, 0, 0.2, 1), opacity 0.52s ease, border-radius 0.45s ease !important;
+}
+.prq-pop-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.prq-pop-ico {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.32);
+}
+.prq-pop-ico svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.prq-pop-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: #34d399;
+}
+html[data-theme="dgwhite"] .prq-pop-tag { color: #059669; }
+.prq-pop-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+}
+.prq-pop-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin-top: 2px;
+  line-height: 1.25;
+}
+.prq-pop-body {
+  font-size: 13.5px;
+  line-height: 1.45;
+  opacity: 0.9;
+  margin-bottom: 10px;
+}
+.prq-pop-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  opacity: 0.72;
+  font-weight: 600;
+}
+.prq-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3.5px;
+  background: linear-gradient(90deg, #10b981, #f59e0b);
+  transform-origin: left center;
+  animation: prqDrain 2s linear forwards;
+}
+
+/* Desktop Floating Bottom Icon Dock for Principal Requisitions */
+.prq-dock {
+  position: fixed;
+  right: 26px;
+  bottom: 22px;
+  z-index: 9050;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(52, 211, 153, 0.55);
+  background: linear-gradient(135deg, #064e3b, #0f7a58);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), 0 0 0 0 rgba(16, 185, 129, 0.4);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s;
+}
+.prq-dock[hidden] { display: none !important; }
+.prq-dock:hover { transform: translateY(-2px) scale(1.06); }
+.prq-dock svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; }
+.prq-dock-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 99px;
+  background: #f59e0b;
+  color: #111827;
+  font-size: 11.5px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  border: 2px solid #064e3b;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.28);
+}
+.prq-dock-hit {
+  animation: prqDockHit 0.65s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+@media (max-width: 820px) {
+  .prq-dock { display: none !important; }
+}
 </style>
 <style id="select-option-contrast-fix">
 /* ==========================================================================
@@ -3293,6 +3452,88 @@ html[data-theme="light"] select option:checked,
     }
   }
   function save(){ls(KEY,store)}
+  function mergeAuthRec(a,b){
+    if(!a)return b?Object.assign({},b):null;
+    if(!b)return Object.assign({},a);
+    var ta=Math.max(Number(a.updatedAt||0),Number(a.resetAt||0));
+    var tb=Math.max(Number(b.updatedAt||0),Number(b.resetAt||0));
+    if(tb>ta)return Object.assign({},b);
+    if(ta>tb)return Object.assign({},a);
+    var ca=!!(a.changed||a.pinChanged), cb=!!(b.changed||b.pinChanged);
+    if(cb&&!ca)return Object.assign({},b);
+    if(ca&&!cb)return Object.assign({},a);
+    return Object.assign({},b);
+  }
+  function mergeAuthStores(loc,rem){
+    var l=(loc&&typeof loc==='object')?loc:{};
+    var r=(rem&&typeof rem==='object')?rem:{};
+    var out={};
+    if(l.admin||r.admin)out.admin=mergeAuthRec(l.admin,r.admin);
+    if(l.principal||r.principal)out.principal=mergeAuthRec(l.principal,r.principal);
+    out.teachers={};
+    var lt=(l.teachers&&typeof l.teachers==='object')?l.teachers:{};
+    var rt=(r.teachers&&typeof r.teachers==='object')?r.teachers:{};
+    Object.keys(lt).forEach(function(k){out.teachers[k]=mergeAuthRec(lt[k],rt[k])});
+    Object.keys(rt).forEach(function(k){if(!out.teachers[k])out.teachers[k]=Object.assign({},rt[k])});
+    return out;
+  }
+  window.__dpsMergeAuth=mergeAuthStores;
+  function pushAuthUpdate(uRole,uName,rec){
+    if(!window.fetch||!uRole||!rec)return Promise.resolve(false);
+    return fetch('/api/data',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      credentials:'include',
+      body:JSON.stringify({_op:{type:'auth_update',role:uRole,name:uName||'',rec:rec}})
+    }).then(function(r){return r.ok;}).catch(function(){return false;});
+  }
+  window.__pushAuthUpdate=pushAuthUpdate;
+  var authSyncBusy=null;
+  function syncAuthFromServer(){
+    if(!window.fetch)return Promise.resolve(false);
+    if(authSyncBusy)return authSyncBusy;
+    authSyncBusy=fetch('/api/data?_ts='+Date.now(),{cache:'no-store',credentials:'include'})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(remote){
+        authSyncBusy=null;
+        if(!remote||typeof remote!=='object')return false;
+        var cur=ls(KEY)||store||{};
+        var remAuth=(remote.auth&&typeof remote.auth==='object')?remote.auth:{};
+        // Auto-upload any locally changed PIN/PW that the server does not yet have
+        function checkAndPush(rRole,rName,locRec,remRec){
+          if(!locRec)return;
+          var locCh=!!(locRec.changed||locRec.pinChanged);
+          var remCh=!!(remRec&&(remRec.changed||remRec.pinChanged));
+          var lt=Math.max(Number(locRec.updatedAt||0),Number(locRec.resetAt||0));
+          var rt=Math.max(Number((remRec&&remRec.updatedAt)||0),Number((remRec&&remRec.resetAt)||0));
+          if((locCh&&!remCh&&rt===0)||(lt>rt)){
+            if(!locRec.updatedAt)locRec.updatedAt=Date.now();
+            pushAuthUpdate(rRole,rName,locRec);
+          }
+        }
+        checkAndPush('admin','admin',cur.admin,remAuth.admin);
+        checkAndPush('principal','principal',cur.principal,remAuth.principal);
+        if(cur.teachers){
+          Object.keys(cur.teachers).forEach(function(tn){
+            checkAndPush('teacher',tn,cur.teachers[tn],remAuth.teachers&&remAuth.teachers[tn]);
+          });
+        }
+        if(remote.auth){
+          var merged=mergeAuthStores(cur,remote.auth);
+          store=merged;
+          ls(KEY,merged);
+          if(document.getElementById('name')&&mode==='login'){
+            var prevVal=document.getElementById('name').value;
+            fillNames();
+            if(prevVal)document.getElementById('name').value=prevVal;
+          }
+        }
+        return true;
+      })
+      .catch(function(){authSyncBusy=null;return false;});
+    return authSyncBusy;
+  }
+  window.__syncAuthFromServer=syncAuthFromServer;
 
   // ---- Lockout (5 wrong tries → wait, doubling each round) ----
   function lockInfo(){return ls(LOCK)||mem.lock||{fails:0,until:0}}
@@ -3404,6 +3645,7 @@ html[data-theme="light"] select option:checked,
   });
 
   async function done4(){
+    await Promise.race([syncAuthFromServer(),new Promise(function(r){setTimeout(r,1500)})]);
     store=ls(KEY)||store;
     var pin=buf,ok=false;
     if(mode==='login'){
@@ -3439,11 +3681,15 @@ html[data-theme="light"] select option:checked,
     }
     if(mode==='confirm'){
       if(pin!==first){mode='new';first='';buf='';busy=false;render();shake($('#dots'));setErr('PINs did not match. Start again.');return}
-      if(store.teachers[$('#name').value]){
-        store.teachers[$('#name').value].pin=await hash(pin);
-        store.teachers[$('#name').value].changed=true;
-        store.teachers[$('#name').value].pinChanged=true;
+      var tKey=$('#name').value;
+      if(store.teachers&&tKey){
+        store.teachers[tKey]=store.teachers[tKey]||{pin:'',pw:await hash(DEMO.teacherPw)};
+        store.teachers[tKey].pin=await hash(pin);
+        store.teachers[tKey].changed=true;
+        store.teachers[tKey].pinChanged=true;
+        store.teachers[tKey].updatedAt=Date.now();
         save();
+        await Promise.race([pushAuthUpdate('teacher',tKey,store.teachers[tKey]),new Promise(function(r){setTimeout(r,1800)})]);
       }
       return success('Your new PIN is saved.');
     }
@@ -3461,8 +3707,9 @@ html[data-theme="light"] select option:checked,
       return;
     }
     if(!v){setErr('Kindly enter your password.');notify('Kindly enter your password.');shake($('#pwView'));return}
-    store=ls(KEY)||store;
     busy=true;
+    await Promise.race([syncAuthFromServer(),new Promise(function(r){setTimeout(r,1500)})]);
+    store=ls(KEY)||store;
     var ok=false;
     var h=await hash(v);
     if(role==='admin'){
@@ -3696,7 +3943,7 @@ html[data-theme="light"] select option:checked,
     s+='<path d="M0 430C120 400 260 420 400 380V560H0Z" fill="url(#gr)"/><rect width="400" height="560" fill="url(#fd)"/>';
     art.innerHTML=s;
   })();
-  init().then(function(){fillNames();render();lockedMsg()});
+  init().then(function(){fillNames();render();lockedMsg();syncAuthFromServer()});
 })();
 </script>
 <script>
@@ -3837,13 +4084,19 @@ html[data-theme="light"] select option:checked,
   seed();
   var DK='dps_data_v4', DK_DIRTY='dps_sync_dirty_v1';
   var syncSaving=0, syncFetching=false, lastServerSig='';
+  function readAuthLocal(){
+    try{var a=JSON.parse(localStorage.getItem('dps_auth_v3'));return(a&&typeof a==='object')?a:null}catch(e){return null}
+  }
   function statePayload(){
     if(log&&log.length>600)log=log.slice(0,600);
-    return {items:items,uid:uid,bills:bills,bid:bid,fac:fac,log:log,reqs:reqs,sessionCfg:sessionCfg};
+    var p={items:items,uid:uid,bills:bills,bid:bid,fac:fac,log:log,reqs:reqs,sessionCfg:sessionCfg};
+    var au=readAuthLocal();
+    if(au)p.auth=au;
+    return p;
   }
   function stateSig(d){
     if(!d)return '';
-    try{return JSON.stringify({i:d.items||[],b:d.bills||[],f:d.fac||[],l:d.log||[],r:d.reqs||[],s:d.sessionCfg||{}});}catch(e){return '';}
+    try{return JSON.stringify({i:d.items||[],b:d.bills||[],f:d.fac||[],l:d.log||[],r:d.reqs||[],s:d.sessionCfg||{},a:d.auth||{}});}catch(e){return '';}
   }
   function saveLocalOnly(){
     try{
@@ -3858,6 +4111,8 @@ html[data-theme="light"] select option:checked,
   }
   function applyRemoteState(remote, skipRender){
     if(!remote||!Array.isArray(remote.items)||!remote.items.length)return false;
+    var prevPendingMap={};
+    (reqs||[]).forEach(function(x){if(x&&x.id!=null&&x.st==='Pending')prevPendingMap[x.id]=true});
     items=remote.items;
     uid=remote.uid||uid;
     bills=remote.bills||[];
@@ -3867,6 +4122,12 @@ html[data-theme="light"] select option:checked,
     reqs=remote.reqs||[];
     bills.forEach(function(b){if(b.stockAdded===undefined)b.stockAdded=!(b.date<iso())});
     if(remote.sessionCfg)sessionCfg=Object.assign({},defaultSessionCfg,remote.sessionCfg);
+    if(remote.auth&&typeof remote.auth==='object'&&window.__dpsMergeAuth){
+      try{
+        var mergedAuth=window.__dpsMergeAuth(readAuthLocal(),remote.auth);
+        localStorage.setItem('dps_auth_v3',JSON.stringify(mergedAuth));
+      }catch(e){}
+    }
     lastServerSig=stateSig(remote);
     saveLocalOnly();
     if(skipRender)return true;
@@ -3880,6 +4141,10 @@ html[data-theme="light"] select option:checked,
         var mn=document.getElementById('main'),sy=mn?mn.scrollTop:0;
         if(typeof go==='function')go();
         var mn2=document.getElementById('main');if(mn2){mn2.style.scrollBehavior='auto';mn2.scrollTop=sy;}
+      }
+      if(getRole()==='principal'&&typeof window.__triggerPrincipalReqPopup==='function'){
+        var newlyPending=reqs.filter(function(r){return r&&r.st==='Pending'&&!prevPendingMap[r.id]});
+        if(newlyPending.length)window.__triggerPrincipalReqPopup(newlyPending);
       }
     }
     if(Tel&&!Tel.hidden){
@@ -4024,6 +4289,31 @@ html[data-theme="light"] select option:checked,
     var sub=$('#a-sub');if(sub)sub.textContent=(role==='principal'?'Principal Portal':'Admin Portal')+' \u2022 Stationery Store';
     var ac=$('#a-actions');
     if(ac)ac.innerHTML='<span class="a-role">'+(role==='principal'?'Principal':'Admin')+'</span><button class="a-gear a-sbtn'+(query?' has':'')+'" data-asearch="1" title="Search items" aria-label="Search items"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.500-3.500"/></svg></button><button class="a-gear" data-a="open-settings" title="Settings">'+ic('gear')+'</button><button class="a-out" data-v="out" title="Sign out">'+ic('out')+'<span>Sign out</span></button>';
+    updatePrincipalDock(pendingReqs, role);
+  }
+  function updatePrincipalDock(pendingReqs, role){
+    var dock=document.getElementById('p-req-dock');
+    var Ael=document.getElementById('A');
+    if(!dock&&Ael){
+      dock=document.createElement('button');
+      dock.id='p-req-dock';
+      dock.className='prq-dock';
+      dock.type='button';
+      dock.setAttribute('aria-label','Pending Requisitions');
+      dock.title='Pending Requisitions';
+      dock.innerHTML='<svg viewBox="0 0 24 24">'+NAV_IC.req+'</svg><span class="prq-dock-badge">0</span>';
+      dock.addEventListener('click',function(){
+        closeKiteBill();view='req';clearSub();
+        var mn=document.getElementById('main');if(mn)mn.scrollTop=0;
+        go();
+      });
+      Ael.appendChild(dock);
+    }
+    if(dock){
+      var b=dock.querySelector('.prq-dock-badge');
+      if(b)b.textContent=String(pendingReqs||0);
+      dock.hidden=!(role==='principal'&&pendingReqs>0&&Ael&&!Ael.hidden);
+    }
   }
   function tree(){
     var h='';
@@ -4972,7 +5262,7 @@ return}
   function pwSave(a){try{localStorage.setItem(AUTH_KEY,JSON.stringify(a));return true}catch(e){return false}}
   async function pwEnsure(n){
     var a=pwAuth();if(!a)return;a.teachers=a.teachers||{};
-    if(!a.teachers[n]){a.teachers[n]={pin:await hashAuth(PWD.pin),pw:await hashAuth(PWD.pw),changed:false};pwSave(a)}
+    if(!a.teachers[n]){a.teachers[n]={pin:await hashAuth(PWD.pin),pw:await hashAuth(PWD.pw),changed:false};pwSave(a);if(window.__pushAuthUpdate)window.__pushAuthUpdate('teacher',n,a.teachers[n]);}
   }
   var pwShown={},pwQ='';
   function pwRows(){
@@ -5003,14 +5293,15 @@ return}
     if(act==='reset'){
       var P=key==='@principal',nm=P?'Principal':key;
       if(!confirm('Reset '+nm+' to the default PIN and password?'))return;
-      var D=P?PWP:PWD,rec=await (async function(){return {pin:await hashAuth(D.pin),pw:await hashAuth(D.pw),changed:false}})();
+      var D=P?PWP:PWD,nowTs=Date.now(),rec=await (async function(){return {pin:await hashAuth(D.pin),pw:await hashAuth(D.pw),changed:false,pinChanged:false,updatedAt:nowTs,resetAt:nowTs}})();
       if(P){a.principal=rec}else{a.teachers[key]=rec}
       pwSave(a)?pwNote(nm+' reset. Default PIN '+D.pin+' / password '+D.pw+'. They must set a new PIN at next sign-in.'):pwNote('Could not save.');
+      save({type:'auth_update',role:P?'principal':'teacher',name:P?'principal':key,rec:rec});
       $('#pw-list').innerHTML=pwRows();return}
     if(act==='del'){
       if(!confirm('Delete faculty "'+key+'"? Their login is removed. Past issue history stays in reports.'))return;
       var i=fac.indexOf(key);if(i>-1)fac.splice(i,1);
-      delete a.teachers[key];pwSave(a);save();
+      delete a.teachers[key];pwSave(a);save({type:'auth_delete_teacher',name:key});
       pwNote(key+' deleted.');$('#pw-list').innerHTML=pwRows();
     }
   });
@@ -5402,6 +5693,7 @@ return}
       if(newPin && !/^\d{4}$/.test(newPin)) return pmsg('PIN must be exactly 4 digits.');
 
       (async function(){
+        if(window.__syncAuthFromServer)await Promise.race([window.__syncAuthFromServer(),new Promise(function(r){setTimeout(r,1200)})]);
         var curHash = await hashAuth(curPw);
         var authStore = ls(AUTH_KEY) || {};
         var isTeacher = targetRoleVal.indexOf('teacher:') === 0;
@@ -5416,14 +5708,16 @@ return}
         if(targetObj.pw === curHash || targetObj.pin === curHash){
           curValid = true;
         } else {
-          if(targetRoleVal === 'admin' && (curPw === 'Admin@DPS26' || curPw === '2026' || curPw === 'admin123' || curPw === 'admin')) curValid = true;
-          else if(targetRoleVal === 'principal' && (curPw === 'Principal@DPS26' || curPw === '2025' || curPw === 'principal123')) curValid = true;
-          else if(isTeacher && (curPw === 'Teacher@DPS26' || curPw === '1234' || curPw === 'Teacher@123' || curPw === 'teacher123')) curValid = true;
+          if(targetRoleVal === 'admin' && !targetObj.changed && !targetObj.pinChanged && (curPw === 'Admin@DPS26' || curPw === '2026' || curPw === 'admin123' || curPw === 'admin')) curValid = true;
+          else if(targetRoleVal === 'principal' && !targetObj.changed && !targetObj.pinChanged && (curPw === 'Principal@DPS26' || curPw === '2025' || curPw === 'principal123')) curValid = true;
+          else if(isTeacher && !targetObj.changed && !targetObj.pinChanged && (curPw === 'Teacher@DPS26' || curPw === '1234' || curPw === 'Teacher@123' || curPw === 'teacher123')) curValid = true;
         }
         if(!curValid) return pmsg('Current password or PIN is incorrect.');
         if(newPw){ targetObj.pw = await hashAuth(newPw); targetObj.changed = true; }
         if(newPin){ targetObj.pin = await hashAuth(newPin); targetObj.pinChanged = true; }
+        targetObj.updatedAt = Date.now();
         ls(AUTH_KEY, authStore);
+        save({type:'auth_update', role: isTeacher ? 'teacher' : targetRoleVal, name: isTeacher ? teacherName : targetRoleVal, rec: targetObj});
         pmsg('Credentials updated successfully! You can now sign in with your new credentials.', 1);
         $('#pw-current').value = '';
         $('#pw-new').value = '';
@@ -6363,7 +6657,122 @@ return}
   };
   go();
   /* ---------- LIVE MULTI-DEVICE SYNC & REAL-TIME ALERTS ---------- */
-  syncFromServer(true);
+  var SEEN_REQ_KEY='dps_pr_seen_reqs_v1', seenPopupIds={};
+  function loadSeenReqs(){
+    try{
+      var arr=JSON.parse(localStorage.getItem(SEEN_REQ_KEY)||'[]');
+      if(Array.isArray(arr))arr.forEach(function(id){seenPopupIds[id]=true});
+    }catch(e){}
+  }
+  function markSeenReqs(ids){
+    ids.forEach(function(id){if(id!=null)seenPopupIds[id]=true});
+    try{
+      var all=Object.keys(seenPopupIds).slice(-200);
+      localStorage.setItem(SEEN_REQ_KEY,JSON.stringify(all));
+    }catch(e){}
+  }
+  loadSeenReqs();
+  function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+  function showPrincipalReqPopup(itemsList){
+    if(!itemsList||!itemsList.length)return;
+    var Ael=document.getElementById('A');
+    if(!Ael||Ael.hidden||getRole()!=='principal')return;
+    var unseen=itemsList.filter(function(x){
+      var rid=(x&&(x.id!=null?x.id:x.slipId));
+      return rid!=null&&!seenPopupIds[rid];
+    });
+    if(!unseen.length)return;
+    markSeenReqs(unseen.map(function(x){return x.id!=null?x.id:x.slipId}));
+
+    var first=unseen[0];
+    var fid=first.id!=null?first.id:first.slipId;
+    var fullSlip=(reqs||[]).filter(function(r){return r&&Number(r.id)===Number(fid)})[0]||first;
+    var who=fullSlip.by||'Teacher';
+    var slipTxt=fid!=null?('#REQ-'+String(fid).padStart(3,'0')):'New Slip';
+    var cnt=Array.isArray(fullSlip.it)?fullSlip.it.length:0;
+    var detailLine=fullSlip.body
+      ? escHtml(fullSlip.body)
+      : (escHtml(who)+' raised '+escHtml(slipTxt)+(cnt?(' ('+cnt+' item'+(cnt>1?'s':'')+')'):'')+(fullSlip.purpose?(' \u2022 '+escHtml(fullSlip.purpose)):''));
+    if(unseen.length>1)detailLine+=' (+'+(unseen.length-1)+' more pending)';
+
+    var prevPop=document.getElementById('prq-center-popup');
+    if(prevPop&&prevPop.parentNode)prevPop.parentNode.removeChild(prevPop);
+
+    var pop=document.createElement('div');
+    pop.id='prq-center-popup';
+    pop.className='prq-center-popup';
+    pop.setAttribute('role','status');
+    pop.innerHTML=
+      '<div class="prq-pop-head">'
+        +'<div class="prq-pop-ico"><svg viewBox="0 0 24 24">'+NAV_IC.req+'</svg></div>'
+        +'<div>'
+          +'<div class="prq-pop-tag"><span class="prq-pop-dot"></span>New Requisition Request</div>'
+          +'<div class="prq-pop-title">'+escHtml(slipTxt)+' \u2022 '+escHtml(who)+'</div>'
+        +'</div>'
+      +'</div>'
+      +'<div class="prq-pop-body">'+detailLine+'</div>'
+      +'<div class="prq-pop-foot"><span>Tap to review &amp; approve</span><span>Awaiting Principal</span></div>'
+      +'<div class="prq-bar"></div>';
+    document.body.appendChild(pop);
+
+    if(window.EnterpriseAnim){
+      EnterpriseAnim.playChime('approval');
+      EnterpriseAnim.vibrate([25,35,25]);
+    }
+
+    var flyTimer=null, cleaned=false;
+    function dismissNow(openReq){
+      if(cleaned)return;
+      cleaned=true;
+      clearTimeout(flyTimer);
+      if(pop&&pop.parentNode)pop.parentNode.removeChild(pop);
+      if(openReq){
+        closeKiteBill();view='req';clearSub();
+        var mn=document.getElementById('main');if(mn)mn.scrollTop=0;
+        go();
+      }
+    }
+    pop.addEventListener('click',function(){dismissNow(true)});
+
+    flyTimer=setTimeout(function(){
+      if(cleaned||!pop.parentNode)return;
+      var pendingCount=reqs.filter(function(r){return r&&r.st==='Pending'}).length;
+      updatePrincipalDock(Math.max(pendingCount,1),'principal');
+      var mobIcon=document.querySelector('#rail-m [data-v="req"] .a-bi')||document.querySelector('#rail-m [data-v="req"]');
+      var mobRect=mobIcon?mobIcon.getBoundingClientRect():null;
+      var target=(mobRect&&mobRect.width>0&&mobRect.height>0)?mobIcon:document.getElementById('p-req-dock');
+      if(!target){dismissNow(false);return}
+      var tRect=target.getBoundingClientRect();
+      var pRect=pop.getBoundingClientRect();
+      var dx=(tRect.left+tRect.width/2)-(pRect.left+pRect.width/2);
+      var dy=(tRect.top+tRect.height/2)-(pRect.top+pRect.height/2);
+      pop.classList.add('prq-flying');
+      void pop.offsetWidth;
+      pop.style.transform='translate(calc(-50% + '+dx+'px), calc(-50% + '+dy+'px)) scale(0.14)';
+      pop.style.borderRadius='50%';
+      pop.style.opacity='0.12';
+      setTimeout(function(){
+        dismissNow(false);
+        var hitTarget=(mobRect&&mobRect.width>0)?(document.querySelector('#rail-m [data-v="req"]')||mobIcon):target;
+        if(hitTarget){
+          hitTarget.classList.remove('prq-dock-hit');
+          void hitTarget.offsetWidth;
+          hitTarget.classList.add('prq-dock-hit');
+        }
+      },560);
+    },2000);
+  }
+  window.__triggerPrincipalReqPopup=showPrincipalReqPopup;
+  window.__checkPrincipalPendingAlert=function(){
+    if(getRole()!=='principal')return;
+    var pend=(reqs||[]).filter(function(r){return r&&r.st==='Pending'});
+    if(pend.length)showPrincipalReqPopup(pend);
+  };
+
+  syncFromServer(true).then(function(){
+    if(window.__syncAuthFromServer)window.__syncAuthFromServer();
+    if(isPortalVisible()&&getRole()==='principal')window.__checkPrincipalPendingAlert();
+  });
   var lastNotifTs=Date.now()-10000, seenNotifIds={};
   function handleIncomingNotif(n){
     if(!n||!n.id||seenNotifIds[n.id])return;
@@ -6382,8 +6791,12 @@ return}
         match=true;
       }
     }
-    if(match&&window.EnterpriseAnim){
-      EnterpriseAnim.toast(n.title||'Stationery Update',n.body||'',n.type==='req_approved'?'stock':'approval');
+    if(match){
+      if(activeRole==='principal'&&n.type==='req_created'){
+        showPrincipalReqPopup([n]);
+      }else if(window.EnterpriseAnim){
+        EnterpriseAnim.toast(n.title||'Stationery Update',n.body||'',n.type==='req_approved'?'stock':'approval');
+      }
     }
   }
   // Connect SSE stream when available (instant local/LAN updates)
@@ -6423,7 +6836,15 @@ return}
   function swap(from,to){from.classList.add('leave');setTimeout(function(){from.hidden=true;from.classList.remove('leave');to.hidden=false;to.classList.add('enter');setTimeout(function(){to.classList.remove('enter')},650)},420)}
   window.__enter=function(s){
     if(!s)return;
-    if(window.__syncServerData)window.__syncServerData(true);
+    if(window.__syncServerData){
+      Promise.resolve(window.__syncServerData(true)).then(function(){
+        if(s.role==='principal'&&window.__checkPrincipalPendingAlert){
+          setTimeout(window.__checkPrincipalPendingAlert,550);
+        }
+      });
+    }else if(s.role==='principal'&&window.__checkPrincipalPendingAlert){
+      setTimeout(window.__checkPrincipalPendingAlert,550);
+    }
     if(s.role==='admin'||s.role==='principal'){
       window.__adminReset&&window.__adminReset();
       swap(L,A);
@@ -6432,7 +6853,7 @@ return}
       swap(L,T);
     }
   };
-  window.__logout=function(){try{sessionStorage.removeItem('dps_session')}catch(e){} if(window.EnterpriseAnim){ EnterpriseAnim.toast('Signed Out Safely', 'See you next time!', 'login'); } var cur=A.hidden?T:A;window.__loginReset&&window.__loginReset();swap(cur,L)};
+  window.__logout=function(){try{sessionStorage.removeItem('dps_session')}catch(e){} var prPop=document.getElementById('prq-center-popup');if(prPop&&prPop.parentNode)prPop.parentNode.removeChild(prPop); if(window.EnterpriseAnim){ EnterpriseAnim.toast('Signed Out Safely', 'See you next time!', 'login'); } var cur=A.hidden?T:A;window.__loginReset&&window.__loginReset();swap(cur,L)};
   try{
     var s=JSON.parse(sessionStorage.getItem('dps_session'));
     if(s&&Date.now()-s.t<288e5){
