@@ -1,5 +1,5 @@
-// DPS Stationery - Service Worker v8 (Silent Auto-Update & Real-Time Push)
-const CACHE_NAME = 'dps-stationery-v8';
+// DPS Stationery - Service Worker v9 (Silent Auto-Update & Real-Time Push)
+const CACHE_NAME = 'dps-stationery-v9';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -50,8 +50,8 @@ self.addEventListener('fetch', event => {
 
   if (req.method !== 'GET') return;
 
-  // Never intercept or cache live notification streams
-  if (url.pathname.startsWith('/api/notifications')) {
+  // Never intercept or cache live notification streams or live app data sync
+  if (url.pathname.startsWith('/api/notifications') || url.pathname.startsWith('/api/data')) {
     return;
   }
 

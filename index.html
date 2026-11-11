@@ -3835,27 +3835,151 @@ html[data-theme="light"] select option:checked,
   };
   var sessionCfg=Object.assign({},defaultSessionCfg);
   seed();
-  var DK='dps_data_v4';
+  var DK='dps_data_v4', DK_DIRTY='dps_sync_dirty_v1';
+  var syncSaving=0, syncFetching=false, lastServerSig='';
+  function statePayload(){
+    if(log&&log.length>600)log=log.slice(0,600);
+    return {items:items,uid:uid,bills:bills,bid:bid,fac:fac,log:log,reqs:reqs,sessionCfg:sessionCfg};
+  }
+  function stateSig(d){
+    if(!d)return '';
+    try{return JSON.stringify({i:d.items||[],b:d.bills||[],f:d.fac||[],l:d.log||[],r:d.reqs||[],s:d.sessionCfg||{}});}catch(e){return '';}
+  }
+  function saveLocalOnly(){
+    try{
+      var p=statePayload();
+      localStorage.setItem(DK,JSON.stringify(p));
+      return p;
+    }catch(e){return null;}
+  }
+  function isPortalVisible(){
+    var L=document.getElementById('L');
+    return !!(L&&L.hidden);
+  }
+  function applyRemoteState(remote, skipRender){
+    if(!remote||!Array.isArray(remote.items)||!remote.items.length)return false;
+    items=remote.items;
+    uid=remote.uid||uid;
+    bills=remote.bills||[];
+    bid=remote.bid||bid;
+    fac=remote.fac||fac;
+    log=remote.log||[];
+    reqs=remote.reqs||[];
+    bills.forEach(function(b){if(b.stockAdded===undefined)b.stockAdded=!(b.date<iso())});
+    if(remote.sessionCfg)sessionCfg=Object.assign({},defaultSessionCfg,remote.sessionCfg);
+    lastServerSig=stateSig(remote);
+    saveLocalOnly();
+    if(skipRender)return true;
+    var Ael=document.getElementById('A'), Tel=document.getElementById('T');
+    var ae=document.activeElement;
+    if(Ael&&!Ael.hidden){
+      if(typeof rail==='function')rail();
+      if(typeof tree==='function')tree();
+      var typingA=ae&&ae.closest&&ae.closest('#main input, #main select, #main textarea');
+      if(!typingA&&view!=='add'&&!editingBillId){
+        var mn=document.getElementById('main'),sy=mn?mn.scrollTop:0;
+        if(typeof go==='function')go();
+        var mn2=document.getElementById('main');if(mn2){mn2.style.scrollBehavior='auto';mn2.scrollTop=sy;}
+      }
+    }
+    if(Tel&&!Tel.hidden){
+      var typingT=ae&&ae.closest&&ae.closest('#T input, #T select, #T textarea, #sp-layer input');
+      if(!typingT){
+        if(typeof rerender==='function')rerender();
+        if(typeof renderLayer==='function'&&!tModal&&!tCartOpen&&!tSent)renderLayer();
+      }
+    }
+    return true;
+  }
+  function syncFromServer(forceRender){
+    if(!window.fetch||syncSaving>0||syncFetching)return Promise.resolve(false);
+    // Flush pending offline save first before pulling
+    try{
+      var pending=localStorage.getItem(DK_DIRTY);
+      if(pending){
+        var parsedP=JSON.parse(pending);
+        localStorage.removeItem(DK_DIRTY);
+        return postToServer(parsedP.payload, parsedP.op).then(function(){return true;});
+      }
+    }catch(e){}
+    syncFetching=true;
+    return fetch('/api/data?_ts='+Date.now(),{cache:'no-store',credentials:'include'})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(remote){
+        syncFetching=false;
+        if(remote&&Array.isArray(remote.items)&&remote.items.length>0){
+          var rSig=stateSig(remote);
+          if(rSig!==lastServerSig){
+            return applyRemoteState(remote, !forceRender && !isPortalVisible());
+          }
+          return false;
+        }else if(items&&items.length>0){
+          // Server empty/uninitialized: seed server once from local master catalog
+          save();
+        }
+        return false;
+      })
+      .catch(function(){syncFetching=false;return false;});
+  }
+  function postToServer(payload, op){
+    if(!window.fetch)return Promise.resolve(null);
+    syncSaving++;
+    var bodyObj=Object.assign({},payload);
+    if(op&&op._reset)bodyObj._reset=true;
+    else if(op)bodyObj._op=op;
+    return fetch('/api/data',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      credentials:'include',
+      body:JSON.stringify(bodyObj)
+    })
+    .then(function(r){return r.json();})
+    .then(function(res){
+      syncSaving=Math.max(0,syncSaving-1);
+      try{localStorage.removeItem(DK_DIRTY);}catch(e){}
+      if(res&&res.ok&&res.state){
+        if(op&&op.type==='req_add'&&res.assignedId&&typeof tSent!=='undefined'&&tSent&&tSent.id===op.req.id){
+          tSent.id=res.assignedId;
+        }
+        var curSig=stateSig(statePayload());
+        var srvSig=stateSig(res.state);
+        if(srvSig!==curSig){
+          applyRemoteState(res.state, false);
+        }else{
+          lastServerSig=srvSig;
+          saveLocalOnly();
+        }
+      }
+      return res;
+    })
+    .catch(function(){
+      syncSaving=Math.max(0,syncSaving-1);
+      try{localStorage.setItem(DK_DIRTY,JSON.stringify({payload:payload,op:op||null,t:Date.now()}));}catch(e){}
+      return null;
+    });
+  }
   try{
     localStorage.removeItem('dps_data_v3');
     localStorage.removeItem('dps_data_v2');
     localStorage.removeItem('dps_data_v1');
     var sv=JSON.parse(localStorage.getItem(DK));
-    if(sv&&sv.items&&sv.items.length>=84&&sv.log&&sv.log.length>=100){
-      items=sv.items;uid=sv.uid;bills=sv.bills||[];bid=sv.bid;fac=sv.fac;log=sv.log;reqs=sv.reqs;
+    if(sv&&Array.isArray(sv.items)&&sv.items.length>0){
+      items=sv.items;uid=sv.uid;bills=sv.bills||[];bid=sv.bid;fac=sv.fac;log=sv.log||[];reqs=sv.reqs||[];
       bills.forEach(function(b){if(b.stockAdded===undefined)b.stockAdded=!(b.date<iso())});
       if(sv.sessionCfg)sessionCfg=Object.assign({},defaultSessionCfg,sv.sessionCfg);
+      lastServerSig=stateSig(statePayload());
     } else {
-      save();
+      saveLocalOnly();
     }
   }catch(e){}
-  function save(){
-    try{
-      localStorage.setItem(DK,JSON.stringify({
-        items:items,uid:uid,bills:bills,bid:bid,fac:fac,log:log,reqs:reqs,sessionCfg:sessionCfg
-      }));
-    }catch(e){}
+  function save(op){
+    var p=saveLocalOnly();
+    if(p){
+      lastServerSig=stateSig(p);
+      postToServer(p, op);
+    }
   }
+  window.__syncServerData=syncFromServer;
 
   var view='stock',mode='f',cat='All',tag=null,openId=null,billId=null,editingBillId=null,facName=null,query='',addTab='issue',dmgItem=null;
   var rowsI=[{id:0,v:'',q:''}],rowsB=[{id:0,v:'',q:'',r:''}],rowsEB=[];
@@ -5364,9 +5488,9 @@ return}
     if(a==='mkdmg'){if(getRole()!=='admin')return;mkDmg();return}
     if(a==='dmgfrom'){if(getRole()!=='admin')return;dmgItem=openId;clearSub();view='add';addTab='dmg';go();$('#main').scrollTop=0;return}
     if(a==='mkbill'){if(getRole()!=='admin')return;mkBill();return}
-    if(a==='reset'){if(getRole()!=='admin')return;try{localStorage.removeItem(DK)}catch(x){}seed();go();return}
+    if(a==='reset'){if(getRole()!=='admin')return;try{localStorage.removeItem(DK);localStorage.removeItem(DK_DIRTY)}catch(x){}seed();save({_reset:true});go();return}
     if(d.r){
-      var r=reqs.filter(function(x){return x.id===+d.r})[0],role=getRole(),msg='',okm=true;
+      var r=reqs.filter(function(x){return x.id===+d.r})[0],role=getRole(),msg='',okm=true,syncOp=null;
       if(!r)return;
       if(d.s==='Verified'){
         if(role!=='principal'||r.st!=='Pending')return;
@@ -5375,6 +5499,7 @@ return}
         if(rj.length===r.it.length){msg='All items are rejected. Use Decline to reject the whole slip, or accept at least one item.';okm=false}
         else{
           r.st='Verified';r.pDate=iso();if(rj.length)r.rejP=rj;
+          syncOp={type:'req_status',id:r.id,req:JSON.parse(JSON.stringify(r))};
           msg='Slip #'+slipNo(r.id)+' of '+r.by+' approved and sent to Admin for issue.'+(rj.length?' '+rj.length+' item'+(rj.length>1?'s were':' was')+' rejected.':''); if(window.EnterpriseAnim){ EnterpriseAnim.confetti(); EnterpriseAnim.toast('Requisition Slip Approved!', 'Slip #' + slipNo(r.id) + ' approved by Principal.', 'approval'); }
         }
       }else if(d.s==='Approved'){
@@ -5395,23 +5520,31 @@ return}
         var remEl=document.querySelector('.rq-rem[data-slip="'+r.id+'"]'),adminNote=remEl?remEl.value.trim():'';
         if(bad){msg=bad;okm=false}
         else{
-          var shorts=[];
+          var shorts=[],deductList=[];
           r.it.forEach(function(x,i){
             var q=qs[i],it=find(x[0]);
-            if(q>0){doIssue(x[0],x[1],q,r.by);if(log[0]){log[0].rem='Requisition '+slipNo(r.id)+(q<x[2]?' \u2022 issued '+q+' of '+x[2]:'')+(adminNote?' \u2022 '+adminNote:'')}}
+            if(q>0){
+              doIssue(x[0],x[1],q,r.by);
+              var rText='Requisition '+slipNo(r.id)+(q<x[2]?' \u2022 issued '+q+' of '+x[2]:'')+(adminNote?' \u2022 '+adminNote:'');
+              if(log[0])log[0].rem=rText;
+              deductList.push({id:x[0],v:x[1],q:q,by:r.by,rem:rText,date:iso()});
+            }
             if((r.rejP||[]).indexOf(i)>=0)shorts.push((it?it.name:'Item')+' ('+x[1]+'): rejected by Principal');
             else if(rjAl.indexOf(i)>=0)shorts.push((it?it.name:'Item')+' ('+x[1]+'): rejected by Admin');
             else if(q<x[2])shorts.push((it?it.name:'Item')+' ('+x[1]+'): requested '+x[2]+', issued '+q+' ('+(x[2]-q)+' not issued)');
           });
           r.st='Approved';r.iDate=iso();r.iss=qs;r.short=shorts;r.iRem=adminNote;if(rjAl.length)r.rejA=rjAl;
+          syncOp={type:'req_status',id:r.id,req:JSON.parse(JSON.stringify(r)),deduct:deductList};
           msg='Slip #'+slipNo(r.id)+' issued to '+r.by+(shorts.length?' with a partial issue. The remark is now visible to everyone.':'. Stock was deducted automatically.'); if(window.EnterpriseAnim){ EnterpriseAnim.confetti(); EnterpriseAnim.toast('Items Issued Successfully!', 'Slip #' + slipNo(r.id) + ' items issued to ' + r.by + '.', 'stock'); EnterpriseAnim.stockBump(); }
         }
       }else if(d.s==='Declined'){
         if(!((role==='principal'&&r.st==='Pending')||(role==='admin'&&r.st==='Verified')))return;
         r.st='Declined';r.declBy=role;r.dDate=iso();
+        syncOp={type:'req_status',id:r.id,req:JSON.parse(JSON.stringify(r))};
         msg='Slip #'+slipNo(r.id)+' of '+r.by+' was declined.';
       }else return;
-      save();rail();tree();
+      if(okm)save(syncOp);
+      rail();tree();
       if(okm&&window.__beep)window.__beep(d.s==='Declined'?'decline':'approve');
       if(reqT)reqTeacherView(reqT);else reqView();
       var rm=$('#rm');if(rm){rm.style.color=okm?'var(--acc)':'var(--err)';rm.textContent=msg}
@@ -5768,8 +5901,9 @@ return}
     });
     if(problem){saveCart();renderLayer();cartMsg(problem);return}
     var id=nextSlipId();
-    reqs.unshift({id:id,by:getTeacherName(),it:tCart.map(function(l){return [l.id,l.v,l.q]}),st:'Pending',date:iso(),purpose:purpose});
-    save();
+    var newSlip={id:id,by:getTeacherName(),it:tCart.map(function(l){return [l.id,l.v,l.q]}),st:'Pending',date:iso(),purpose:purpose};
+    reqs.unshift(newSlip);
+    save({type:'req_add',req:JSON.parse(JSON.stringify(newSlip))});
     if(window.__beep)window.__beep('send');
     tCart=[];tPurpose='';saveCart();
     tCartOpen=false;tView='my-slips';tSent={id:id};
@@ -6228,6 +6362,60 @@ return}
     return false;
   };
   go();
+  /* ---------- LIVE MULTI-DEVICE SYNC & REAL-TIME ALERTS ---------- */
+  syncFromServer(true);
+  var lastNotifTs=Date.now()-10000, seenNotifIds={};
+  function handleIncomingNotif(n){
+    if(!n||!n.id||seenNotifIds[n.id])return;
+    seenNotifIds[n.id]=true;
+    if(n.timestamp&&n.timestamp>lastNotifTs)lastNotifTs=n.timestamp;
+    syncFromServer(true);
+    if(!isPortalVisible())return;
+    var curRole=getRole(), curTeacher=typeof getTeacherName==='function'?getTeacherName():'';
+    var Ael=document.getElementById('A'), Tel=document.getElementById('T');
+    var activeRole=(Tel&&!Tel.hidden)?'teacher':((Ael&&!Ael.hidden)?curRole:'');
+    var match=false;
+    if(Array.isArray(n.targetRole)&&n.targetRole.indexOf(activeRole)>=0){
+      if(activeRole==='teacher'){
+        if(!n.targetTeacher||(curTeacher&&n.targetTeacher.trim().toLowerCase()===curTeacher.trim().toLowerCase()))match=true;
+      }else{
+        match=true;
+      }
+    }
+    if(match&&window.EnterpriseAnim){
+      EnterpriseAnim.toast(n.title||'Stationery Update',n.body||'',n.type==='req_approved'?'stock':'approval');
+    }
+  }
+  // Connect SSE stream when available (instant local/LAN updates)
+  if(window.EventSource){
+    (function connectSSE(){
+      try{
+        var es=new EventSource('/api/notifications/stream');
+        es.onmessage=function(ev){
+          try{var n=JSON.parse(ev.data);handleIncomingNotif(n);}catch(e){}
+        };
+        es.onerror=function(){
+          try{es.close();}catch(e){}
+          setTimeout(connectSSE,8000);
+        };
+      }catch(e){}
+    })();
+  }
+  // Background polling fallback (works on both LAN server and Vercel serverless)
+  setInterval(function(){
+    if(document.hidden||!isPortalVisible())return;
+    syncFromServer(true);
+  },3500);
+  setInterval(function(){
+    if(document.hidden||!isPortalVisible()||!window.fetch)return;
+    fetch('/api/notifications?since='+lastNotifTs,{cache:'no-store'})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(d){if(d&&Array.isArray(d.notifications))d.notifications.forEach(handleIncomingNotif);})
+      .catch(function(){});
+  },4500);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)syncFromServer(true);});
+  window.addEventListener('focus',function(){syncFromServer(true);});
+  window.addEventListener('online',function(){syncFromServer(true);});
 })();
 </script>
 <script>(function(){
@@ -6235,6 +6423,7 @@ return}
   function swap(from,to){from.classList.add('leave');setTimeout(function(){from.hidden=true;from.classList.remove('leave');to.hidden=false;to.classList.add('enter');setTimeout(function(){to.classList.remove('enter')},650)},420)}
   window.__enter=function(s){
     if(!s)return;
+    if(window.__syncServerData)window.__syncServerData(true);
     if(s.role==='admin'||s.role==='principal'){
       window.__adminReset&&window.__adminReset();
       swap(L,A);

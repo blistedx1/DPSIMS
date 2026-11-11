@@ -5,6 +5,7 @@ const path = require('path');
 const os = require('os');
 const db = require('./db');
 const push = require('./lib/push');
+const { mergeAppState, detectReqNotifications } = require('./lib/sync');
 
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data.json');
@@ -21,21 +22,53 @@ const MIME = {
   '.ico': 'image/x-icon'
 };
 
-// Notification Broker (In-memory ring buffer + SSE live streaming)
+// Notification Broker & Live State Cache
 const notificationsQueue = [];
 const notificationClients = new Set();
-let lastReqsState = null;
+let cachedStateStr = null;
+let cachedStateAt = 0;
 
-// Initialize lastReqsState from data.json if available
-try {
-  if (fs.existsSync(DATA_FILE)) {
-    const raw = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-    if (Array.isArray(raw.reqs)) {
-      lastReqsState = {};
-      raw.reqs.forEach(r => { if (r && r.id != null) lastReqsState[r.id] = r.st; });
+function readLocalDataObj() {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      const raw = fs.readFileSync(DATA_FILE, 'utf8');
+      return JSON.parse(raw);
     }
+  } catch (e) {}
+  return null;
+}
+
+async function readAuthoritativeState(forceFresh) {
+  const now = Date.now();
+  if (!forceFresh && cachedStateStr && (now - cachedStateAt) < 1500) {
+    try { return { str: cachedStateStr, obj: JSON.parse(cachedStateStr) }; } catch (e) {}
   }
-} catch (e) {}
+
+  let localObj = readLocalDataObj();
+  if (db.isConnected()) {
+    try {
+      const r = await db.query("SELECT payload FROM dps_app_state WHERE key = 'current' LIMIT 1;");
+      if (r.rows && r.rows.length && r.rows[0].payload) {
+        const dbObj = typeof r.rows[0].payload === 'string' ? JSON.parse(r.rows[0].payload) : r.rows[0].payload;
+        // Prefer whichever actually has items if one is uninitialized
+        const dbHasItems = dbObj && Array.isArray(dbObj.items) && dbObj.items.length > 0;
+        const localHasItems = localObj && Array.isArray(localObj.items) && localObj.items.length > 0;
+        const chosen = dbHasItems || !localHasItems ? dbObj : localObj;
+        const str = JSON.stringify(chosen);
+        cachedStateStr = str;
+        cachedStateAt = Date.now();
+        fs.writeFile(DATA_FILE, str, () => {});
+        return { str, obj: chosen };
+      }
+    } catch (e) {}
+  }
+
+  const chosen = localObj || { items: [], reqs: [] };
+  const str = JSON.stringify(chosen);
+  cachedStateStr = str;
+  cachedStateAt = Date.now();
+  return { str, obj: chosen };
+}
 
 function broadcastNotification(notif) {
   if (!notif.id) notif.id = 'notif_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
@@ -176,29 +209,18 @@ const server = http.createServer((req, res) => {
         }));
       }
     }
-    const fallbackLocalRead = () => {
-      fs.readFile(DATA_FILE, 'utf8', (err, data) => {
-        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-        res.end(err ? '{}' : data);
-      });
-    };
 
     if (req.method === 'GET') {
-      if (db.isConnected()) {
-        db.query("SELECT payload FROM dps_app_state WHERE key = 'current' LIMIT 1;")
-          .then(r => {
-            if (r.rows && r.rows.length && r.rows[0].payload) {
-              const payloadStr = typeof r.rows[0].payload === 'string' ? r.rows[0].payload : JSON.stringify(r.rows[0].payload);
-              fs.writeFile(DATA_FILE, payloadStr, () => {});
-              res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-              return res.end(payloadStr);
-            }
-            fallbackLocalRead();
-          })
-          .catch(() => fallbackLocalRead());
-        return;
-      }
-      fallbackLocalRead();
+      readAuthoritativeState(false).then(({ str }) => {
+        res.writeHead(200, {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Cache-Control': 'no-store, no-cache, must-revalidate'
+        });
+        res.end(str);
+      }).catch(() => {
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+        res.end('{}');
+      });
       return;
     }
 
@@ -208,87 +230,45 @@ const server = http.createServer((req, res) => {
         body += chunk;
         if (body.length > 5 * 1024 * 1024) req.destroy();
       });
-      req.on('end', () => {
+      req.on('end', async () => {
         try {
           const parsed = JSON.parse(body);
+          const { obj: existing } = await readAuthoritativeState(true);
+          const { state: merged, assignedId } = mergeAppState(existing, parsed);
+          const mergedStr = JSON.stringify(merged);
 
-          // Auto-detect requisition status changes and broadcast push notifications
-          if (Array.isArray(parsed.reqs)) {
-            const nextMap = {};
-            parsed.reqs.forEach(r => {
-              if (!r || r.id == null) return;
-              nextMap[r.id] = r.st;
-              const prevSt = lastReqsState ? lastReqsState[r.id] : undefined;
+          // Update memory cache immediately so concurrent GETs get newest state
+          cachedStateStr = mergedStr;
+          cachedStateAt = Date.now();
 
-              // 1. New Requisition submitted by Teacher -> Notify Principal & Admin
-              if (prevSt === undefined && r.st === 'Pending') {
-                const count = Array.isArray(r.it) ? r.it.length : 0;
-                broadcastNotification({
-                  id: `req_new_${r.id}_${Date.now()}`,
-                  type: 'req_created',
-                  targetRole: ['principal', 'admin'],
-                  title: '📋 New Requisition Slip Raised',
-                  body: `${r.by || 'Teacher'} has filled Requisition Slip #REQ-${String(r.id).padStart(3, '0')} (${count} items). Awaiting approval.`,
-                  tag: `req-slip-${r.id}`,
-                  slipId: r.id
-                });
-              }
-              // 2. Principal verifies slip -> Notify Teacher & Admin
-              else if (prevSt === 'Pending' && r.st === 'Verified') {
-                broadcastNotification({
-                  id: `req_ver_${r.id}_${Date.now()}`,
-                  type: 'req_verified',
-                  targetTeacher: r.by,
-                  targetRole: ['admin'],
-                  title: '✅ Requisition Slip Approved by Principal',
-                  body: `Principal approved Requisition Slip #REQ-${String(r.id).padStart(3, '0')} for ${r.by}. Please issue the requested items.`,
-                  tag: `req-verified-${r.id}`,
-                  slipId: r.id
-                });
-              }
-              // 3. Admin issues/approves slip -> Notify Teacher
-              else if (prevSt === 'Verified' && r.st === 'Approved') {
-                broadcastNotification({
-                  id: `req_app_${r.id}_${Date.now()}`,
-                  type: 'req_approved',
-                  targetRole: ['teacher'],
-                  targetTeacher: r.by,
-                  title: '📦 Requested Items Ready for Collection',
-                  body: `Your Requisition Slip #REQ-${String(r.id).padStart(3, '0')} has been approved. You can collect your requested items from Admin.`,
-                  tag: `req-approved-${r.id}`,
-                  slipId: r.id
-                });
-              }
-              // 4. Declined slip -> Notify Teacher
-              else if (prevSt && prevSt !== 'Declined' && r.st === 'Declined') {
-                broadcastNotification({
-                  id: `req_dec_${r.id}_${Date.now()}`,
-                  type: 'req_declined',
-                  targetRole: ['teacher'],
-                  targetTeacher: r.by,
-                  title: '❌ Requisition Slip Declined',
-                  body: `Your Requisition Slip #REQ-${String(r.id).padStart(3, '0')} was declined by ${r.declBy === 'principal' ? 'Principal' : 'Store Admin'}.`,
-                  tag: `req-declined-${r.id}`,
-                  slipId: r.id
-                });
-              }
-            });
-            lastReqsState = nextMap;
+          // Detect requisition transitions & broadcast live notifications (SSE + DB + Web Push)
+          const notifs = detectReqNotifications(existing ? existing.reqs : [], merged.reqs);
+          notifs.forEach(n => broadcastNotification(n));
+
+          // Persist to local disk & Neon PostgreSQL before responding
+          try { fs.writeFileSync(DATA_FILE, mergedStr, 'utf8'); } catch (err) {
+            console.error('[DATA] Local write error:', err.message);
           }
-
-          // 1. Write local disk cache
-          fs.writeFile(DATA_FILE, body, 'utf8', err => {
-            if (err) console.error('[DATA] Local write error:', err.message);
-          });
-          // 2. Write to PostgreSQL in cloud
           if (db.isConnected()) {
-            db.query(
-              "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', $1, NOW()) ON CONFLICT (key) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW();",
-              [body]
-            ).catch(err => console.error('[DB] Cloud sync error:', err.message));
+            try {
+              await db.query(
+                "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', $1, NOW()) ON CONFLICT (key) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW();",
+                [mergedStr]
+              );
+            } catch (err) {
+              console.error('[DB] Cloud sync error:', err.message);
+            }
           }
-          res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-          res.end(JSON.stringify({ ok: true, source: db.isConnected() ? 'postgres+local' : 'local' }));
+          res.writeHead(200, {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Cache-Control': 'no-store'
+          });
+          res.end(JSON.stringify({
+            ok: true,
+            source: db.isConnected() ? 'postgres+local' : 'local',
+            state: merged,
+            assignedId: assignedId || null
+          }));
         } catch (e) {
           res.writeHead(400, { 'Content-Type': 'text/plain' });
           res.end('Invalid JSON');
