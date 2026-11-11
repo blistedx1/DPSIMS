@@ -24,7 +24,7 @@ function getPool() {
       max: 5,
       keepAlive: true,
       idleTimeoutMillis: 20000,
-      connectionTimeoutMillis: 30000
+      connectionTimeoutMillis: process.env.VERCEL ? 8000 : 15000
     });
     pool.on('error', () => {});
   }

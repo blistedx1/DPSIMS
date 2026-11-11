@@ -1,5 +1,5 @@
 const db = require('../../db');
-const { verifySecret, checkRateLimit } = require('../../lib/auth');
+const { verifySecret, checkRateLimit, getClientIp, classifyApiError } = require('../../lib/auth');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
     }
     const { username, role, recoveryCode } = body || {};
 
-    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const clientIp = getClientIp(req);
     const limit = checkRateLimit(`recover:${clientIp}`, 5, 60);
     if (!limit.ok) {
       return res.status(429).json({ ok: false, error: `Too many attempts. Try again in ${limit.retrySec}s.` });
@@ -78,7 +78,8 @@ module.exports = async (req, res) => {
     });
   } catch (err) {
     console.error('[API/AUTH/RECOVER] Error:', err.message);
-    return res.status(500).json({ ok: false, error: 'Internal server error' });
+    const info = classifyApiError(err);
+    return res.status(info.status).json({ ok: false, error: info.error });
   }
 };
 

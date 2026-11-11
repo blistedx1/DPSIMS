@@ -1,5 +1,5 @@
 const db = require('../../db');
-const { parseCookies, verifyToken, formatCookie, setCorsHeaders } = require('../../lib/auth');
+const { parseCookies, verifyToken, formatCookie, setCorsHeaders, getClientIp, classifyApiError } = require('../../lib/auth');
 
 module.exports = async (req, res) => {
   setCorsHeaders(req, res, 'GET, POST, OPTIONS');
@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
     const session = verifyToken(cookies.dps_session);
 
     if (session && session.userId) {
-      const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+      const clientIp = getClientIp(req);
       await db.query(`
         INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent)
         VALUES ($1, $2, 'logout', $3, $4, $5);
@@ -26,7 +26,8 @@ module.exports = async (req, res) => {
     return res.status(200).json({ ok: true });
   } catch (err) {
     console.error('[API/AUTH/LOGOUT] Error:', err.message);
-    return res.status(500).json({ ok: false, error: 'Internal server error' });
+    const info = classifyApiError(err);
+    return res.status(info.status).json({ ok: false, error: info.error });
   }
 };
 

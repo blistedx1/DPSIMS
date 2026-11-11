@@ -1,5 +1,5 @@
 const db = require('../../db');
-const { hashSecret, verifySecret, needsRehash, signToken, formatCookie, setCorsHeaders, checkRateLimit, PERSISTENT_MAX_AGE } = require('../../lib/auth');
+const { hashSecret, verifySecret, needsRehash, signToken, formatCookie, setCorsHeaders, checkRateLimit, getClientIp, classifyApiError, PERSISTENT_MAX_AGE } = require('../../lib/auth');
 
 module.exports = async (req, res) => {
   setCorsHeaders(req, res, 'POST, OPTIONS');
@@ -10,16 +10,19 @@ module.exports = async (req, res) => {
   try {
     let body = req.body;
     if (typeof body === 'string') {
-      try { body = JSON.parse(body); } catch(e) { body = {}; }
+      try { body = JSON.parse(body); } catch (e) { body = {}; }
     }
     const { username, role, password, pin, newPin } = body || {};
 
     if (!username || !role) {
       return res.status(400).json({ ok: false, error: 'Username and role are required' });
     }
+    if (!pin && !password) {
+      return res.status(400).json({ ok: false, error: 'PIN or password is required' });
+    }
 
     // Rate limit check: max 10 attempts per minute per IP
-    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const clientIp = getClientIp(req);
     const limit = checkRateLimit(`login:${clientIp}:${username}`, 10, 60);
     if (!limit.ok) {
       return res.status(429).json({ ok: false, error: `Too many attempts. Try again in ${limit.retrySec}s.` });
@@ -56,11 +59,11 @@ module.exports = async (req, res) => {
       await db.query(
         `UPDATE users SET failed_attempts = $1, locked_until = ${lockMinutes ? "NOW() + INTERVAL '5 minutes'" : 'NULL'} WHERE id = $2;`,
         [nextFails, user.id]
-      ).catch(() => {});
+      ).catch(() => { });
       db.query(
         'INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5, $6)',
         [user.id, user.username, pin ? 'failed_pin_login' : 'failed_pw_login', { role, fails: nextFails }, clientIp, req.headers['user-agent'] || '']
-      ).catch(() => {});
+      ).catch(() => { });
       return res.status(401).json({ ok: false, error: pin ? 'Incorrect PIN. Please try again.' : 'Incorrect password. Please try again.' });
     }
 
@@ -132,7 +135,7 @@ module.exports = async (req, res) => {
     db.query(
       'INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5, $6)',
       [user.id, user.username, pin ? 'pin_login_success' : 'pw_login_success', { role: user.role, hasActivePasskey }, clientIp, req.headers['user-agent'] || '']
-    ).catch(() => {});
+    ).catch(() => { });
 
     return res.status(200).json({
       ok: true,
@@ -150,7 +153,8 @@ module.exports = async (req, res) => {
     });
   } catch (err) {
     console.error('[API/AUTH/LOGIN] Error:', err.message);
-    return res.status(500).json({ ok: false, error: 'Internal server error' });
+    const info = classifyApiError(err);
+    return res.status(info.status).json({ ok: false, error: info.error });
   }
 };
 

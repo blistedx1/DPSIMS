@@ -1,5 +1,5 @@
 const db = require('../../db');
-const { parseCookies, verifyToken, setCorsHeaders } = require('../../lib/auth');
+const { parseCookies, verifyToken, setCorsHeaders, classifyApiError } = require('../../lib/auth');
 
 module.exports = async (req, res) => {
   setCorsHeaders(req, res, 'GET, OPTIONS');
@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
         "SELECT 1 FROM passkeys pk JOIN users u ON u.id = pk.user_id WHERE u.role = 'admin' AND pk.revoked_at IS NULL LIMIT 1;"
       );
       hasAdminPasskey = !!(admPass.rows && admPass.rows.length);
-    } catch (_) {}
+    } catch (_) { }
 
     if (!session || !session.userId) {
       return res.status(200).json({ ok: false, user: null, sseEnabled: !process.env.VERCEL, teachers, hasAdminPasskey });
@@ -73,7 +73,8 @@ module.exports = async (req, res) => {
     });
   } catch (err) {
     console.error('[API/AUTH/ME] Error:', err.message);
-    return res.status(500).json({ ok: false, error: 'Internal server error' });
+    const info = classifyApiError(err);
+    return res.status(info.status).json({ ok: false, error: info.error });
   }
 };
 

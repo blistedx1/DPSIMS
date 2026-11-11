@@ -1,4 +1,4 @@
-const { verifyToken, parseCookies, formatCookie, setCorsHeaders } = require('../lib/auth');
+const { verifyToken, parseCookies, formatCookie, setCorsHeaders, classifyApiError } = require('../lib/auth');
 
 module.exports = async (req, res) => {
   setCorsHeaders(req, res, 'GET, DELETE, OPTIONS');
@@ -43,7 +43,8 @@ module.exports = async (req, res) => {
     return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
   } catch (err) {
     console.error('[API/SESSION] Error:', err.message);
-    return res.status(500).json({ ok: false, error: 'Internal server error' });
+    const info = classifyApiError(err);
+    return res.status(info.status).json({ ok: false, error: info.error });
   }
 };
 

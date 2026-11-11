@@ -1,5 +1,5 @@
 const db = require('../../db');
-const { hashSecret, verifySecret, parseCookies, verifyToken, setCorsHeaders } = require('../../lib/auth');
+const { hashSecret, verifySecret, parseCookies, verifyToken, setCorsHeaders, getClientIp, classifyApiError } = require('../../lib/auth');
 
 module.exports = async (req, res) => {
   setCorsHeaders(req, res, 'POST, OPTIONS');
@@ -85,7 +85,7 @@ module.exports = async (req, res) => {
       WHERE id = $4;
     `, [newPinHash, newPwHash, nextResetRequired, targetUser.id]);
 
-    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const clientIp = getClientIp(req);
     await db.query(`
       INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent)
       VALUES ($1, $2, 'changed_credentials', $3, $4, $5);
@@ -97,7 +97,8 @@ module.exports = async (req, res) => {
     });
   } catch (err) {
     console.error('[API/AUTH/CHANGE-CREDENTIALS] Error:', err.message);
-    return res.status(500).json({ ok: false, error: 'Internal server error: ' + err.message });
+    const info = classifyApiError(err);
+    return res.status(info.status).json({ ok: false, error: info.error });
   }
 };
 
