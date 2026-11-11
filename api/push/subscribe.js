@@ -1,10 +1,8 @@
 const push = require('../../lib/push');
+const { parseCookies, verifyToken, setCorsHeaders } = require('../../lib/auth');
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  setCorsHeaders(req, res, 'GET, POST, DELETE, OPTIONS');
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
@@ -18,19 +16,28 @@ module.exports = async (req, res) => {
     });
   }
 
-  // POST: Register or update browser push subscription
+  // POST: Register or update browser push subscription (bound to authenticated session)
   if (req.method === 'POST') {
     try {
+      const cookies = parseCookies(req.headers.cookie);
+      const session = verifyToken(cookies.dps_session);
+      if (!session || !session.userId || session.scope !== 'full') {
+        return res.status(401).json({ ok: false, error: 'Unauthorized. Sign in before enabling notifications.' });
+      }
       let body = req.body;
       if (typeof body === 'string') {
         body = JSON.parse(body);
       }
-      const { subscription, role, username } = body || {};
+      const { subscription } = body || {};
       if (!subscription || !subscription.endpoint || !subscription.keys) {
         return res.status(400).json({ ok: false, error: 'Invalid push subscription payload' });
       }
 
-      await push.saveSubscription({ subscription, role, username });
+      await push.saveSubscription({
+        subscription,
+        role: session.role,
+        username: session.displayName || session.username
+      });
       return res.status(200).json({ ok: true, message: 'Subscription saved successfully' });
     } catch (e) {
       console.error('[API/PUSH/SUBSCRIBE] Save error:', e.message);

@@ -89,33 +89,36 @@ async function migrate() {
   await db.query(`CREATE INDEX IF NOT EXISTS idx_challenges_lookup ON webauthn_challenges(challenge, user_id);`);
   await db.query(`CREATE INDEX IF NOT EXISTS idx_audit_created ON auth_audit_log(created_at DESC);`);
 
-  // 2. Seed Default Accounts
+  // 2. Seed Default Accounts (passwords/PINs must come from environment variables)
   console.log('[4/4] Seeding default accounts (Admin, Principal, Teachers)...');
 
-  // Admin
-  const adminPwHash = hashSecret('Admin@DPS26');
-  const adminPinHash = hashSecret('2026');
-  const adminRecoverHash = hashSecret('DPS-ADMIN-RECOVER-2026');
+  if (!process.env.SEED_ADMIN_PW || !process.env.SEED_PRINCIPAL_PW || !process.env.SEED_TEACHER_PW) {
+    throw new Error('Set SEED_ADMIN_PW, SEED_PRINCIPAL_PW, SEED_TEACHER_PW (and optional SEED_*_PIN / SEED_ADMIN_RECOVER) in env before running seed migration.');
+  }
+
+  const adminPwHash = hashSecret(process.env.SEED_ADMIN_PW);
+  const adminPinHash = hashSecret(process.env.SEED_ADMIN_PIN || '2026');
+  const adminRecoverHash = process.env.SEED_ADMIN_RECOVER ? hashSecret(process.env.SEED_ADMIN_RECOVER) : null;
 
   await db.query(`
     INSERT INTO users (username, role, display_name, password_hash, pin_hash, pin_changed, pw_changed, admin_recovery_code_hash)
-    VALUES ('admin', 'admin', 'Administrator', $1, $2, TRUE, TRUE, $3)
+    VALUES ('admin', 'admin', 'Administrator', $1, $2, FALSE, FALSE, $3)
     ON CONFLICT (username) DO NOTHING;
   `, [adminPwHash, adminPinHash, adminRecoverHash]);
 
   // Principal
-  const princPwHash = hashSecret('Principal@DPS26');
-  const princPinHash = hashSecret('2025');
+  const princPwHash = hashSecret(process.env.SEED_PRINCIPAL_PW);
+  const princPinHash = hashSecret(process.env.SEED_PRINCIPAL_PIN || '2025');
 
   await db.query(`
     INSERT INTO users (username, role, display_name, password_hash, pin_hash, pin_changed, pw_changed)
-    VALUES ('principal', 'principal', 'Principal', $1, $2, TRUE, TRUE)
+    VALUES ('principal', 'principal', 'Principal', $1, $2, FALSE, FALSE)
     ON CONFLICT (username) DO NOTHING;
   `, [princPwHash, princPinHash]);
 
   // Teachers
-  const teacherPwHash = hashSecret('Teacher@DPS26');
-  const teacherPinHash = hashSecret('1234');
+  const teacherPwHash = hashSecret(process.env.SEED_TEACHER_PW);
+  const teacherPinHash = hashSecret(process.env.SEED_TEACHER_PIN || '1234');
 
   for (const name of TEACHERS) {
     await db.query(`

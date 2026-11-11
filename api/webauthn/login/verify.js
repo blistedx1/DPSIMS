@@ -1,12 +1,9 @@
 const { verifyAuthenticationResponse } = require('@simplewebauthn/server');
 const db = require('../../../db');
-const { getRpContext, signToken, formatCookie, checkRateLimit } = require('../../../lib/auth');
+const { getRpContext, signToken, formatCookie, setCorsHeaders, checkRateLimit, PERSISTENT_MAX_AGE } = require('../../../lib/auth');
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  setCorsHeaders(req, res, 'POST, OPTIONS');
 
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
@@ -111,16 +108,16 @@ module.exports = async (req, res) => {
       WHERE id = $2;
     `, [newCounter, passkey.id]);
 
-    // Issue FULL session cookie (8 hours)
+    // Issue persistent FULL session cookie
     const fullToken = signToken({
       userId: user.id,
       username: user.username,
       role: user.role,
       displayName: user.display_name,
       scope: 'full'
-    }, 8 * 60 * 60 * 1000);
+    }, PERSISTENT_MAX_AGE * 1000);
 
-    const fullCookie = formatCookie('dps_session', fullToken, 28800, true);
+    const fullCookie = formatCookie('dps_session', fullToken, PERSISTENT_MAX_AGE, true);
     res.setHeader('Set-Cookie', fullCookie);
 
     // Audit log

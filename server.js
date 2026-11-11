@@ -100,8 +100,10 @@ function broadcastNotification(notif) {
   });
 
   const eventPayload = `data: ${JSON.stringify(notif)}\n\n`;
+  const { filterNotificationsForSession } = require('./lib/sync');
   notificationClients.forEach(client => {
     try {
+      if (client.session && !filterNotificationsForSession([notif], client.session).length) return;
       client.res.write(eventPayload);
     } catch (e) {
       notificationClients.delete(client);
@@ -113,18 +115,24 @@ const server = http.createServer((req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const urlPath = decodeURI(parsedUrl.pathname);
 
-  // CORS headers for all API requests
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  const { parseCookies, verifyToken, setCorsHeaders } = require('./lib/auth');
+  const { sanitizeStateForClient, authorizeDataOp, filterNotificationsForSession } = require('./lib/sync');
+
+  setCorsHeaders(req, res, 'GET, POST, DELETE, OPTIONS');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     return res.end();
   }
 
-  // SSE Real-time Notification Stream
+  // SSE Real-time Notification Stream (authenticated)
   if (urlPath === '/api/notifications/stream') {
+    const cookies = parseCookies(req.headers.cookie);
+    const session = verifyToken(cookies.dps_session);
+    if (!session || !session.userId || session.scope !== 'full') {
+      res.writeHead(401, { 'Content-Type': 'application/json; charset=utf-8' });
+      return res.end(JSON.stringify({ ok: false, error: 'Unauthorized' }));
+    }
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache, no-transform',
@@ -133,7 +141,7 @@ const server = http.createServer((req, res) => {
     });
     res.write(': connected\n\n');
 
-    const client = { res, req };
+    const client = { res, req, session };
     notificationClients.add(client);
 
     req.on('close', () => {
@@ -142,8 +150,14 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Notification API endpoints (Query / Publish)
+  // Notification API endpoints (Query / Publish - authenticated & role-filtered)
   if (urlPath === '/api/notifications' || urlPath === '/api/notify') {
+    const cookies = parseCookies(req.headers.cookie);
+    const session = verifyToken(cookies.dps_session);
+    if (!session || !session.userId || session.scope !== 'full') {
+      res.writeHead(401, { 'Content-Type': 'application/json; charset=utf-8' });
+      return res.end(JSON.stringify({ ok: false, error: 'Unauthorized. Sign in first.' }));
+    }
     if (req.method === 'GET') {
       const since = parseInt(parsedUrl.searchParams.get('since') || '0', 10);
       if (db.isConnected()) {
@@ -154,21 +168,26 @@ const server = http.createServer((req, res) => {
           ORDER BY created_at ASC
           LIMIT 50;
         `, [since]).then(r => {
-          res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-          res.end(JSON.stringify({ ok: true, notifications: r.rows || [] }));
+          const notifications = filterNotificationsForSession(r.rows || [], session);
+          res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+          res.end(JSON.stringify({ ok: true, notifications }));
         }).catch(() => {
-          const filtered = notificationsQueue.filter(n => n.timestamp > since);
-          res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+          const filtered = filterNotificationsForSession(notificationsQueue.filter(n => n.timestamp > since), session);
+          res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
           res.end(JSON.stringify({ ok: true, notifications: filtered }));
         });
         return;
       }
-      const filtered = notificationsQueue.filter(n => n.timestamp > since);
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      const filtered = filterNotificationsForSession(notificationsQueue.filter(n => n.timestamp > since), session);
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
       return res.end(JSON.stringify({ ok: true, notifications: filtered }));
     }
 
     if (req.method === 'POST') {
+      if (!['admin', 'principal'].includes(String(session.role || '').toLowerCase())) {
+        res.writeHead(403, { 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({ ok: false, error: 'Forbidden: Only Admin or Principal can broadcast.' }));
+      }
       let body = '';
       req.on('data', chunk => {
         body += chunk;
@@ -189,28 +208,32 @@ const server = http.createServer((req, res) => {
     }
   }
 
-  // Shared data persistence endpoint (Dual-layer: PostgreSQL + local data.json fallback)
+  // Shared data persistence endpoint (authenticated + RBAC + sanitized)
   if (urlPath === '/api/data') {
-    const { parseCookies, verifyToken } = require('./lib/auth');
     const cookies = parseCookies(req.headers.cookie);
-    if (cookies.dps_limited_sess && !cookies.dps_session) {
-      const limited = verifyToken(cookies.dps_limited_sess);
-      if (limited && limited.scope === 'register_only') {
-        res.writeHead(403, { 'Content-Type': 'application/json; charset=utf-8' });
-        return res.end(JSON.stringify({
-          ok: false,
-          error: 'Forbidden: Full session required. Please complete device screen lock registration.'
-        }));
+    const fullSession = verifyToken(cookies.dps_session);
+    if (!fullSession || !fullSession.userId || fullSession.scope !== 'full') {
+      if (cookies.dps_limited_sess) {
+        const limited = verifyToken(cookies.dps_limited_sess);
+        if (limited && limited.scope === 'register_only') {
+          res.writeHead(403, { 'Content-Type': 'application/json; charset=utf-8' });
+          return res.end(JSON.stringify({
+            ok: false,
+            error: 'Forbidden: Full session required. Please complete device screen lock registration.'
+          }));
+        }
       }
+      res.writeHead(401, { 'Content-Type': 'application/json; charset=utf-8' });
+      return res.end(JSON.stringify({ ok: false, error: 'Unauthorized. Please sign in first.' }));
     }
 
     if (req.method === 'GET') {
-      readAuthoritativeState(true).then(({ str }) => {
+      readAuthoritativeState(true).then(({ obj }) => {
         res.writeHead(200, {
           'Content-Type': 'application/json; charset=utf-8',
           'Cache-Control': 'no-store, no-cache, must-revalidate'
         });
-        res.end(str);
+        res.end(JSON.stringify(sanitizeStateForClient(obj)));
       }).catch(err => {
         console.error('[DB] Neon read error:', err.message);
         res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
@@ -228,6 +251,11 @@ const server = http.createServer((req, res) => {
       req.on('end', async () => {
         try {
           const parsed = JSON.parse(body);
+          const authz = authorizeDataOp(fullSession, parsed);
+          if (!authz.ok) {
+            res.writeHead(authz.status || 403, { 'Content-Type': 'application/json; charset=utf-8' });
+            return res.end(JSON.stringify({ ok: false, error: authz.error }));
+          }
           let existing, merged, assignedId, mergedStr;
 
           if (db.isConnected()) {
@@ -272,8 +300,10 @@ const server = http.createServer((req, res) => {
           // Update memory cache & local mirror only after Neon write succeeds
           cachedStateStr = mergedStr;
           cachedStateAt = Date.now();
-          try { fs.writeFileSync(DATA_FILE, mergedStr, 'utf8'); } catch (err) {
-            console.error('[DATA] Local write error:', err.message);
+          if (!process.env.VERCEL && !db.isConnected()) {
+            try { fs.writeFileSync(DATA_FILE, mergedStr, 'utf8'); } catch (err) {
+              console.error('[DATA] Local write error:', err.message);
+            }
           }
 
           // Detect requisition transitions & broadcast live notifications (SSE + DB + Web Push)
@@ -287,7 +317,7 @@ const server = http.createServer((req, res) => {
           res.end(JSON.stringify({
             ok: true,
             source: db.isConnected() ? 'postgres' : 'local',
-            state: merged,
+            state: sanitizeStateForClient(merged),
             assignedId: assignedId || null
           }));
         } catch (e) {
@@ -313,6 +343,7 @@ const API_HANDLERS = {
   'webauthn/register/options': require('./api/webauthn/register/options'),
   'webauthn/register/verify': require('./api/webauthn/register/verify'),
   'push/subscribe': require('./api/push/subscribe'),
+  'slip-verify': require('./api/slip-verify'),
   'session': require('./api/session')
 };
 

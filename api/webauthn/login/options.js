@@ -1,12 +1,9 @@
 const { generateAuthenticationOptions } = require('@simplewebauthn/server');
 const db = require('../../../db');
-const { getRpContext, checkRateLimit } = require('../../../lib/auth');
+const { getRpContext, checkRateLimit, setCorsHeaders } = require('../../../lib/auth');
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  setCorsHeaders(req, res, 'POST, OPTIONS');
 
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
@@ -30,7 +27,7 @@ module.exports = async (req, res) => {
 
     // Find user
     const userRes = await db.query(
-      'SELECT id, username, role, display_name FROM users WHERE username = $1 LIMIT 1;',
+      'SELECT id, username, role, display_name FROM users WHERE LOWER(username) = LOWER($1) LIMIT 1;',
       [username]
     );
 
@@ -38,9 +35,6 @@ module.exports = async (req, res) => {
       return res.status(404).json({ ok: false, error: 'User not found.' });
     }
     const user = userRes.rows[0];
-
-    // Auto-clean old mock/test passkeys created during headless tests
-    await db.query("UPDATE passkeys SET revoked_at = NOW() WHERE revoked_at IS NULL AND device_label IN ('Desktop Device', 'Windows Laptop (Edge)', 'Pixel Phone (Android)');");
 
     // BIOMETRIC auth only for ADMIN
     if (user.role !== 'admin') {

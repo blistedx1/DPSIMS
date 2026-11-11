@@ -2841,27 +2841,27 @@ button:active, .btn:active, .rq-prbtn:active, .seg button:active, .kpi:active {
 
 /* 5. Smooth Portal Transitions */
 #A.enter, #T.enter, #L.enter {
-  animation: epPortalEnter 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) both !important;
+  animation: epPortalEnter 0.22s ease-out both !important;
 }
 
 #A.leave, #T.leave, #L.leave {
-  animation: epPortalLeave 0.35s cubic-bezier(0.4, 0, 0.8, 0.4) both !important;
+  animation: epPortalLeave 0.16s ease-in both !important;
 }
 
 @keyframes epPortalEnter {
-  0% { opacity: 0; transform: scale(0.97) translateY(8px); filter: blur(4px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes epPortalLeave {
-  0% { opacity: 1; transform: scale(1); filter: blur(0px); }
-  100% { opacity: 0; transform: scale(0.97) translateY(-8px); filter: blur(4px); }
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-6px); }
 }
 
 /* 6. Principal Requisition Center Popup (2s) -> Fly to Bottom Icon */
 @keyframes prqPopIn {
-  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.72); filter: blur(4px); }
-  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: blur(0px); }
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 @keyframes prqDrain {
   0% { transform: scaleX(1); }
@@ -3304,14 +3304,12 @@ html[data-theme="light"] select option:checked,
 <div id="T" hidden></div>
 <script>
 (function(){
-  // ====== Settings (replace for production) ======
-  var REDIRECT='index.html';                       // page opened after sign-in
-  var TEACHERS=["Mr. Abhishek Shukla","Mr. Anugraha","Mr. Devesh Saini","Ms. Aparna","Ms. Divyanshi","Ms. Eishwari","Ms. Harshita","Ms. Juhee","Ms. Kajal","Ms. Kaynat","Ms. Pragya","Ms. Rachana","Ms. Shivangi"]; // staff list
-  var DEMO={adminPin:'2026',adminPw:'Admin@DPS26',principalPin:'2025',principalPw:'Principal@DPS26',teacherPin:'1234',teacherPw:'Teacher@DPS26'};
-  var KEY='dps_auth_v3',LOCK='dps_lock_v1',SALT='dps-amrapali|';
+  var REDIRECT='index.html';
+  var TEACHERS=["Mr. Abhishek Shukla","Mr. Anugraha","Mr. Devesh Saini","Ms. Aparna","Ms. Divyanshi","Ms. Eishwari","Ms. Harshita","Ms. Juhee","Ms. Kajal","Ms. Kaynat","Ms. Pragya","Ms. Rachana","Ms. Shivangi"];
+  var LOCK='dps_lock_v1';
   // ===============================================
   var $=function(s){return document.querySelector(s)};
-  var role='admin',method='pw',mode='login',buf='',first='',busy=false,store=null,tick=null;
+  var role='admin',method='pw',mode='login',buf='',first='',pendingAuth=null,busy=false,tick=null;
   try{
     var curTh = window.__thId();
     document.documentElement.setAttribute('data-theme', curTh);
@@ -3323,11 +3321,6 @@ html[data-theme="light"] select option:checked,
 
   var mem={};
   function ls(k,v){
-    if(k===KEY){
-      if(v===undefined)return window.__dpsMemAuth||null;
-      window.__dpsMemAuth=v;
-      return v;
-    }
     if(v===undefined)return mem.hasOwnProperty(k)?mem[k]:null;
     mem[k]=v;
     return v;
@@ -3345,147 +3338,32 @@ html[data-theme="light"] select option:checked,
       else if(n==='ok'){tone(659,0,.16,'sine',.12);tone(831,.11,.16,'sine',.12);tone(988,.22,.32,'sine',.12)}
     }catch(e){}
   }
-  function sha256Hex(str){
-    var bytes=unescape(encodeURIComponent(str)), K=[
-      1116352408,1899447441,-1245643825,-373957723,961987163,1508970993,-1841331548,-1424204075,
-      -670586216,310598401,607225278,1426881987,1925078388,-2132889090,-1680079193,-1046744716,
-      -459576895,-272742522,264347078,604807628,770255983,1249150122,1555081692,1996064986,
-      -1740746414,-1473132947,-1341970488,-1084653625,-958395405,-710438585,113926993,338241895,
-      666307205,773529912,1294757372,1396182291,1695183700,1986661051,-2117940946,-1838011259,
-      -1564481375,-1474664885,-1035236496,-949202525,-778901479,-694614492,-200395387,275423344,
-      430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,
-      1955562222,2024104815,-2067236844,-1933114872,-1866530822,-1538233109,-1090935817,-965641998
-    ], H=[1779033703,-1150833019,1013904242,-1521486534,1359893119,-1694144372,528734635,1541459225], w=[];
-    for(var i=0;i<bytes.length;i++)w[i>>2]|=(bytes.charCodeAt(i)&255)<<(24-(i%4)*8);
-    var l=bytes.length*8;w[l>>5]|=128<<(24-l%32);w[((l+64>>9)<<4)+15]=l;
-    function r(x,n){return(x>>>n)|(x<<(32-n))}
-    for(var j=0;j<w.length;j+=16){
-      var a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7],W=w.slice(j,j+16);
-      for(var t=0;t<64;t++){
-        if(t>=16){var w15=W[t-15]|0,w2=W[t-2]|0,s0=r(w15,7)^r(w15,18)^(w15>>>3),s1=r(w2,17)^r(w2,19)^(w2>>>10);W[t]=((W[t-16]|0)+s0+(W[t-7]|0)+s1)|0}
-        var ch=(e&f)^((~e)&g),maj=(a&b)^(a&c)^(b&c),S0=r(a,2)^r(a,13)^r(a,22),S1=r(e,6)^r(e,11)^r(e,25);
-        var t1=(h+S1+ch+K[t]+(W[t]|0))|0,t2=(S0+maj)|0;
-        h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0;
-      }
-      H[0]=(H[0]+a)|0;H[1]=(H[1]+b)|0;H[2]=(H[2]+c)|0;H[3]=(H[3]+d)|0;
-      H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;
-    }
-    var hex='';for(var k=0;k<8;k++)hex+=('00000000'+(H[k]>>>0).toString(16)).slice(-8);
-    return hex;
-  }
-  function djb2Legacy(s){var h=5381;s=SALT+s;for(var i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))|0}return 'f'+h}
-  function matchHash(stored,raw,sha){return !!(stored&&(stored===sha||(stored.charAt(0)==='f'&&stored===djb2Legacy(raw))))}
-  async function hash(s){
-    try{
-      if(window.crypto&&crypto.subtle&&window.TextEncoder){
-        var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(SALT+s));
-        return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('');
-      }
-    }catch(e){}
-    return sha256Hex(SALT+s);
-  }
-  window.__dpsHash=hash;
-  window.__dpsMatchHash=matchHash;
-  async function buildDefaultAuth(){
-    var def={
-      admin:{pin:await hash(DEMO.adminPin),pw:await hash(DEMO.adminPw)},
-      principal:{pin:await hash(DEMO.principalPin),pw:await hash(DEMO.principalPw)},
-      teachers:{}
-    };
-    for(var i=0;i<TEACHERS.length;i++){
-      def.teachers[TEACHERS[i]]={pin:await hash(DEMO.teacherPin),pw:await hash(DEMO.teacherPw),changed:false};
-    }
-    return def;
-  }
-  async function mergeDefaultAuth(rem){
-    var def=await buildDefaultAuth();
-    return (rem&&typeof rem==='object')?mergeAuthStores(def,rem):def;
-  }
-  window.__dpsMergeDefaultAuth=mergeDefaultAuth;
-  async function init(){
-    store=ls(KEY);
-    if(!store&&window.fetch){
-      try{await Promise.race([syncAuthFromServer(),new Promise(function(r){setTimeout(r,2500)})]);store=ls(KEY);}catch(e){}
-    }
-    if(!store){
-      store=await buildDefaultAuth();
-      ls(KEY,store);
-    }
-  }
-  function save(){ls(KEY,store)}
-  function mergeAuthRec(a,b){
-    if(!a)return b?Object.assign({},b):null;
-    if(!b)return Object.assign({},a);
-    var ta=Math.max(Number(a.updatedAt||0),Number(a.resetAt||0));
-    var tb=Math.max(Number(b.updatedAt||0),Number(b.resetAt||0));
-    if(tb>ta)return Object.assign({},b);
-    if(ta>tb)return Object.assign({},a);
-    var ca=!!(a.changed||a.pinChanged), cb=!!(b.changed||b.pinChanged);
-    if(cb&&!ca)return Object.assign({},b);
-    if(ca&&!cb)return Object.assign({},a);
-    return Object.assign({},b);
-  }
-  function mergeAuthStores(loc,rem){
-    var l=(loc&&typeof loc==='object')?loc:{};
-    var r=(rem&&typeof rem==='object')?rem:{};
-    var out={};
-    if(l.admin||r.admin)out.admin=mergeAuthRec(l.admin,r.admin);
-    if(l.principal||r.principal)out.principal=mergeAuthRec(l.principal,r.principal);
-    out.teachers={};
-    var lt=(l.teachers&&typeof l.teachers==='object')?l.teachers:{};
-    var rt=(r.teachers&&typeof r.teachers==='object')?r.teachers:{};
-    Object.keys(lt).forEach(function(k){out.teachers[k]=mergeAuthRec(lt[k],rt[k])});
-    Object.keys(rt).forEach(function(k){if(!out.teachers[k])out.teachers[k]=Object.assign({},rt[k])});
-    return out;
-  }
-  window.__dpsMergeAuth=mergeAuthStores;
-  function pushAuthUpdate(uRole,uName,rec){
-    if(!window.fetch||!uRole||!rec)return Promise.resolve(false);
-    return fetch('/api/data',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      credentials:'include',
-      body:JSON.stringify({_op:{type:'auth_update',role:uRole,name:uName||'',rec:rec}})
-    }).then(function(r){
-      return r.json().then(function(d){return !!(r.ok&&d&&d.ok);}).catch(function(){return false;});
-    }).catch(function(){return false;});
-  }
-  window.__pushAuthUpdate=pushAuthUpdate;
-  var authSyncBusy=null;
+
+  var authMetaBusy=null;
   function syncAuthFromServer(){
-    if(!window.fetch)return Promise.resolve(false);
-    if(authSyncBusy)return authSyncBusy;
-    authSyncBusy=fetch('/api/data?_ts='+Date.now(),{cache:'no-store',credentials:'include'})
+    if(!window.fetch||location.protocol==='file:')return Promise.resolve(null);
+    if(authMetaBusy)return authMetaBusy;
+    authMetaBusy=fetch('/api/auth/me?_ts='+Date.now(),{cache:'no-store',credentials:'include'})
       .then(function(r){return r.ok?r.json():null;})
-      .then(async function(remote){
-        authSyncBusy=null;
-        if(!remote||typeof remote!=='object')return false;
-        if(remote.prefs&&typeof remote.prefs==='object'){
-          window.__dpsMemPrefs=Object.assign({theme:'dgwhite',sound:1,haptic:1,seenReqIds:[]},remote.prefs);
-          if(window.__applyThemeFromSync)window.__applyThemeFromSync(window.__dpsMemPrefs.theme);
-          if(window.__nxSyncPrefs)window.__nxSyncPrefs(window.__dpsMemPrefs);
-        }
-        if(remote.devlock&&typeof remote.devlock==='object'){
-          window.__dpsMemDevlock=remote.devlock;
-        }
-        if(remote.carts&&typeof remote.carts==='object'){
-          window.__dpsMemCarts=remote.carts;
-        }
-        if(remote.auth&&typeof remote.auth==='object'){
-          var prevNames=Object.keys((store&&store.teachers)||{});
-          store=await mergeDefaultAuth(remote.auth);
-          ls(KEY,store);
-          var nextNames=Object.keys((store&&store.teachers)||{});
-          if(document.getElementById('name')&&mode==='login'&&prevNames.join('|')!==nextNames.join('|')){
-            var prevVal=document.getElementById('name').value;
+      .then(function(d){
+        authMetaBusy=null;
+        if(!d||typeof d!=='object')return null;
+        window.__sseEnabled=!!d.sseEnabled;
+        if(typeof d.hasAdminPasskey==='boolean')window.__adminBioEnrolledState=d.hasAdminPasskey;
+        if(Array.isArray(d.teachers)&&d.teachers.length){
+          var prev=TEACHERS.join('|'), next=d.teachers.join('|');
+          TEACHERS=d.teachers.slice();
+          var sel=document.getElementById('name');
+          if(sel&&prev!==next){
+            var prevVal=sel.value;
             fillNames();
-            if(prevVal)document.getElementById('name').value=prevVal;
+            if(prevVal)sel.value=prevVal;
           }
         }
-        return true;
+        return d;
       })
-      .catch(function(){authSyncBusy=null;return false;});
-    return authSyncBusy;
+      .catch(function(){authMetaBusy=null;return null;});
+    return authMetaBusy;
   }
   window.__syncAuthFromServer=syncAuthFromServer;
 
@@ -3521,22 +3399,23 @@ html[data-theme="light"] select option:checked,
   function dots(){var d=document.querySelectorAll('#dots i');d.forEach(function(x,i){x.classList.toggle('on',i<buf.length)})}
   function render(){
     var t=$('#title'),s=$('#sub');
-    $('#nameGroup').hidden=(role!=='teacher');
-    var isPw=(method==='pw');
+    var forcingPin=(mode==='new'||mode==='confirm');
+    $('#nameGroup').hidden=(role!=='teacher')||forcingPin;
+    var isPw=(!forcingPin && method==='pw');
     var isAdm=(role==='admin');
     // Lock/Biometrics is STRICTLY for Admin only!
-    var lock = isAdm && !!(window.__dlLockOn && window.__dlLockOn());
+    var lock = !forcingPin && isAdm && !!(window.__dlLockOn && window.__dlLockOn());
 
     $('#lockView').hidden = !lock;
     $('#pwView').hidden = lock || !isPw;
     $('#pinView').hidden = lock || isPw;
-    $('#userRow').hidden = (role==='teacher');
+    $('#userRow').hidden = (role==='teacher')||forcingPin;
     $('#user').value = role==='admin'?'Admin':role==='principal'?'Principal':'';
 
-    $('#swap').hidden = lock;
-    if (!lock) {
+    $('#swap').hidden = lock || forcingPin;
+    if (!lock && !forcingPin) {
       if (isAdm && window.__adminBioEnrolled && window.__adminBioEnrolled()) {
-        $('#swap').textContent = isPw ? 'Use PIN or Biometrics' : 'Use Biometrics instead';
+        $('#swap').textContent = isPw ? 'Use PIN or Biometrics' : 'Use password instead';
       } else {
         $('#swap').textContent = isPw ? 'Use PIN instead' : 'Use password instead';
       }
@@ -3544,7 +3423,7 @@ html[data-theme="light"] select option:checked,
 
     if(mode==='new'){
       t.textContent='Create a new PIN';
-      s.textContent='First sign-in: replace the default PIN';
+      s.textContent='Create your personal 4-digit PIN';
     } else if(mode==='confirm'){
       t.textContent='Confirm new PIN';
       s.textContent='Enter the same PIN again';
@@ -3562,9 +3441,9 @@ html[data-theme="light"] select option:checked,
     }
     dots();
   }
-  function reset(){buf='';first='';mode='login';setErr('');render()}
+  function reset(){buf='';first='';pendingAuth=null;mode='login';setErr('');render()}
 
-  function fillNames(){var L=(store&&store.teachers)?Object.keys(store.teachers):TEACHERS;$('#name').innerHTML='<option value="">Select your name</option>'+L.map(function(n){return '<option>'+String(n).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</option>'}).join('')}
+  function fillNames(){var L=TEACHERS;$('#name').innerHTML='<option value="">Select your name</option>'+L.map(function(n){return '<option>'+String(n).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</option>'}).join('')}
   fillNames();
   $('#seg').addEventListener('click',function(e){
     var b=e.target.closest('button');if(!b||busy)return;
@@ -3576,7 +3455,12 @@ html[data-theme="light"] select option:checked,
     this.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-selected',x===b)});
     reset();
   });
-  $('#swap').addEventListener('click',function(){method=method==='pin'?'pw':'pin';buf='';setErr('');render()});
+  $('#swap').addEventListener('click',function(){
+    if(role==='admin'&&method==='pw'&&window.__adminBioEnrolled&&window.__adminBioEnrolled()){
+      window.__adminForcePin=false;
+    }
+    method=method==='pin'?'pw':'pin';buf='';setErr('');render();
+  });
   $('#name').addEventListener('change',function(){setErr('');render()});
   $('#eye').addEventListener('click',function(){var p=$('#pw');var show=p.type==='password';p.type=show?'text':'password';this.textContent=show?'Hide':'Show'});
 
@@ -3598,60 +3482,67 @@ html[data-theme="light"] select option:checked,
     if(/^\d$/.test(e.key))press(e.key);else if(e.key==='Backspace')press('del');
   });
 
+  function loginUsername(){
+    return role==='admin'?'admin':role==='principal'?'principal':$('#name').value;
+  }
+  async function postLogin(payload){
+    var r=await fetch('/api/auth/login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      credentials:'include',
+      body:JSON.stringify(payload)
+    });
+    var d=await r.json().catch(function(){return {ok:false,error:'Server response error'};});
+    return {status:r.status,ok:r.ok,data:d||{ok:false}};
+  }
+
   async function done4(){
-    await Promise.race([syncAuthFromServer(),new Promise(function(r){setTimeout(r,1500)})]);
-    store=ls(KEY)||store;
-    var pin=buf,ok=false;
+    var pin=buf;
     if(mode==='login'){
-      var h=await hash(pin);
-      if(role==='admin'){
-        ok=matchHash(store.admin&&store.admin.pin,pin,h);
-        if(!ok&&(!store.admin||!store.admin.pinChanged)) ok=(pin===DEMO.adminPin);
-      } else if(role==='principal'){
-        ok=matchHash(store.principal&&store.principal.pin,pin,h);
-        if(!ok&&(!store.principal||!store.principal.pinChanged)) ok=(pin===DEMO.principalPin);
-      } else {
-        var rec=store.teachers&&store.teachers[$('#name').value];
-        ok=matchHash(rec&&rec.pin,pin,h);
-        if(!ok&&(!rec||!rec.pinChanged)) ok=(pin===DEMO.teacherPin);
-        if(ok&&rec&&!rec.changed&&!rec.pinChanged){
+      try{
+        var resp=await postLogin({username:loginUsername(),role:role,pin:pin});
+        var d=resp.data;
+        if(d&&d.code==='PIN_CHANGE_REQUIRED'){
           setLock({fails:0,until:0});
-          mode='new';buf='';busy=false;render();return;
+          pendingAuth={pin:pin};
+          method='pin';mode='new';buf='';busy=false;render();return;
         }
+        if(resp.ok&&d&&d.ok){
+          setLock({fails:0,until:0});
+          pendingAuth=null;
+          return success(null,d.user,d.hasActivePasskey);
+        }
+        fail();buf='';busy=false;dots();shake($('#dots'));
+        if(!lockedMsg())setErr((d&&d.error)||'Incorrect PIN. Please try again.');
+      }catch(err){
+        buf='';busy=false;dots();shake($('#dots'));
+        setErr('Unable to reach server. Please check connection.');
       }
-      if(ok){
-        setLock({fails:0,until:0});
-        return success();
-      }
-      fail();buf='';busy=false;dots();shake($('#dots'));
-      if(!lockedMsg())setErr('Incorrect PIN. Please try again.');
       return;
     }
     if(mode==='new'){
-      if(pin===DEMO.teacherPin||/^(\d)\1{3}$/.test(pin)||'01234567890'.indexOf(pin)>-1||'09876543210'.indexOf(pin)>-1){
+      if(pin==='1234'||/^(\d)\1{3}$/.test(pin)||'01234567890'.indexOf(pin)>-1||'09876543210'.indexOf(pin)>-1){
         buf='';busy=false;dots();shake($('#dots'));setErr('Too easy to guess. Choose a different PIN.');return;
       }
       first=pin;mode='confirm';buf='';busy=false;render();return;
     }
     if(mode==='confirm'){
       if(pin!==first){mode='new';first='';buf='';busy=false;render();shake($('#dots'));setErr('PINs did not match. Start again.');return}
-      var tKey=$('#name').value;
-      if(store.teachers&&tKey){
-        var prevRec=store.teachers[tKey]?Object.assign({},store.teachers[tKey]):null;
-        var nextRec=Object.assign({},prevRec||{pin:'',pw:await hash(DEMO.teacherPw)},{
-          pin:await hash(pin),
-          changed:true,
-          pinChanged:true,
-          updatedAt:Date.now()
-        });
-        var savedOk=await Promise.race([pushAuthUpdate('teacher',tKey,nextRec),new Promise(function(r){setTimeout(function(){r(false)},6000)})]);
-        if(!savedOk){
-          buf='';busy=false;dots();shake($('#dots'));setErr('Could not save PIN to Neon database. Please try again.');return;
+      try{
+        var payload=Object.assign({username:loginUsername(),role:role,newPin:pin},pendingAuth||{pin:'1234'});
+        var r2=await postLogin(payload);
+        var d2=r2.data;
+        if(r2.ok&&d2&&d2.ok){
+          pendingAuth=null;
+          return success('Your new PIN is saved to Neon database.',d2.user,d2.hasActivePasskey);
         }
-        store.teachers[tKey]=nextRec;
-        save();
+        mode='new';first='';buf='';busy=false;render();shake($('#dots'));
+        setErr((d2&&d2.error)||'Could not save PIN to Neon database. Please try again.');
+      }catch(err){
+        mode='new';first='';buf='';busy=false;render();shake($('#dots'));
+        setErr('Could not save PIN to Neon database. Please try again.');
       }
-      return success('Your new PIN is saved to Neon database.');
+      return;
     }
   }
 
@@ -3668,74 +3559,64 @@ html[data-theme="light"] select option:checked,
     }
     if(!v){setErr('Kindly enter your password.');notify('Kindly enter your password.');shake($('#pwView'));return}
     busy=true;
-    await Promise.race([syncAuthFromServer(),new Promise(function(r){setTimeout(r,1500)})]);
-    store=ls(KEY)||store;
-    var ok=false;
-    var h=await hash(v);
-    if(role==='admin'){
-      ok=matchHash(store.admin&&store.admin.pw,v,h);
-      if(!ok&&(!store.admin||!store.admin.changed)) ok=(v===DEMO.adminPw||v==='admin123'||v==='admin');
-    } else if(role==='principal'){
-      ok=matchHash(store.principal&&store.principal.pw,v,h);
-      if(!ok&&(!store.principal||!store.principal.changed)) ok=(v===DEMO.principalPw||v==='principal123'||v==='principal'||v==='Principal@DPS26');
-    } else if(role==='teacher'){
-      var tRec=store.teachers&&store.teachers[$('#name').value];
-      ok=matchHash(tRec&&tRec.pw,v,h);
-      if(!ok&&(!tRec||!tRec.changed)) ok=(v===DEMO.teacherPw||v==='Teacher@123'||v==='teacher123'||v==='teacher'||v==='1234');
+    try{
+      var resp=await postLogin({username:loginUsername(),role:role,password:v});
+      var d=resp.data;
+      if(d&&d.code==='PIN_CHANGE_REQUIRED'){
+        setLock({fails:0,until:0});
+        pendingAuth={password:v};
+        $('#pw').value='';
+        method='pin';mode='new';buf='';busy=false;render();return;
+      }
+      if(resp.ok&&d&&d.ok){
+        setLock({fails:0,until:0});
+        pendingAuth=null;
+        return success(null,d.user,d.hasActivePasskey);
+      }
+      fail();busy=false;$('#pw').value='';shake($('#pwView'));
+      if(!lockedMsg())setErr((d&&d.error)||'Incorrect password. Please try again.');
+    }catch(err){
+      busy=false;shake($('#pwView'));
+      setErr('Unable to reach server. Please try again.');
     }
-    if(ok){
-      setLock({fails:0,until:0});
-      return success();
-    }
-    fail();busy=false;$('#pw').value='';shake($('#pwView'));
-    if(!lockedMsg())setErr('Incorrect password. Please try again.');
   });
 
-  function success(note){
-    var name=role==='admin'?'Administrator':role==='principal'?'Principal':$('#name').value;
-    var sObj={role:role,name:name,t:Date.now()};
+  function success(note,userObj,hasActivePasskey){
+    var uRole=(userObj&&userObj.role)||role;
+    var name=(userObj&&(userObj.displayName||userObj.username))||(uRole==='admin'?'Administrator':uRole==='principal'?'Principal':$('#name').value);
+    if(uRole==='admin'&&typeof hasActivePasskey==='boolean')window.__adminBioEnrolledState=hasActivePasskey;
+    role=uRole;
+    var sObj={role:uRole,name:name,t:Date.now()};
     if(window.__savePortalSession)window.__savePortalSession(sObj);
     else{try{sessionStorage.setItem('dps_session',JSON.stringify(sObj))}catch(e){}}
     $('#doneT').textContent='Welcome, '+name; if(window.EnterpriseAnim){ EnterpriseAnim.confetti(); EnterpriseAnim.toast('Welcome Back, ' + name, 'Entering your portal...', 'login'); }
-    $('#doneP').textContent=note||(role==='admin'?'Full inventory control: bills, stock management, issuing and settings.':role==='principal'?'Complete oversight: view all stocks, bills & reports. Review and approve teacher requisitions.':'View stock and raise requisitions.');
+    $('#doneP').textContent=note||(uRole==='admin'?'Full inventory control: bills, stock management, issuing and settings.':uRole==='principal'?'Complete oversight: view all stocks, bills & reports. Review and approve teacher requisitions.':'View stock and raise requisitions.');
     window.__sess=sObj;$('#done').hidden=false;busy=false;buf='';sfx('ok');
     clearTimeout(window.__autoGo);
     if(window.__dlAfterLogin&&window.__dlAfterLogin())return;
     window.__autoGo=setTimeout(function(){var d=$('#done');if(d&&!d.hidden&&window.__sess)window.__enter(window.__sess)},1300);
   }
   $('#go').addEventListener('click',function(){clearTimeout(window.__autoGo);if(window.__initPushNotifications&&window.__sess)window.__initPushNotifications(window.__sess,true);window.__enter(window.__sess)});
-  /* ---------- Screen-lock sign-in (Dedicated Admin Biometrics - Zero Latency) ---------- */
+  /* ---------- Screen-lock sign-in (Dedicated Admin WebAuthn Biometrics) ---------- */
   (function(){
-    var KEY='dps_devlock_v1';
     window.__adminForcePin = false;
 
-    function st(){
-      return (window.__dpsMemDevlock&&typeof window.__dpsMemDevlock==='object')?window.__dpsMemDevlock:{};
-    }
-    function put(o){
-      window.__dpsMemDevlock=o||{};
-      if(window.fetch){
-        fetch('/api/data',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({_op:{type:'devlock_update',devlock:window.__dpsMemDevlock}})}).catch(function(){});
-      }
-    }
     function isSupported(){
       return !!(window.PublicKeyCredential && navigator.credentials && navigator.credentials.create && crypto && crypto.subtle && (location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'));
     }
+    window.__adminBioSupported = isSupported;
     function isEnrolled(){
-      return !!(st()['admin'] && st()['admin'].cid);
+      return !!window.__adminBioEnrolledState;
     }
     window.__adminBioEnrolled = isEnrolled;
 
     function b64(buf){var b=new Uint8Array(buf),s='';for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
-    function unb64(t){t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';var s=atob(t),b=new Uint8Array(s.length);for(var i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b.buffer}
-    function rnd(n){return crypto.getRandomValues(new Uint8Array(n))}
+    function unb64(t){t=String(t||'').replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';var s=atob(t),b=new Uint8Array(s.length);for(var i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b.buffer}
 
-    // Synchronous check! Immediate 0ms rendering - STRICTLY FOR ADMIN ONLY
     window.__dlLockOn = function(){
       return role === 'admin' && mode === 'login' && isSupported() && isEnrolled() && !window.__adminForcePin;
     };
 
-    // Fast check in background without delaying UI
     if (isSupported()) {
       try {
         PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(avail){
@@ -3747,68 +3628,104 @@ html[data-theme="light"] select option:checked,
 
     async function unlockAdmin(){
       if (busy) return;
-      var rec = st()['admin'];
-      if (!rec) {
-        setErr('No biometric registered for Admin. Please use PIN.');
-        return;
-      }
       busy = true; setErr('');
-      // Enforce Admin role explicitly
       role = 'admin';
       try {
-        var ch = rnd(32);
-        var cred = await navigator.credentials.get({
-          publicKey: {
-            challenge: ch,
-            rpId: location.hostname,
-            timeout: 60000,
-            userVerification: 'required',
-            allowCredentials: [{ type: 'public-key', id: unb64(rec.cid), transports: ['internal'] }]
-          }
+        var optRes = await fetch('/api/webauthn/login/options', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ username: 'admin', role: 'admin' })
         });
-        var cd = JSON.parse(new TextDecoder().decode(cred.response.clientDataJSON));
-        var ad = new Uint8Array(cred.response.authenticatorData);
-        if (cd.type !== 'webauthn.get' || cd.origin !== location.origin || cd.challenge !== b64(ch) || b64(cred.rawId) !== rec.cid || (ad[32]&4) !== 4) {
-          throw new Error('verify');
+        var optData = await optRes.json().catch(function(){ return {}; });
+        if (!optRes.ok || !optData.ok || !optData.options) {
+          if (optData && optData.code === 'NO_PASSKEY') window.__adminBioEnrolledState = false;
+          throw new Error((optData && (optData.message || optData.error)) || 'No biometric registered for Admin. Please use PIN.');
+        }
+        var pub = optData.options;
+        pub.challenge = unb64(pub.challenge);
+        if (Array.isArray(pub.allowCredentials)) {
+          pub.allowCredentials = pub.allowCredentials.map(function(c){
+            return Object.assign({}, c, { id: unb64(c.id) });
+          });
+        }
+        var cred = await navigator.credentials.get({ publicKey: pub });
+        var serialized = {
+          id: cred.id,
+          rawId: b64(cred.rawId),
+          type: cred.type,
+          authenticatorAttachment: cred.authenticatorAttachment || 'platform',
+          clientExtensionResults: cred.getClientExtensionResults ? cred.getClientExtensionResults() : {},
+          response: {
+            clientDataJSON: b64(cred.response.clientDataJSON),
+            authenticatorData: b64(cred.response.authenticatorData),
+            signature: b64(cred.response.signature),
+            userHandle: cred.response.userHandle ? b64(cred.response.userHandle) : null
+          }
+        };
+        var verRes = await fetch('/api/webauthn/login/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ username: 'admin', response: serialized })
+        });
+        var verData = await verRes.json().catch(function(){ return {}; });
+        if (!verRes.ok || !verData.ok) {
+          throw new Error((verData && verData.error) || 'Biometric verification failed.');
         }
         busy = false;
-        // Absolute guarantee: Admin session created, can NEVER be principal
-        role = 'admin';
-        var adminSess = { role: 'admin', name: 'Administrator', t: Date.now() };
-        if(window.__savePortalSession)window.__savePortalSession(adminSess);
-        else{try { sessionStorage.setItem('dps_session', JSON.stringify(adminSess)); } catch(e){}}
-        window.__sess = adminSess;
-        success();
+        window.__adminBioEnrolledState = true;
+        success(null, verData.user || { role: 'admin', displayName: 'Administrator' }, true);
       } catch(e) {
         busy = false;
-        setErr(e && e.name === 'NotAllowedError' ? 'Biometric scan was cancelled. Tap again or enter PIN.' : 'Biometric verification failed. Please enter your Admin PIN.');
+        setErr(e && e.name === 'NotAllowedError' ? 'Biometric scan was cancelled. Tap again or enter PIN.' : (e && e.message) || 'Biometric verification failed. Please enter your Admin PIN.');
         var lb = $('#lockBtn'); if (lb) shake(lb);
       }
     }
 
     async function enrollAdmin(){
-      var ch = rnd(32);
-      var uid = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('dps|admin'));
-      var cred = await navigator.credentials.create({
-        publicKey: {
-          challenge: ch,
-          rp: { name: 'DPS Amrapali Inventory', id: location.hostname },
-          user: { id: uid, name: 'Administrator', displayName: 'DPS Administrator' },
-          pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
-          authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'discouraged' },
-          timeout: 60000,
-          attestation: 'none'
-        }
+      var optRes = await fetch('/api/webauthn/register/options', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({})
       });
-      var cd = JSON.parse(new TextDecoder().decode(cred.response.clientDataJSON));
-      if (cd.type !== 'webauthn.create' || cd.origin !== location.origin || cd.challenge !== b64(ch)) throw new Error('verify');
-      if (cred.response.getAuthenticatorData) {
-        var ad = new Uint8Array(cred.response.getAuthenticatorData());
-        if ((ad[32]&4) !== 4) throw new Error('uv');
+      var optData = await optRes.json().catch(function(){ return {}; });
+      if (!optRes.ok || !optData.ok || !optData.options) {
+        throw new Error((optData && optData.error) || 'Could not start biometric registration.');
       }
-      var o = st();
-      o['admin'] = { cid: b64(cred.rawId), t: Date.now() };
-      put(o);
+      var pub = optData.options;
+      pub.challenge = unb64(pub.challenge);
+      if (pub.user && pub.user.id) pub.user.id = unb64(pub.user.id);
+      if (Array.isArray(pub.excludeCredentials)) {
+        pub.excludeCredentials = pub.excludeCredentials.map(function(c){
+          return Object.assign({}, c, { id: unb64(c.id) });
+        });
+      }
+      var cred = await navigator.credentials.create({ publicKey: pub });
+      var serialized = {
+        id: cred.id,
+        rawId: b64(cred.rawId),
+        type: cred.type,
+        authenticatorAttachment: cred.authenticatorAttachment || 'platform',
+        clientExtensionResults: cred.getClientExtensionResults ? cred.getClientExtensionResults() : {},
+        response: {
+          clientDataJSON: b64(cred.response.clientDataJSON),
+          attestationObject: b64(cred.response.attestationObject),
+          transports: cred.response.getTransports ? cred.response.getTransports() : []
+        }
+      };
+      var verRes = await fetch('/api/webauthn/register/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ response: serialized })
+      });
+      var verData = await verRes.json().catch(function(){ return {}; });
+      if (!verRes.ok || !verData.ok) {
+        throw new Error((verData && verData.error) || 'Biometric registration verification failed.');
+      }
+      window.__adminBioEnrolledState = true;
       window.__adminForcePin = false;
     }
     window.__enrollAdminBio = enrollAdmin;
@@ -3864,7 +3781,7 @@ html[data-theme="light"] select option:checked,
             var d = $('#done'); if (d && !d.hidden && window.__sess) window.__enter(window.__sess);
           }, 1400);
         } catch(e) {
-          setErr(e && e.name === 'NotAllowedError' ? 'Biometric setup was cancelled.' : 'Could not set up biometrics on this device.');
+          setErr(e && e.name === 'NotAllowedError' ? 'Biometric setup was cancelled.' : (e && e.message) || 'Could not set up biometrics on this device.');
           var de = $('#dlEnroll'); if (de) shake(de);
           var sk = $('#dlSkip'); if (sk) sk.hidden = false;
         }
@@ -3884,7 +3801,7 @@ html[data-theme="light"] select option:checked,
     }
   })();
 
-  window.__loginReset=function(){clearTimeout(window.__autoGo);if(window.__dlReset)window.__dlReset();$('#done').hidden=true;busy=false;buf='';first='';mode='login';method='pw';$('#pw').value='';setErr('');render()};
+  window.__loginReset=function(){clearTimeout(window.__autoGo);if(window.__dlReset)window.__dlReset();$('#done').hidden=true;busy=false;buf='';first='';pendingAuth=null;mode='login';method='pw';$('#pw').value='';setErr('');render()};
 
   (function(){
     var art=$('#art');
@@ -3909,7 +3826,7 @@ html[data-theme="light"] select option:checked,
     s+='<path d="M0 430C120 400 260 420 400 380V560H0Z" fill="url(#gr)"/><rect width="400" height="560" fill="url(#fd)"/>';
     art.innerHTML=s;
   })();
-  init().then(function(){fillNames();render();lockedMsg();syncAuthFromServer()});
+  fillNames();render();lockedMsg();syncAuthFromServer().then(function(){render()});
 })();
 </script>
 <script>
@@ -4048,29 +3965,22 @@ html[data-theme="light"] select option:checked,
   };
   var sessionCfg=Object.assign({},defaultSessionCfg);
   seed();
-  var syncSaving=0, syncFetching=false, lastServerSig='', lastCoreSig='', lastRemoteAuthSig='', hydratedFromServer=false;
-  function readAuthLocal(){
-    var a=window.__dpsMemAuth;
-    return (a&&typeof a==='object')?a:null;
-  }
+  var syncSaving=0, syncFetching=false, lastServerSig='', lastCoreSig='', hydratedFromServer=false;
   function savePrefsToNeon(){
-    if(!window.fetch)return;
+    if(!window.fetch)return Promise.resolve(false);
     window.__dpsMemPrefs=window.__dpsMemPrefs||{theme:'dgwhite',sound:1,haptic:1,seenReqIds:[]};
-    fetch('/api/data',{
+    return fetch('/api/data',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       credentials:'include',
       body:JSON.stringify({_op:{type:'prefs_update',prefs:window.__dpsMemPrefs}})
-    }).catch(function(){});
+    }).then(function(r){return r.ok}).catch(function(){return false;});
   }
   window.__savePrefsToNeon=savePrefsToNeon;
   function statePayload(){
     if(log&&log.length>600)log=log.slice(0,600);
     var p={items:items,uid:uid,bills:bills,bid:bid,fac:fac,log:log,reqs:reqs,sessionCfg:sessionCfg};
-    var au=readAuthLocal();
-    if(au)p.auth=au;
     p.prefs=window.__dpsMemPrefs||{theme:'dgwhite',sound:1,haptic:1,seenReqIds:[]};
-    p.devlock=window.__dpsMemDevlock||{};
     p.carts=window.__dpsMemCarts||{};
     return p;
   }
@@ -4080,7 +3990,7 @@ html[data-theme="light"] select option:checked,
   }
   function stateSig(d){
     if(!d)return '';
-    try{return JSON.stringify({i:d.items||[],b:d.bills||[],f:d.fac||[],l:d.log||[],r:d.reqs||[],s:d.sessionCfg||{},a:d.auth||{},p:d.prefs||{},dl:d.devlock||{},c:d.carts||{}});}catch(e){return '';}
+    try{return JSON.stringify({i:d.items||[],b:d.bills||[],f:d.fac||[],l:d.log||[],r:d.reqs||[],s:d.sessionCfg||{},p:d.prefs||{},c:d.carts||{}});}catch(e){return '';}
   }
   function isPortalVisible(){
     var L=document.getElementById('L');
@@ -4093,9 +4003,6 @@ html[data-theme="light"] select option:checked,
     (reqs||[]).forEach(function(x){if(x&&x.id!=null&&x.st==='Pending')prevPendingMap[x.id]=true});
     var newCoreSig=coreDataSig(remote);
     var coreChanged=(newCoreSig!==lastCoreSig);
-    var newAuthSig='';
-    try{newAuthSig=JSON.stringify(remote.auth||{});}catch(e){}
-    var authChanged=(newAuthSig!==lastRemoteAuthSig);
     var curCartFor=(typeof tCartFor==='string'&&tCartFor)?tCartFor:'';
     var prevCartSig='';
     try{prevCartSig=curCartFor?JSON.stringify((window.__dpsMemCarts&&window.__dpsMemCarts[curCartFor])||[]):'';}catch(e){}
@@ -4111,22 +4018,11 @@ html[data-theme="light"] select option:checked,
     reqs=remote.reqs||[];
     bills.forEach(function(b){if(b.stockAdded===undefined)b.stockAdded=!(b.date<iso())});
     if(remote.sessionCfg)sessionCfg=Object.assign({},defaultSessionCfg,remote.sessionCfg);
-    if(remote.auth&&typeof remote.auth==='object'){
-      var curAu=readAuthLocal();
-      if(window.__dpsMergeAuth&&curAu)window.__dpsMemAuth=window.__dpsMergeAuth(curAu,remote.auth);
-      else{
-        window.__dpsMemAuth=remote.auth;
-        if(window.__dpsMergeDefaultAuth)window.__dpsMergeDefaultAuth(remote.auth).then(function(m){if(m)window.__dpsMemAuth=m;});
-      }
-    }
     if(remote.prefs&&typeof remote.prefs==='object'){
       var prevTheme=(window.__dpsMemPrefs&&window.__dpsMemPrefs.theme)||'';
       window.__dpsMemPrefs=Object.assign({theme:'dgwhite',sound:1,haptic:1,seenReqIds:[]},remote.prefs);
       if(window.__dpsMemPrefs.theme!==prevTheme&&typeof applyTheme==='function')applyTheme(window.__dpsMemPrefs.theme,true);
       if(window.__nxSyncPrefs)window.__nxSyncPrefs(window.__dpsMemPrefs);
-    }
-    if(remote.devlock&&typeof remote.devlock==='object'){
-      window.__dpsMemDevlock=remote.devlock;
     }
     if(remote.carts&&typeof remote.carts==='object'){
       window.__dpsMemCarts=remote.carts;
@@ -4135,13 +4031,12 @@ html[data-theme="light"] select option:checked,
       }
     }
     lastCoreSig=newCoreSig;
-    lastRemoteAuthSig=newAuthSig;
     lastServerSig=stateSig(remote);
     if(skipRender)return true;
     var Ael=document.getElementById('A'), Tel=document.getElementById('T');
     var ae=document.activeElement;
     if(Ael&&!Ael.hidden){
-      if(coreChanged||(view==='pw'&&authChanged)){
+      if(coreChanged){
         var typingA=ae&&ae.closest&&ae.closest('#main input, #main select, #main textarea');
         if(!typingA&&view!=='add'&&!editingBillId){
           var mn=document.getElementById('main'),sy=mn?mn.scrollTop:0;
@@ -4173,23 +4068,21 @@ html[data-theme="light"] select option:checked,
       .then(function(r){return r.ok?r.json():null;})
       .then(function(remote){
         syncFetching=false;
-        if(remote&&Array.isArray(remote.items)&&remote.items.length>0){
+        if(!remote||typeof remote!=='object')return false;
+        if(Array.isArray(remote.items)&&remote.items.length>0){
           var rSig=stateSig(remote);
           if(rSig!==lastServerSig||!hydratedFromServer){
             return applyRemoteState(remote, !forceRender && !isPortalVisible());
           }
           hydratedFromServer=true;
           return false;
-        }else if(items&&items.length>0){
-          hydratedFromServer=true;
-          save();
         }
         return false;
       })
       .catch(function(){syncFetching=false;return false;});
   }
   function postToServer(payload, op){
-    if(!window.fetch)return Promise.resolve(null);
+    if(!window.fetch)return Promise.resolve({ok:false,error:'Fetch unsupported'});
     syncSaving++;
     var bodyObj=Object.assign({},payload);
     if(op&&op._reset)bodyObj._reset=true;
@@ -4234,13 +4127,14 @@ html[data-theme="light"] select option:checked,
   }
   function save(op){
     var explicitOp=!!(op&&(op.type||op._reset));
-    if(!hydratedFromServer&&!explicitOp){syncFromServer();return;}
+    if(!hydratedFromServer&&!explicitOp)return syncFromServer();
     var p=statePayload();
     if(p){
       lastCoreSig=coreDataSig(p);
       lastServerSig=stateSig(p);
-      postToServer(p, op);
+      return postToServer(p, op);
     }
+    return Promise.resolve({ok:false,error:'Invalid state payload'});
   }
   window.__syncServerData=syncFromServer;
 
@@ -4330,9 +4224,13 @@ html[data-theme="light"] select option:checked,
   }
   function list(){return items.filter(function(i){return (cat==='All'||i.cat===cat)&&(!tag||stat(i)===tag)&&i.name.toLowerCase().indexOf(query)>-1})}
   function checkAutoRollover(){
+    if(getRole()!=='admin')return;
     var today=iso();
-    if(today>=sessionCfg.nextStart&&!sessionCfg.rolledOver){
-      doRollover(true);
+    if(today>=sessionCfg.nextStart&&!sessionCfg.rolledOver&&!window.__rolloverPrompted){
+      window.__rolloverPrompted=true;
+      if(confirm('Academic session rollover to '+(sessionCfg.nextName||'next session')+' is due. Perform rollover now?')){
+        doRollover(false);
+      }
     }
   }
   function doRollover(isAuto){
@@ -4409,7 +4307,7 @@ html[data-theme="light"] select option:checked,
     if(settingsTab==='theme'){
       var curTheme = window.__thId();
       var themes = [
-        { id:'dgwhite', name:'3D Tactile - Dark Green & Crisp White', desc:'Neumorphic capsule tracks, volumetric squircles, specular highlights, deep ambient shadows & mechanical press physics', bg:'#f2f7f4', card:'#ffffff', acc:'#0e5640', txt:'#0e2119', mut:'#5a7167', on:'#ffffff' },
+        { id:'dgwhite', name:'Dark Green & Crisp White', desc:'Clean high-contrast green accents on a crisp white workspace', bg:'#f2f7f4', card:'#ffffff', acc:'#0e5640', txt:'#0e2119', mut:'#5a7167', on:'#ffffff' },
         { id:'obsidian', name:'Charcoal Dark', desc:'Deep charcoal-green background with sage green accents', bg:'#070a06', card:'#121a10', acc:'#9bab84', txt:'#f5f6f2', mut:'#8d9882', on:'#0d1109' }
       ];
 
@@ -4474,7 +4372,7 @@ html[data-theme="light"] select option:checked,
           + '</div>'
           + '<div style="display:flex;gap:10px;align-items:center;margin-top:16px">'
             + '<button class="btn" data-a="save-new-password">Update Credentials</button>'
-          + '<button class="btn ghost" type="button" data-a="admin-setup-bio" style="margin-left:8px;border:1px solid #2e8b57;color:#2e8b57;font-weight:600;">Setup / Update Admin Biometrics</button>'
+            + (userRole==='admin' ? '<button class="btn ghost" type="button" data-a="admin-setup-bio" style="margin-left:8px;border:1px solid #2e8b57;color:#2e8b57;font-weight:600;">Setup / Update Admin Biometrics</button>' : '')
           + '</div>'
           + '<div id="pw-change-msg" style="margin-top:12px;min-height:22px;font-size:13.5px;font-weight:600"></div>'
         + '</div>';
@@ -4603,7 +4501,7 @@ html[data-theme="light"] select option:checked,
   }
 
   /* ---------- BILLS ---------- */
-  function bt(b){var sub=b.lines.reduce(function(a,l){return a+l[2]*l[3]},0),d=sub*b.disc/100,g=(sub-d)*b.gst/100;return {sub:sub,d:d,g:g,t:sub-d+g}}
+  function bt(b){var r2=function(n){return Math.round((+n||0)*100)/100};var sub=r2((b.lines||[]).reduce(function(a,l){return a+Math.max(0,+l[2]||0)*Math.max(0,+l[3]||0)},0)),dp=Math.min(100,Math.max(0,+b.disc||0)),gp=Math.max(0,+b.gst||0),d=r2(sub*dp/100),g=r2((sub-d)*gp/100),t=r2(sub-d+g);return {sub:sub,d:d,g:g,t:t}}
   var bf={q:'',p:'all',v:''};
   function billFilter(){
     var now=iso(),m=now.slice(0,7),d30=new Date(Date.now()-30*864e5).toISOString().slice(0,10);
@@ -4692,7 +4590,7 @@ html[data-theme="light"] select option:checked,
   };
 
   window.printSingleSlip = function(id){
-    var r = (reqs || []).find(function(x){ return Number(x.id) === +id; });
+    var r = (reqs || []).find(function(x){ return Number(x.id) === +id; }) || (window.__slipVerifiedMap && window.__slipVerifiedMap[+id]);
     if(r) printSlips([r]);
   };
 
@@ -4715,7 +4613,7 @@ html[data-theme="light"] select option:checked,
     document.body.appendChild(modal);
   }
 
-  function showSlipVerificationModal(r, sid){
+  function showSlipVerificationModal(r, sid, lookupErr){
     window.closeSlipVerifyModal();
     var modal = document.createElement('div');
     modal.id = 'slip-verify-modal';
@@ -4731,13 +4629,22 @@ html[data-theme="light"] select option:checked,
         + '</div>'
         + '<div class="sp-verify-body" style="text-align:center;padding:36px 20px">'
           + '<div style="font-size:36px;margin-bottom:12px">\u26A0\uFE0F</div>'
-          + '<h4 style="font-size:17px;margin:0 0 8px;color:#111827">Slip #'+slipNo(sid)+' Not Found</h4>'
-          + '<p style="font-size:13px;color:#6b7280;margin:0 0 20px">This requisition voucher could not be found in active inventory records.</p>'
+          + '<h4 style="font-size:17px;margin:0 0 8px;color:#111827">'+(lookupErr?'Unable to Verify Slip #'+slipNo(sid):'Slip #'+slipNo(sid)+' Not Found')+'</h4>'
+          + '<p style="font-size:13px;color:#6b7280;margin:0 0 20px">'+E(lookupErr||'This requisition voucher could not be found in active inventory records.')+'</p>'
           + '<button type="button" class="sp-v-btn-home" style="margin:0 auto" onclick="closeSlipVerifyModal()">Close</button>'
         + '</div>'
       + '</div>';
       document.body.appendChild(modal);
       return;
+    }
+
+    window.__slipVerifiedMap = window.__slipVerifiedMap || {};
+    window.__slipVerifiedMap[r.id] = r;
+    if (r.itemMap && typeof r.itemMap === 'object') {
+      Object.keys(r.itemMap).forEach(function(k){
+        var m = r.itemMap[k];
+        if (m && !find(+k)) items.push({ id: +k, name: m.name, unit: m.unit || 'pcs', cat: 'General', min: 0, v: [] });
+      });
     }
 
     var st = prStatus(r);
@@ -4749,8 +4656,8 @@ html[data-theme="light"] select option:checked,
     else if(r.st==='Declined') c3={k:'Store Admin Issue',d:'Not issued'};
     else c3={k:'Store Admin Issue',d:'Pending'};
 
-    var rows = r.it.map(function(x, i){
-      var it = find(x[0]);
+    var rows = (r.it||[]).map(function(x, i){
+      var it = (r.itemMap && r.itemMap[x[0]]) || find(x[0]);
       var rjP = (r.rejP||[]).indexOf(i)>=0, rjA = (r.rejA||[]).indexOf(i)>=0, rj = rjP || rjA;
       var req = +x[2]||0;
       var iss = '\u2014';
@@ -4789,7 +4696,7 @@ html[data-theme="light"] select option:checked,
           + '<div><span>Voucher Number</span><b>'+slipNo(r.id)+'</b></div>'
           + '<div><span>Date</span><b>'+prDate(r.date)+'</b></div>'
           + '<div><span>Requisitioned By</span><b>'+E(r.by)+' (Teacher)</b></div>'
-          + '<div><span>Purpose / Event</span><b>'+E(r.purpose||'School stationery')+'</b></div>'
+          + '<div><span>Purpose / Event</span><b>'+E(r.purpose||r.pur||'School stationery')+'</b></div>'
         + '</div>'
         + '<table class="sp-v-tbl">'
           + '<thead>'
@@ -4828,17 +4735,23 @@ html[data-theme="light"] select option:checked,
       if(!sid) return;
 
       showSlipVerificationLoading(sid);
+      var r = null, lookupErr = '';
       try {
-        var res = await fetch('/api/data?_ts=' + Date.now(), { cache: 'no-store' });
-        if(res.ok){
-          var d = await res.json();
-          if(d && Array.isArray(d.reqs)) reqs = d.reqs;
-          if(d && Array.isArray(d.items) && d.items.length) items = d.items;
+        var res = await fetch('/api/slip-verify?id=' + encodeURIComponent(String(sid)) + '&_ts=' + Date.now(), { cache: 'no-store' });
+        var d = await res.json().catch(function(){ return null; });
+        if(res.ok && d && d.ok && d.slip){
+          r = d.slip;
+        } else if (res.status >= 500) {
+          lookupErr = (d && d.error) || 'Could not reach voucher verification service.';
         }
-      } catch(e){}
+      } catch(e){
+        lookupErr = 'Network error while verifying voucher.';
+      }
 
-      var r = (reqs || []).find(function(x){ return x && Number(x.id) === sid; });
-      showSlipVerificationModal(r, sid);
+      if (!r && !lookupErr) {
+        r = (reqs || []).find(function(x){ return x && Number(x.id) === sid; }) || null;
+      }
+      showSlipVerificationModal(r, sid, lookupErr);
     } catch(err){
       console.warn('checkUrlSlip error:', err);
     }
@@ -4847,10 +4760,10 @@ html[data-theme="light"] select option:checked,
   checkUrlSlip();
   function ebCalc(){
     var el=document.getElementById('eb-sum');if(!el)return;
-    var rows=readRows('eb');
-    var sub=rows.reduce(function(a,r){return a+(+r.q||0)*(+r.r||0)},0);
-    var g=+(($('#eb-gst')||{}).value)||0,ds=+(($('#eb-disc')||{}).value)||0;
-    var d=sub*ds/100,gg=(sub-d)*g/100,tot=sub-d+gg;
+    var rows=readRows('eb'),r2=function(n){return Math.round((+n||0)*100)/100};
+    var sub=r2(rows.reduce(function(a,r){return a+Math.max(0,+r.q||0)*Math.max(0,+r.r||0)},0));
+    var g=Math.max(0,+(($('#eb-gst')||{}).value)||0),ds=Math.min(100,Math.max(0,+(($('#eb-disc')||{}).value)||0));
+    var d=r2(sub*ds/100),gg=r2((sub-d)*g/100),tot=r2(sub-d+gg);
     var n=rows.filter(function(r){return +r.q>0}).length;
     el.innerHTML='<div class="kb-row"><span>Subtotal ('+n+' item'+(n===1?'':'s')+')</span><span>'+money(sub)+'</span></div><div class="kb-row"><span>Discount ('+ds+'%)</span><span>\u2212 '+money(d)+'</span></div><div class="kb-row"><span>GST ('+g+'%)</span><span>+ '+money(gg)+'</span></div><div class="kb-row tot"><span>Net total payable</span><b>'+money(tot)+'</b></div>';
     var t=document.getElementById('eb-total');if(t)t.textContent=money(tot);
@@ -5275,52 +5188,77 @@ html[data-theme="light"] select option:checked,
   function nvRender(){var b=document.getElementById('nv-box');if(b)b.innerHTML=nvHTML()}
 
   /* ===== Password Manager (admin only) ===== */
-  var PWD={pin:'1234',pw:'Teacher@DPS26'},PWP={pin:'2025',pw:'Principal@DPS26'};
-  function pwAuth(){var a=window.__dpsMemAuth;return (a&&typeof a==='object')?a:null;}
-  function pwSave(a){window.__dpsMemAuth=a;return true;}
-  async function pwEnsure(n){
-    var a=pwAuth();if(!a)return;a.teachers=a.teachers||{};
-    if(!a.teachers[n]){a.teachers[n]={pin:await hashAuth(PWD.pin),pw:await hashAuth(PWD.pw),changed:false};pwSave(a);if(window.__pushAuthUpdate)window.__pushAuthUpdate('teacher',n,a.teachers[n]);}
+  var pwUsersCache=[], pwUsersLoading=false, pwQ='';
+  async function pwLoadUsers(){
+    if(getRole()!=='admin'||!window.fetch)return;
+    pwUsersLoading=true;
+    try{
+      var r=await fetch('/api/auth/admin/devices?_ts='+Date.now(),{cache:'no-store',credentials:'include'});
+      var d=r.ok?await r.json():null;
+      if(d&&d.ok&&Array.isArray(d.users))pwUsersCache=d.users;
+    }catch(e){}
+    pwUsersLoading=false;
+    var l=$('#pw-list');if(l)l.innerHTML=pwRows();
   }
-  var pwShown={},pwQ='';
+  function pwFindUser(username,role){
+    var target=String(username||'').toLowerCase();
+    return (pwUsersCache||[]).find(function(u){
+      if(role&&u.role!==role)return false;
+      return String(u.username||'').toLowerCase()===target||String(u.displayName||'').toLowerCase()===target;
+    })||null;
+  }
   function pwRows(){
-    var a=pwAuth()||{},T=a.teachers||{},q=pwQ.toLowerCase(),h='';
-    function row(n,rec,key,isP){
-      var has=!!rec,chg=has&&(rec.changed||rec.pinChanged),D=isP?PWP:PWD;
-      var st=!has?'<span class="pw-st no">No login yet</span>':chg?'<span class="pw-st ch">Changed by user</span>':'<span class="pw-st df">Default</span>';
-      var info=!has?'Reset to create a login.':chg?'Hidden: stored encrypted (hash). Use Reset if forgotten.':(pwShown[key]?'PIN <b>'+D.pin+'</b> &middot; Password <b>'+D.pw+'</b>':'PIN &bull;&bull;&bull;&bull; &middot; Password &bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;');
-      var eye=(has&&!chg)?'<button class="pill" data-pw="show" data-n="'+E(key)+'">'+(pwShown[key]?'Hide':'Show')+'</button>':'';
-      return '<div class="pw-row"><div class="pw-who"><b>'+E(n)+'</b>'+st+'<small>'+info+'</small></div><div class="pw-act">'+eye+'<button class="pill" data-pw="reset" data-n="'+E(key)+'">Reset</button>'+(isP?'':'<button class="pill pw-del" data-pw="del" data-n="'+E(key)+'">Delete</button>')+'</div></div>';
+    var q=pwQ.toLowerCase(),h='';
+    function row(n,u,key,isP){
+      var has=!!u;
+      var chg=has&&u.pinChanged&&!u.resetRequired;
+      var st=!has?'<span class="pw-st no">No login yet</span>':chg?'<span class="pw-st ch">Active (PIN set)</span>':'<span class="pw-st df">Reset / Onboarding Pending</span>';
+      var info=!has?'Click Reset / Create to generate a one-time onboarding PIN.':chg?'Credentials are scrypt-hashed in Neon DB (cannot be viewed). Use Reset if forgotten.':'One-time PIN active — user must choose a personal PIN on next sign-in.';
+      var btnLbl=has?'Reset PIN':'Create Login';
+      return '<div class="pw-row"><div class="pw-who"><b>'+E(n)+'</b>'+st+'<small>'+info+'</small></div><div class="pw-act"><button class="pill" data-pw="reset" data-n="'+E(key)+'">'+btnLbl+'</button>'+(isP?'':'<button class="pill pw-del" data-pw="del" data-n="'+E(key)+'">Delete</button>')+'</div></div>';
     }
-    if(!q||'principal'.indexOf(q)>-1)h+=row('Principal',a.principal,'@principal',true);
-    fac.forEach(function(n){if(!q||n.toLowerCase().indexOf(q)>-1)h+=row(n,T[n],n,false)});
+    if(pwUsersLoading&&!pwUsersCache.length)return '<p class="pw-note">Loading users from Neon database...</p>';
+    if(!q||'principal'.indexOf(q)>-1)h+=row('Principal',pwFindUser('principal','principal'),'@principal',true);
+    fac.forEach(function(n){if(!q||n.toLowerCase().indexOf(q)>-1)h+=row(n,pwFindUser(n,'teacher'),n,false)});
     return h||'<p class="pw-note">No faculty found.</p>';
   }
   function pwView(){
-    var h=top('Passwords')+'<h2 class="s">Password Manager</h2><p class="pw-note">Passwords are stored encrypted, so a password a user has set themselves cannot be viewed. You can see default logins, reset any account to default (the user must set a new PIN at next sign-in) or delete a faculty member.</p><input id="pw-q" type="search" placeholder="Search faculty" value="'+E(pwQ)+'"><div id="pw-msg" class="pw-note"></div><div id="pw-list">'+pwRows()+'</div>';
+    var h=top('Passwords')+'<h2 class="s">Password Manager</h2><p class="pw-note">All PINs and passwords are scrypt-hashed in Neon PostgreSQL and never exposed in plain text. Resetting an account generates a one-time temporary PIN and forces the user to set a new PIN at their next sign-in.</p><input id="pw-q" type="search" placeholder="Search faculty" value="'+E(pwQ)+'"><div id="pw-msg" class="pw-note"></div><div id="pw-list">'+pwRows()+'</div>';
     $('#main').innerHTML=h;
+    pwLoadUsers();
   }
   function pwNote(t){var m=$('#pw-msg');if(m)m.textContent=t}
   document.addEventListener('input',function(e){if(e.target&&e.target.id==='pw-q'){pwQ=e.target.value;var l=$('#pw-list');if(l)l.innerHTML=pwRows()}});
   document.addEventListener('click',async function(e){
     var b=e.target.closest&&e.target.closest('[data-pw]');if(!b||getRole()!=='admin')return;
-    var act=b.getAttribute('data-pw'),key=b.getAttribute('data-n'),a=pwAuth();
-    if(!a){pwNote('Login data not found on this device.');return}
-    a.teachers=a.teachers||{};
-    if(act==='show'){pwShown[key]=!pwShown[key];$('#pw-list').innerHTML=pwRows();return}
+    var act=b.getAttribute('data-pw'),key=b.getAttribute('data-n');
     if(act==='reset'){
-      var P=key==='@principal',nm=P?'Principal':key;
-      if(!confirm('Reset '+nm+' to the default PIN and password?'))return;
-      var D=P?PWP:PWD,nowTs=Date.now(),rec=await (async function(){return {pin:await hashAuth(D.pin),pw:await hashAuth(D.pw),changed:false,pinChanged:false,updatedAt:nowTs,resetAt:nowTs}})();
-      if(P){a.principal=rec}else{a.teachers[key]=rec}
-      pwSave(a)?pwNote(nm+' reset. Default PIN '+D.pin+' / password '+D.pw+'. They must set a new PIN at next sign-in.'):pwNote('Could not save.');
-      save({type:'auth_update',role:P?'principal':'teacher',name:P?'principal':key,rec:rec});
-      $('#pw-list').innerHTML=pwRows();return}
+      var P=key==='@principal',nm=P?'Principal':key,uName=P?'principal':key;
+      var existing=pwFindUser(uName,P?'principal':'teacher');
+      if(existing&&!confirm('Generate a new one-time temporary PIN for '+nm+'? They will be required to choose a new PIN on next sign-in.'))return;
+      b.disabled=true;
+      try{
+        var payload=existing?{action:'reset_credentials',username:uName}:{action:'add_user',username:uName,displayName:nm,role:'teacher'};
+        var r=await fetch('/api/auth/admin/devices',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify(payload)});
+        var d=await r.json().catch(function(){return {};});
+        if(!r.ok||!d.ok){pwNote((d&&d.error)||'Could not update credentials.');b.disabled=false;return;}
+        pwNote(d.tempPin?(nm+' temporary one-time PIN: '+d.tempPin+' (share securely; must be changed on next sign-in).'):(d.message||'Updated.'));
+        await pwLoadUsers();
+      }catch(err){pwNote('Network error updating credentials.');}
+      b.disabled=false;
+      return;
+    }
     if(act==='del'){
       if(!confirm('Delete faculty "'+key+'"? Their login is removed. Past issue history stays in reports.'))return;
-      var i=fac.indexOf(key);if(i>-1)fac.splice(i,1);
-      delete a.teachers[key];pwSave(a);save({type:'auth_delete_teacher',name:key});
-      pwNote(key+' deleted.');$('#pw-list').innerHTML=pwRows();
+      b.disabled=true;
+      try{
+        await fetch('/api/auth/admin/devices',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({action:'delete_user',username:key})});
+        var i=fac.indexOf(key);if(i>-1)fac.splice(i,1);
+        await save({type:'auth_delete_teacher',name:key});
+        pwNote(key+' deleted.');
+        await pwLoadUsers();
+      }catch(err){pwNote('Could not delete faculty.');}
+      b.disabled=false;
     }
   });
   /* ---------- DAMAGED / LOST ---------- */
@@ -5344,7 +5282,7 @@ html[data-theme="light"] select option:checked,
     if(!L.length)return '<div class="empty">No damaged or lost items recorded yet.</div>';
     return '<div class="tw"><table><tr><th>Date</th><th>Item</th><th>Variant</th><th>Qty</th><th>Reason</th><th>Note</th></tr>'+L.map(function(l){var it=find(l.id);return '<tr><td><b style="font-size:12.5px">'+fmt(l.d)+'</b></td><td><b>'+(it?E(it.name):'?')+'</b></td><td><span class="tag">'+E(l.v)+'</span></td><td><b>'+l.q+'</b> <small style="color:var(--muted)">'+E(it?it.unit:'')+'</small></td><td><span class="tag dm">'+E(l.by)+'</span></td><td>'+E(l.rem||'\u2014')+'</td></tr>'}).join('')+'</table></div>';
   }
-  function mkDmg(){
+  async function mkDmg(){
     var id=+val('d-item'),v=val('d-var'),q=+val('d-qty'),date=val('d-date')||iso(),why=val('d-reason')||'Damaged',note=val('d-note');
     var it=find(id);if(!it)return msg('Select an item.');
     var r=it.v.filter(function(x){return x[0]===v})[0];if(!r)return msg('Select a variant.');
@@ -5352,7 +5290,12 @@ html[data-theme="light"] select option:checked,
     if(q>r[1])return msg('Only '+r[1]+' '+it.unit+' in stock for '+v+'.');
     r[1]-=q;
     log.unshift({d:date,id:id,t:'dmg',q:q,by:why,v:v,rem:note});
-    save({type:'stock_adj',kind:'dmg',id:id,v:v,q:q,by:why,date:date,rem:note});addTab='dmg';addView();msg('Recorded: '+q+' '+it.unit+' of '+it.name+' ('+v+') marked '+why.toLowerCase()+'. Stock updated.',1);rail();tree();
+    var res=await save({type:'stock_adj',kind:'dmg',id:id,v:v,q:q,by:why,date:date,rem:note});
+    if(!res||!res.ok){
+      r[1]+=q;log.shift();
+      return msg((res&&res.error)||'Could not save damage record to database.');
+    }
+    addTab='dmg';addView();msg('Recorded: '+q+' '+it.unit+' of '+it.name+' ('+v+') marked '+why.toLowerCase()+'. Stock updated.',1);rail();tree();
   }
   document.addEventListener('change',function(e){var t=e.target;if(t&&t.id==='d-item'){var vs=document.getElementById('d-var');if(vs)vs.innerHTML=dmgVarOpts(t.value)}});
   function addView(){
@@ -5379,17 +5322,23 @@ html[data-theme="light"] select option:checked,
   }
   function msg(t,ok){var m=$('#amsg');if(m){m.className=ok?'ok':'er';m.textContent=t}}
   function val(id){var e=$('#'+id);return e?e.value.trim():''}
-  function doIssueForm(){
+  async function doIssueForm(){
     var rows=readRows('i').filter(function(r){return +r.q>0}),who=val('i-fac'),date=val('i-date')||iso();
     if(!who)return msg('Select a faculty.');
     if(!rows.length)return msg('Enter a quantity for at least one item.');
     var need={};for(var i=0;i<rows.length;i++){var k=rows[i].id+'|'+rows[i].v;need[k]=(need[k]||0)+(+rows[i].q)}
     for(var k in need){var p=k.split('|'),it=find(+p[0]),r=it.v.filter(function(x){return x[0]===p[1]})[0];if(!r||r[1]<need[k])return msg('Not enough stock: '+it.name+' ('+p[1]+') has '+(r?r[1]:0)+'.')}
+    var prevLogLen=log.length;
     rows.forEach(function(r){doIssue(r.id,r.v,+r.q,who,date)});
-    save({type:'issue_batch',by:who,date:date,rows:rows.map(function(r){return {id:+r.id,v:r.v,q:+r.q}})});
+    var res=await save({type:'issue_batch',by:who,date:date,rows:rows.map(function(r){return {id:+r.id,v:r.v,q:+r.q}})});
+    if(!res||!res.ok){
+      rows.forEach(function(r){var it=find(r.id),vr=it&&it.v.filter(function(x){return x[0]===r.v})[0];if(vr)vr[1]+=(+r.q);});
+      log.splice(0,log.length-prevLogLen);
+      return msg((res&&res.error)||'Could not save issue to database.');
+    }
     rowsI=[{id:0,v:'',q:''}];fillRows('i');msg('Issued '+rows.length+' item'+(rows.length>1?'s':'')+' to '+who+'.',1);rail();tree();
   }
-  function mkItem(){
+  async function mkItem(){
     var n=val('n-name');if(!n)return msg('Enter an item name.');
     if(items.some(function(i){return i.name.toLowerCase()===n.toLowerCase()}))return msg('This item already exists.');
     var v=[];
@@ -5407,13 +5356,30 @@ html[data-theme="light"] select option:checked,
       v=[['Standard',Math.max(0,parseInt(val('n-open'),10)||0)]];
     }
     var newIt={id:++uid,name:n,cat:val('n-cat')||'General',unit:val('n-unit')||'pcs',min:parseInt(val('n-min'),10)||0,v:v};
-    items.push(newIt);save({type:'item_add',item:JSON.parse(JSON.stringify(newIt))});
+    items.push(newIt);
+    var res=await save({type:'item_add',item:JSON.parse(JSON.stringify(newIt))});
+    if(!res||!res.ok){
+      items.pop();uid--;
+      return msg((res&&res.error)||'Could not save item to database.');
+    }
     $('#n-name').value='';rowsNV=[{n:'',q:''},{n:'',q:''}];nvRender();var no=$('#n-open');if(no)no.value='0';msg('Added “'+n+'”. It now appears in Stock.',1);tree();
   }
-  function mkFac(){
+  async function mkFac(){
     var n=val('f-name');if(!n)return msg('Enter a name.');
     if(fac.some(function(x){return x.toLowerCase()===n.toLowerCase()}))return msg('This faculty already exists.');
-    fac.push(n);save({type:'fac_add',name:n});pwEnsure(n);$('#f-name').value='';msg('Added '+n+'.',1);
+    fac.push(n);
+    var res=await save({type:'fac_add',name:n});
+    if(!res||!res.ok){
+      fac.pop();
+      return msg((res&&res.error)||'Could not save faculty to database.');
+    }
+    var pinNote='';
+    try{
+      var r2=await fetch('/api/auth/admin/devices',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({action:'add_user',username:n,displayName:n,role:'teacher'})});
+      var d2=await r2.json().catch(function(){return {};});
+      if(r2.ok&&d2&&d2.tempPin)pinNote=' Onboarding one-time PIN: '+d2.tempPin;
+    }catch(e){}
+    $('#f-name').value='';msg('Added '+n+'.'+pinNote,1);
   }
 
   function checkBillDate(){
@@ -5437,7 +5403,7 @@ html[data-theme="light"] select option:checked,
     }
   }
 
-  function mkBill(){
+  async function mkBill(){
     var no=val('b-no'),vendor=val('b-vendor'),rows=readRows('b').filter(function(r){return +r.q>0});
     if(!no)return msg('Enter the bill number.');if(!val('b-ip'))return msg('Enter the in-pass number.');if(!vendor)return msg('Enter the vendor.');
     if(!rows.length)return msg('Add at least one item with quantity.');
@@ -5445,10 +5411,11 @@ html[data-theme="light"] select option:checked,
     var isOld=(date<iso());
     var newBill={
       id:++bid,no:no,ip:val('b-ip'),vendor:vendor,date:date,
-      gst:+val('b-gst')||0,disc:+val('b-disc')||0,
+      gst:Math.max(0,+val('b-gst')||0),disc:Math.min(100,Math.max(0,+val('b-disc')||0)),
       lines:rows.map(function(r){return [r.id,r.v,+r.q,+r.r||0]}),
       stockAdded:!isOld
     };
+    var prevLogLen=log.length;
     bills.push(newBill);
     if(!isOld){
       rows.forEach(function(r){
@@ -5457,10 +5424,19 @@ html[data-theme="light"] select option:checked,
           var vr=it.v.filter(function(x){return x[0]===r.v})[0];
           if(vr)vr[1]+=(+r.q);
           addLog(r.id,'in',+r.q,vendor,r.v,date);
+          if(log[0])log[0].billId=newBill.id;
         }
       });
     }
-    save({type:'bill_add',bill:JSON.parse(JSON.stringify(newBill))});
+    var res=await save({type:'bill_add',bill:JSON.parse(JSON.stringify(newBill))});
+    if(!res||!res.ok){
+      bills.pop();bid--;
+      if(!isOld){
+        rows.forEach(function(r){var it=find(r.id),vr=it&&it.v.filter(function(x){return x[0]===r.v})[0];if(vr)vr[1]=Math.max(0,vr[1]-(+r.q));});
+        log.splice(0,log.length-prevLogLen);
+      }
+      return msg((res&&res.error)||'Could not save bill to database.');
+    }
     rowsB=[{id:0,v:'',q:'',r:''}];
     addView();
     if(isOld){
@@ -5471,12 +5447,12 @@ html[data-theme="light"] select option:checked,
     tree();
   }
 
-  function saveBill(id){
+  async function saveBill(id){
     if(getRole()!=='admin')return;
     var b=bills.filter(function(x){return x.id===id})[0];
     if(!b)return;
     var no=val('eb-no'),vendor=val('eb-vendor'),ip=val('eb-ip'),date=val('eb-date')||iso();
-    var gst=+val('eb-gst')||0,disc=+val('eb-disc')||0;
+    var gst=Math.max(0,+val('eb-gst')||0),disc=Math.min(100,Math.max(0,+val('eb-disc')||0));
     var rows=readRows('eb').filter(function(r){return +r.q>0});
     var em=$('#eb-msg');
     function emsg(t,ok){if(em){em.className=ok?'ok':'er';em.textContent=t}}
@@ -5485,6 +5461,7 @@ html[data-theme="light"] select option:checked,
     if(!vendor)return emsg('Enter the vendor.');
     if(!rows.length)return emsg('Add at least one item with quantity.');
 
+    var snapBill=JSON.parse(JSON.stringify(b));
     var isOld=(date<iso());
     if(b.stockAdded!==false){
       b.lines.forEach(function(l){
@@ -5511,17 +5488,25 @@ html[data-theme="light"] select option:checked,
 
     b.no=no;b.ip=ip;b.vendor=vendor;b.date=date;b.gst=gst;b.disc=disc;
     b.lines=rows.map(function(r){return [r.id,r.v,+r.q,+r.r||0]});
-    save({type:'bill_edit',id:b.id,bill:JSON.parse(JSON.stringify(b))});
+    var res=await save({type:'bill_edit',id:b.id,bill:JSON.parse(JSON.stringify(b))});
+    if(!res||!res.ok){
+      if(b.stockAdded){b.lines.forEach(function(l){var it=find(l[0]),vr=it&&it.v.filter(function(x){return x[0]===l[1]})[0];if(vr)vr[1]=Math.max(0,vr[1]-l[2]);});}
+      if(snapBill.stockAdded!==false){snapBill.lines.forEach(function(l){var it=find(l[0]),vr=it&&it.v.filter(function(x){return x[0]===l[1]})[0];if(vr)vr[1]+=l[2];});}
+      Object.assign(b,snapBill);
+      return emsg((res&&res.error)||'Could not update bill in database.');
+    }
     editingBillId=null;
     billId=b.id;
     go();
     $('#main').scrollTop=0;
   }
 
-  function delBill(id){
+  async function delBill(id){
     if(getRole()!=='admin')return;
     if(!confirm('Are you sure you want to delete this bill?'))return;
-    var b=bills.filter(function(x){return x.id===id})[0];
+    var idx=bills.findIndex(function(x){return x.id===id});
+    if(idx<0)return;
+    var b=bills[idx];
     if(b&&b.stockAdded!==false){
       b.lines.forEach(function(l){
         var it=find(l[0]);
@@ -5531,8 +5516,13 @@ html[data-theme="light"] select option:checked,
         }
       });
     }
-    bills=bills.filter(function(x){return x.id!==id});
-    save({type:'bill_del',id:id});
+    bills.splice(idx,1);
+    var res=await save({type:'bill_del',id:id});
+    if(!res||!res.ok){
+      bills.splice(idx,0,b);
+      if(b&&b.stockAdded!==false){b.lines.forEach(function(l){var it=find(l[0]),vr=it&&it.v.filter(function(x){return x[0]===l[1]})[0];if(vr)vr[1]+=l[2];});}
+      return;
+    }
     editingBillId=null;
     billId=null;
     view='bills';
@@ -5691,7 +5681,29 @@ html[data-theme="light"] select option:checked,
       }
       return;
     }
+    var bioSetupBtn = e.target.closest('[data-a="admin-setup-bio"]');
+    if(bioSetupBtn){
+      var bmsgEl = $('#pw-change-msg');
+      function bmsg(t, ok){
+        if(bmsgEl){ bmsgEl.className = ok ? 'ok' : 'er'; bmsgEl.style.color = ok ? 'var(--acc)' : 'var(--err)'; bmsgEl.textContent = t; }
+      }
+      if(getRole()!=='admin') return bmsg('Only Administrator can setup Admin biometrics.');
+      if(!window.__adminBioSupported||!window.__adminBioSupported()) return bmsg('Biometric passkeys require HTTPS (or localhost) and a supported authenticator.');
+      if(!window.__enrollAdminBio) return bmsg('Biometric module not initialized.');
+      bioSetupBtn.disabled = true;
+      (async function(){
+        try{
+          await window.__enrollAdminBio();
+          bmsg('Admin Biometrics registered! Unlock with fingerprint / Windows Hello on next sign-in.', 1);
+        }catch(err){
+          bmsg(err && err.name === 'NotAllowedError' ? 'Biometric registration cancelled.' : (err && err.message) || 'Could not register biometrics on this device.');
+        }
+        bioSetupBtn.disabled = false;
+      })();
+      return;
+    }
     if((e.target.dataset&&e.target.dataset.a==='save-new-password')||e.target.closest('[data-a="save-new-password"]')){
+      var savePwBtn = e.target.closest('[data-a="save-new-password"]');
       var targetRoleVal = val('pw-target-role') || 'admin';
       var curPw = val('pw-current');
       var newPw = val('pw-new');
@@ -5705,7 +5717,12 @@ html[data-theme="light"] select option:checked,
           msgEl.textContent = t;
         }
       }
-      if(!curPw) return pmsg('Please enter your current password or PIN.');
+      var sessInfo=(window.__readPortalSession?window.__readPortalSession():null)||{};
+      var curRole=sessInfo.role||getRole();
+      var isTeacher = targetRoleVal.indexOf('teacher:') === 0;
+      var teacherName = isTeacher ? targetRoleVal.replace('teacher:', '') : '';
+      var isSelf = (targetRoleVal===curRole) || (isTeacher && teacherName===(sessInfo.name||''));
+      if(isSelf && !curPw) return pmsg('Please enter your current password or PIN.');
       if(!newPw && !newPin) return pmsg('Enter a new password or a new 4-digit PIN.');
       if(newPw){
         if(newPw.length < 4) return pmsg('New password must be at least 4 characters long.');
@@ -5713,37 +5730,36 @@ html[data-theme="light"] select option:checked,
       }
       if(newPin && !/^\d{4}$/.test(newPin)) return pmsg('PIN must be exactly 4 digits.');
 
+      if(savePwBtn) savePwBtn.disabled = true;
       (async function(){
-        if(window.__syncAuthFromServer)await Promise.race([window.__syncAuthFromServer(),new Promise(function(r){setTimeout(r,1200)})]);
-        var curHash = await hashAuth(curPw);
-        var authStore = ls(AUTH_KEY) || {};
-        var isTeacher = targetRoleVal.indexOf('teacher:') === 0;
-        var teacherName = isTeacher ? targetRoleVal.replace('teacher:', '') : '';
-        var targetObj = isTeacher ? (authStore.teachers && authStore.teachers[teacherName] ? authStore.teachers[teacherName] : null) : authStore[targetRoleVal];
-        if(!targetObj){
-          targetObj = {};
-          if(isTeacher){ authStore.teachers = authStore.teachers || {}; authStore.teachers[teacherName] = targetObj; }
-          else authStore[targetRoleVal] = targetObj;
+        try{
+          var payload = {
+            currentSecret: curPw || undefined,
+            newPassword: newPw || undefined,
+            newPin: newPin || undefined,
+            targetRole: isTeacher ? 'teacher' : targetRoleVal,
+            targetUsername: isTeacher ? teacherName : targetRoleVal
+          };
+          var res = await fetch('/api/auth/change-credentials', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(payload)
+          });
+          var data = await res.json().catch(function(){ return {}; });
+          if(!res.ok || !data.ok){
+            pmsg((data && data.error) || 'Could not update credentials.');
+          } else {
+            pmsg(data.message || 'Credentials updated in Neon database! Sign in with your new credentials anywhere.', 1);
+            $('#pw-current').value = '';
+            $('#pw-new').value = '';
+            $('#pw-confirm').value = '';
+            if($('#pin-new')) $('#pin-new').value = '';
+          }
+        }catch(err){
+          pmsg('Network error updating credentials.');
         }
-        var curValid = false;
-        if((window.__dpsMatchHash && (window.__dpsMatchHash(targetObj.pw, curPw, curHash) || window.__dpsMatchHash(targetObj.pin, curPw, curHash))) || targetObj.pw === curHash || targetObj.pin === curHash){
-          curValid = true;
-        } else {
-          if(targetRoleVal === 'admin' && !targetObj.changed && !targetObj.pinChanged && (curPw === 'Admin@DPS26' || curPw === '2026' || curPw === 'admin123' || curPw === 'admin')) curValid = true;
-          else if(targetRoleVal === 'principal' && !targetObj.changed && !targetObj.pinChanged && (curPw === 'Principal@DPS26' || curPw === '2025' || curPw === 'principal123')) curValid = true;
-          else if(isTeacher && !targetObj.changed && !targetObj.pinChanged && (curPw === 'Teacher@DPS26' || curPw === '1234' || curPw === 'Teacher@123' || curPw === 'teacher123')) curValid = true;
-        }
-        if(!curValid) return pmsg('Current password or PIN is incorrect.');
-        if(newPw){ targetObj.pw = await hashAuth(newPw); targetObj.changed = true; }
-        if(newPin){ targetObj.pin = await hashAuth(newPin); targetObj.pinChanged = true; }
-        targetObj.updatedAt = Date.now();
-        ls(AUTH_KEY, authStore);
-        save({type:'auth_update', role: isTeacher ? 'teacher' : targetRoleVal, name: isTeacher ? teacherName : targetRoleVal, rec: targetObj});
-        pmsg('Credentials updated successfully! You can now sign in with your new credentials.', 1);
-        $('#pw-current').value = '';
-        $('#pw-new').value = '';
-        $('#pw-confirm').value = '';
-        if($('#pin-new')) $('#pin-new').value = '';
+        if(savePwBtn) savePwBtn.disabled = false;
       })();
       return;
     }
@@ -5781,35 +5797,55 @@ html[data-theme="light"] select option:checked,
       $('#main').scrollTop=0;
       return;
     }
-    if(a==='savebill'){if(getRole()!=='admin')return;saveBill(+d.b);return}
-    if(a==='delbill'){if(getRole()!=='admin')return;closeKiteBill();delBill(+d.b);return}
+    if(a==='savebill'){if(getRole()!=='admin')return;t.disabled=true;Promise.resolve(saveBill(+d.b)).finally(function(){t.disabled=false});return}
+    if(a==='delbill'){if(getRole()!=='admin')return;closeKiteBill();t.disabled=true;Promise.resolve(delBill(+d.b)).finally(function(){t.disabled=false});return}
     if(a==='in'||a==='out'){
       if(getRole()!=='admin')return;
       var q=parseInt($('#aq').value,10),v=$('#av').value,by=$('#ab').value,it=find(openId);
       if(!q||q<1){$('#am').textContent='Enter a quantity.';return}
-      if(a==='in'){it.v.filter(function(x){return x[0]===v})[0][1]+=q;addLog(openId,'in',q,'Direct entry',v);save({type:'stock_adj',kind:'in',id:openId,v:v,q:q,by:'Direct entry',date:iso()})}
-      else{
-        if(!doIssue(openId,v,q,by)){$('#am').textContent='Not enough stock in this variant.';return}
-        save({type:'stock_adj',kind:'out',id:openId,v:v,q:q,by:by,date:iso()});
-      }
-      detail(openId);return;
+      t.disabled=true;
+      (async function(){
+        var prevLogLen=log.length, vr=it&&it.v.filter(function(x){return x[0]===v})[0];
+        if(a==='in'){
+          if(vr)vr[1]+=q;
+          addLog(openId,'in',q,'Direct entry',v);
+          var res=await save({type:'stock_adj',kind:'in',id:openId,v:v,q:q,by:'Direct entry',date:iso()});
+          if(!res||!res.ok){if(vr)vr[1]-=q;log.splice(0,log.length-prevLogLen);$('#am').textContent=(res&&res.error)||'Could not save stock update.';t.disabled=false;return;}
+        }else{
+          if(!doIssue(openId,v,q,by)){$('#am').textContent='Not enough stock in this variant.';t.disabled=false;return}
+          var res2=await save({type:'stock_adj',kind:'out',id:openId,v:v,q:q,by:by,date:iso()});
+          if(!res2||!res2.ok){if(vr)vr[1]+=q;log.splice(0,log.length-prevLogLen);$('#am').textContent=(res2&&res2.error)||'Could not save issue to database.';t.disabled=false;return;}
+        }
+        t.disabled=false;
+        detail(openId);
+      })();
+      return;
     }
     if(a==='addrow'){if(getRole()!=='admin')return;var k=d.kind,rows=readRows(k);rows.push({id:0,v:'',q:'',r:''});fillRows(k);return}
     if(a==='rmrow'){if(getRole()!=='admin')return;var k2=d.kind,rs=readRows(k2);rs.splice(+d.i,1);if(!rs.length)rs.push({id:0,v:'',q:'',r:''});if(k2==='i')rowsI=rs;else if(k2==='b')rowsB=rs;else rowsEB=rs;fillRows(k2);return}
-    if(a==='doissue'){if(getRole()!=='admin')return;doIssueForm();return}
+    if(a==='doissue'){if(getRole()!=='admin')return;t.disabled=true;Promise.resolve(doIssueForm()).finally(function(){t.disabled=false});return}
     if(a==='nv-mode'){nvRead();nvMulti=d.nm==="1";nvRender();return}
     if(a==='nv-pre'){nvRead();nvLabel=d.k;var P=NV_PRESETS[d.k]||[];if(rowsNV.every(function(r){return !r.n&&!r.q}))rowsNV=P.slice(0,3).map(function(x){return {n:x,q:''}});nvRender();return}
     if(a==='nv-add'){nvRead();rowsNV.push({n:'',q:''});nvRender();var ns=document.querySelectorAll('#nv-box .nv-n');if(ns.length)ns[ns.length-1].focus();return}
     if(a==='nv-rm'){nvRead();rowsNV.splice(+d.i,1);if(rowsNV.length<1)rowsNV.push({n:'',q:''});nvRender();return}
-    if(a==='mkitem'){if(getRole()!=='admin')return;mkItem();return}
-    if(a==='mkfac'){if(getRole()!=='admin')return;mkFac();return}
-    if(a==='mkdmg'){if(getRole()!=='admin')return;mkDmg();return}
+    if(a==='mkitem'){if(getRole()!=='admin')return;t.disabled=true;Promise.resolve(mkItem()).finally(function(){t.disabled=false});return}
+    if(a==='mkfac'){if(getRole()!=='admin')return;t.disabled=true;Promise.resolve(mkFac()).finally(function(){t.disabled=false});return}
+    if(a==='mkdmg'){if(getRole()!=='admin')return;t.disabled=true;Promise.resolve(mkDmg()).finally(function(){t.disabled=false});return}
     if(a==='dmgfrom'){if(getRole()!=='admin')return;dmgItem=openId;clearSub();view='add';addTab='dmg';go();$('#main').scrollTop=0;return}
-    if(a==='mkbill'){if(getRole()!=='admin')return;mkBill();return}
-    if(a==='reset'){if(getRole()!=='admin')return;seed();save({_reset:true});go();return}
+    if(a==='mkbill'){if(getRole()!=='admin')return;t.disabled=true;Promise.resolve(mkBill()).finally(function(){t.disabled=false});return}
+    if(a==='reset'){
+      if(getRole()!=='admin')return;
+      if(!confirm('Reset ALL inventory, bills, logs and requisitions to initial demo seed?'))return;
+      t.disabled=true;
+      Promise.resolve(save({_reset:true})).then(function(res){
+        if(res&&res.ok){seed();if(res.state)applyRemoteState(res.state,false);else go();}
+      }).finally(function(){t.disabled=false});
+      return;
+    }
     if(d.r){
       var r=reqs.filter(function(x){return x.id===+d.r})[0],role=getRole(),msg='',okm=true,syncOp=null;
       if(!r)return;
+      var snapR=JSON.parse(JSON.stringify(r)), snapLogLen=log.length, snapDeduct=[];
       if(d.s==='Verified'){
         if(role!=='principal'||r.st!=='Pending')return;
         var rj=[];
@@ -5818,7 +5854,7 @@ html[data-theme="light"] select option:checked,
         else{
           r.st='Verified';r.pDate=iso();if(rj.length)r.rejP=rj;
           syncOp={type:'req_status',id:r.id,req:JSON.parse(JSON.stringify(r))};
-          msg='Slip #'+slipNo(r.id)+' of '+r.by+' approved and sent to Admin for issue.'+(rj.length?' '+rj.length+' item'+(rj.length>1?'s were':' was')+' rejected.':''); if(window.EnterpriseAnim){ EnterpriseAnim.confetti(); EnterpriseAnim.toast('Requisition Slip Approved!', 'Slip #' + slipNo(r.id) + ' approved by Principal.', 'approval'); }
+          msg='Slip #'+slipNo(r.id)+' of '+r.by+' approved and sent to Admin for issue.'+(rj.length?' '+rj.length+' item'+(rj.length>1?'s were':' was')+' rejected.':'');
         }
       }else if(d.s==='Approved'){
         if(role!=='admin'||r.st!=='Verified')return;
@@ -5843,6 +5879,7 @@ html[data-theme="light"] select option:checked,
             var q=qs[i],it=find(x[0]);
             if(q>0){
               doIssue(x[0],x[1],q,r.by);
+              snapDeduct.push({id:x[0],v:x[1],q:q});
               var rText='Requisition '+slipNo(r.id)+(q<x[2]?' \u2022 issued '+q+' of '+x[2]:'')+(adminNote?' \u2022 '+adminNote:'');
               if(log[0])log[0].rem=rText;
               deductList.push({id:x[0],v:x[1],q:q,by:r.by,rem:rText,date:iso()});
@@ -5853,7 +5890,7 @@ html[data-theme="light"] select option:checked,
           });
           r.st='Approved';r.iDate=iso();r.iss=qs;r.short=shorts;r.iRem=adminNote;if(rjAl.length)r.rejA=rjAl;
           syncOp={type:'req_status',id:r.id,req:JSON.parse(JSON.stringify(r)),deduct:deductList};
-          msg='Slip #'+slipNo(r.id)+' issued to '+r.by+(shorts.length?' with a partial issue. The remark is now visible to everyone.':'. Stock was deducted automatically.'); if(window.EnterpriseAnim){ EnterpriseAnim.confetti(); EnterpriseAnim.toast('Items Issued Successfully!', 'Slip #' + slipNo(r.id) + ' items issued to ' + r.by + '.', 'stock'); EnterpriseAnim.stockBump(); }
+          msg='Slip #'+slipNo(r.id)+' issued to '+r.by+(shorts.length?' with a partial issue. The remark is now visible to everyone.':'. Stock was deducted automatically.');
         }
       }else if(d.s==='Declined'){
         if(!((role==='principal'&&r.st==='Pending')||(role==='admin'&&r.st==='Verified')))return;
@@ -5861,11 +5898,37 @@ html[data-theme="light"] select option:checked,
         syncOp={type:'req_status',id:r.id,req:JSON.parse(JSON.stringify(r))};
         msg='Slip #'+slipNo(r.id)+' of '+r.by+' was declined.';
       }else return;
-      if(okm)save(syncOp);
-      rail();tree();
-      if(okm&&window.__beep)window.__beep(d.s==='Declined'?'decline':'approve');
-      if(reqT)reqTeacherView(reqT);else reqView();
-      var rm=$('#rm');if(rm){rm.style.color=okm?'var(--acc)':'var(--err)';rm.textContent=msg}
+      if(!okm){
+        if(reqT)reqTeacherView(reqT);else reqView();
+        var rm0=$('#rm');if(rm0){rm0.style.color='var(--err)';rm0.textContent=msg}
+        return;
+      }
+      t.disabled=true;
+      (async function(){
+        var res=await save(syncOp);
+        if(!res||!res.ok){
+          Object.assign(r,snapR);
+          if(!snapR.hasOwnProperty('rejP'))delete r.rejP;
+          if(!snapR.hasOwnProperty('rejA'))delete r.rejA;
+          if(!snapR.hasOwnProperty('iss'))delete r.iss;
+          if(!snapR.hasOwnProperty('short'))delete r.short;
+          if(!snapR.hasOwnProperty('iRem'))delete r.iRem;
+          snapDeduct.forEach(function(dl){var it=find(dl.id),vr=it&&it.v.filter(function(v){return v[0]===dl.v})[0];if(vr)vr[1]+=dl.q;});
+          log.splice(0,log.length-snapLogLen);
+          rail();tree();
+          if(reqT)reqTeacherView(reqT);else reqView();
+          var rmE=$('#rm');if(rmE){rmE.style.color='var(--err)';rmE.textContent=(res&&res.error)||'Could not save requisition update to Neon database.';}
+          t.disabled=false;
+          return;
+        }
+        if(d.s==='Verified'&&window.EnterpriseAnim){ EnterpriseAnim.confetti(); EnterpriseAnim.toast('Requisition Slip Approved!', 'Slip #' + slipNo(r.id) + ' approved by Principal.', 'approval'); }
+        if(d.s==='Approved'&&window.EnterpriseAnim){ EnterpriseAnim.confetti(); EnterpriseAnim.toast('Items Issued Successfully!', 'Slip #' + slipNo(r.id) + ' items issued to ' + r.by + '.', 'stock'); EnterpriseAnim.stockBump(); }
+        rail();tree();
+        if(window.__beep)window.__beep(d.s==='Declined'?'decline':'approve');
+        if(reqT)reqTeacherView(reqT);else reqView();
+        var rm=$('#rm');if(rm){rm.style.color='var(--acc)';rm.textContent=msg}
+        t.disabled=false;
+      })();
       return;
     }
   });
@@ -6206,7 +6269,7 @@ html[data-theme="light"] select option:checked,
     if(a)a.textContent=tCart.length;if(b)b.textContent=cartTotalQty();
     updateCartBtn(false);
   }
-  function sendSlip(){
+  async function sendSlip(){
     if(!tCart.length)return;
     var purpose=(tPurpose||'').trim();
     if(!purpose){
@@ -6221,10 +6284,19 @@ html[data-theme="light"] select option:checked,
       else if(l.q>s){l.q=s;problem=problem||'Some quantities were reduced to the available stock – please review and send again.'}
     });
     if(problem){saveCart();renderLayer();cartMsg(problem);return}
+    var sendBtn=document.querySelector('[data-sp-send]');
+    if(sendBtn)sendBtn.disabled=true;
     var id=nextSlipId();
     var newSlip={id:id,by:getTeacherName(),it:tCart.map(function(l){return [l.id,l.v,l.q]}),st:'Pending',date:iso(),purpose:purpose};
     reqs.unshift(newSlip);
-    save({type:'req_add',req:JSON.parse(JSON.stringify(newSlip))});
+    var res=await save({type:'req_add',req:JSON.parse(JSON.stringify(newSlip))});
+    if(!res||!res.ok){
+      reqs.shift();
+      if(sendBtn)sendBtn.disabled=false;
+      cartMsg((res&&res.error)||'Could not save requisition slip to Neon database. Please try again.');
+      return;
+    }
+    if(res.assignedId)newSlip.id=id=res.assignedId;
     if(window.__beep)window.__beep('send');
     tCart=[];tPurpose='';saveCart();
     tCartOpen=false;tView='my-slips';tSent={id:id};
@@ -6668,8 +6740,9 @@ html[data-theme="light"] select option:checked,
     for(var i=0;i<list.length;i++){
       htmls.push(await prSlipHTML(list[i],on));
     }
+    clearTimeout(window.__printClearT);
     box.innerHTML=htmls.join('');
-    var done=function(){box.innerHTML='';window.removeEventListener('afterprint',done)};
+    var done=function(){window.removeEventListener('afterprint',done);window.__printClearT=setTimeout(function(){box.innerHTML=''},1500)};
     window.addEventListener('afterprint',done);
     setTimeout(function(){window.print()},120);
   }
@@ -6813,16 +6886,17 @@ html[data-theme="light"] select option:checked,
     if(pend.length)showPrincipalReqPopup(pend);
   };
 
-  syncFromServer(true).then(function(){
-    if(window.__syncAuthFromServer)window.__syncAuthFromServer();
-    if(isPortalVisible()&&getRole()==='principal')window.__checkPrincipalPendingAlert();
-  });
-  var lastNotifTs=Date.now()-10000, seenNotifIds={};
+  if(isPortalVisible()){
+    syncFromServer(true).then(function(){
+      if(getRole()==='principal')window.__checkPrincipalPendingAlert();
+    });
+  }
+  var lastNotifTs=Date.now()-10000, seenNotifIds={}, activeSse=null, sseRetryTimer=null;
   function handleIncomingNotif(n){
     if(!n||!n.id||seenNotifIds[n.id])return;
     seenNotifIds[n.id]=true;
     if(n.timestamp&&n.timestamp>lastNotifTs)lastNotifTs=n.timestamp;
-    syncFromServer(true);
+    if(isPortalVisible())syncFromServer(true);
     if(!isPortalVisible())return;
     var curRole=getRole(), curTeacher=typeof getTeacherName==='function'?getTeacherName():'';
     var Ael=document.getElementById('A'), Tel=document.getElementById('T');
@@ -6843,21 +6917,28 @@ html[data-theme="light"] select option:checked,
       }
     }
   }
-  // Connect SSE stream when available (instant local/LAN updates)
-  if(window.EventSource){
-    (function connectSSE(){
-      try{
-        var es=new EventSource('/api/notifications/stream');
-        es.onmessage=function(ev){
-          try{var n=JSON.parse(ev.data);handleIncomingNotif(n);}catch(e){}
-        };
-        es.onerror=function(){
-          try{es.close();}catch(e){}
-          setTimeout(connectSSE,8000);
-        };
-      }catch(e){}
-    })();
+  function closeNotifStream(){
+    clearTimeout(sseRetryTimer);sseRetryTimer=null;
+    if(activeSse){try{activeSse.close();}catch(e){}activeSse=null;}
   }
+  function startNotifStream(){
+    if(!window.EventSource||!window.__sseEnabled||!isPortalVisible())return;
+    if(activeSse)return;
+    try{
+      activeSse=new EventSource('/api/notifications/stream');
+      activeSse.onmessage=function(ev){
+        try{var n=JSON.parse(ev.data);handleIncomingNotif(n);}catch(e){}
+      };
+      activeSse.onerror=function(){
+        closeNotifStream();
+        if(window.__sseEnabled&&isPortalVisible()){
+          sseRetryTimer=setTimeout(startNotifStream,8000);
+        }
+      };
+    }catch(e){}
+  }
+  window.__startNotifStream=startNotifStream;
+  window.__closeNotifStream=closeNotifStream;
   // Background polling fallback (works on both LAN server and Vercel serverless)
   setInterval(function(){
     if(document.hidden||!isPortalVisible())return;
@@ -6865,14 +6946,14 @@ html[data-theme="light"] select option:checked,
   },3500);
   setInterval(function(){
     if(document.hidden||!isPortalVisible()||!window.fetch)return;
-    fetch('/api/notifications?since='+lastNotifTs,{cache:'no-store'})
+    fetch('/api/notifications?since='+lastNotifTs,{cache:'no-store',credentials:'include'})
       .then(function(r){return r.ok?r.json():null;})
       .then(function(d){if(d&&Array.isArray(d.notifications))d.notifications.forEach(handleIncomingNotif);})
       .catch(function(){});
   },4500);
-  document.addEventListener('visibilitychange',function(){if(!document.hidden)syncFromServer(true);});
-  window.addEventListener('focus',function(){syncFromServer(true);});
-  window.addEventListener('online',function(){syncFromServer(true);});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden&&isPortalVisible())syncFromServer(true);});
+  window.addEventListener('focus',function(){if(isPortalVisible())syncFromServer(true);});
+  window.addEventListener('online',function(){if(isPortalVisible())syncFromServer(true);});
 })();
 </script>
 <script>(function(){
@@ -6917,19 +6998,12 @@ html[data-theme="light"] select option:checked,
     var clean={role:s.role,name:s.name,t:s.t||Date.now()};
     try{sessionStorage.setItem('dps_session',JSON.stringify(clean));}catch(e){}
     writeCookieSess(clean);
-    if(window.fetch&&location.protocol!=='file:'){
-      fetch('/api/session',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        credentials:'include',
-        body:JSON.stringify({role:clean.role,name:clean.name})
-      }).catch(function(){});
-    }
   };
   window.__clearPortalSession=function(){
     try{sessionStorage.removeItem('dps_session');}catch(e){}
     clearCookieSess();
     if(window.fetch&&location.protocol!=='file:'){
+      fetch('/api/auth/logout',{method:'POST',credentials:'include'}).catch(function(){});
       fetch('/api/session',{method:'DELETE',credentials:'include'}).catch(function(){});
     }
   };
@@ -6964,10 +7038,10 @@ html[data-theme="light"] select option:checked,
     if(document.getElementById('dps-push-bar'))return;
     var bar=document.createElement('div');
     bar.id='dps-push-bar';
-    bar.style.cssText='position:fixed;right:16px;bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:9998;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:rgba(15,61,42,0.96);color:#fff;font:600 13px var(--font,system-ui);box-shadow:0 12px 30px rgba(0,0,0,.35);border:1px solid rgba(155,171,132,.35)';
+    bar.style.cssText='position:fixed;right:16px;left:16px;max-width:340px;margin-left:auto;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:9998;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:14px;background:rgba(15,61,42,0.96);color:#fff;font:600 13px var(--font,system-ui);box-shadow:0 12px 30px rgba(0,0,0,.35);border:1px solid rgba(155,171,132,.35)';
     bar.innerHTML='<span>Enable background push alerts</span>'
-      +'<button type="button" data-push-go="1" style="border:0;border-radius:9px;padding:6px 12px;background:#7ee2a8;color:#0b241a;font:700 12px inherit;cursor:pointer">Enable</button>'
-      +'<button type="button" data-push-x="1" aria-label="Dismiss" style="border:0;background:transparent;color:rgba(255,255,255,.75);font-size:15px;cursor:pointer;padding:2px 4px">&#10005;</button>';
+      +'<button type="button" data-push-go="1" style="border:0;border-radius:9px;padding:6px 12px;background:#7ee2a8;color:#0b241a;font:700 12px inherit;cursor:pointer;flex-shrink:0">Enable</button>'
+      +'<button type="button" data-push-x="1" aria-label="Dismiss" style="border:0;background:transparent;color:rgba(255,255,255,.75);font-size:15px;cursor:pointer;padding:2px 4px;flex-shrink:0">&#10005;</button>';
     bar.querySelector('[data-push-go]').onclick=function(){
       window.__initPushNotifications(sess,true).then(removePushBanner);
     };
@@ -6989,7 +7063,7 @@ html[data-theme="light"] select option:checked,
       if(!reg||!reg.pushManager)return false;
       var sub=await reg.pushManager.getSubscription();
       if(!sub){
-        var kr=await fetch('/api/push/subscribe',{cache:'no-store'});
+        var kr=await fetch('/api/push/subscribe',{cache:'no-store',credentials:'include'});
         var kd=kr.ok?await kr.json():null;
         if(!kd||!kd.publicKey)return false;
         sub=await reg.pushManager.subscribe({
@@ -7021,6 +7095,7 @@ html[data-theme="light"] select option:checked,
         await fetch('/api/push/subscribe',{
           method:'DELETE',
           headers:{'Content-Type':'application/json'},
+          credentials:'include',
           body:JSON.stringify({endpoint:sub.endpoint})
         }).catch(function(){});
       }
@@ -7039,11 +7114,20 @@ html[data-theme="light"] select option:checked,
       T.hidden=false;A.hidden=true;
     }
     window.__initPushNotifications(s,false);
+    window.__startNotifStream&&window.__startNotifStream();
   }
   window.__enter=function(s){
     if(!s)return;
     window.__savePortalSession(s);
+    if(s.role==='admin'||s.role==='principal'){
+      window.__adminReset&&window.__adminReset();
+      swap(L,A);
+    }else{
+      window.__renderTeacherPanel&&window.__renderTeacherPanel(s.name);
+      swap(L,T);
+    }
     window.__initPushNotifications(s,false);
+    window.__startNotifStream&&window.__startNotifStream();
     if(window.__syncServerData){
       Promise.resolve(window.__syncServerData(true)).then(function(){
         if(s.role==='principal'&&window.__checkPrincipalPendingAlert){
@@ -7053,29 +7137,40 @@ html[data-theme="light"] select option:checked,
     }else if(s.role==='principal'&&window.__checkPrincipalPendingAlert){
       setTimeout(window.__checkPrincipalPendingAlert,550);
     }
-    if(s.role==='admin'||s.role==='principal'){
-      window.__adminReset&&window.__adminReset();
-      swap(L,A);
-    }else{
-      window.__renderTeacherPanel&&window.__renderTeacherPanel(s.name);
-      swap(L,T);
-    }
   };
-  window.__logout=function(){window.__clearPortalSession();window.__pushUnsubscribe();window.__sess=null;var prPop=document.getElementById('prq-center-popup');if(prPop&&prPop.parentNode)prPop.parentNode.removeChild(prPop); if(window.EnterpriseAnim){ EnterpriseAnim.toast('Signed Out Safely', 'See you next time!', 'login'); } var cur=A.hidden?T:A;window.__loginReset&&window.__loginReset();swap(cur,L)};
+  window.__logout=function(){window.__closeNotifStream&&window.__closeNotifStream();window.__clearPortalSession();window.__pushUnsubscribe();window.__sess=null;var prPop=document.getElementById('prq-center-popup');if(prPop&&prPop.parentNode)prPop.parentNode.removeChild(prPop); if(window.EnterpriseAnim){ EnterpriseAnim.toast('Signed Out Safely', 'See you next time!', 'login'); } var cur=A.hidden?T:A;window.__loginReset&&window.__loginReset();swap(cur,L)};
+
   var restoredSess=window.__readPortalSession();
-  if(restoredSess){
-    showPortalImmediate(restoredSess);
-    window.__savePortalSession(restoredSess);
-  }else if(window.fetch&&location.protocol!=='file:'){
-    fetch('/api/session',{cache:'no-store',credentials:'include'})
+  if(window.fetch&&location.protocol!=='file:'){
+    fetch('/api/auth/me?_ts='+Date.now(),{cache:'no-store',credentials:'include'})
       .then(function(r){return r.ok?r.json():null;})
       .then(function(d){
-        if(d&&d.ok&&d.session&&!window.__readPortalSession()){
-          window.__savePortalSession(d.session);
-          showPortalImmediate(d.session);
-          if(window.__syncServerData)window.__syncServerData(true);
+        if(!d||typeof d!=='object')return;
+        window.__sseEnabled=!!d.sseEnabled;
+        if(typeof d.hasAdminPasskey==='boolean')window.__adminBioEnrolledState=d.hasAdminPasskey;
+        if(d.ok&&!d.limited&&d.user){
+          var srvSess={role:d.user.role,name:d.user.displayName||d.user.username,t:Date.now()};
+          window.__savePortalSession(srvSess);
+          showPortalImmediate(srvSess);
+          if(window.__syncServerData){
+            Promise.resolve(window.__syncServerData(true)).then(function(){
+              if(srvSess.role==='principal'&&window.__checkPrincipalPendingAlert)window.__checkPrincipalPendingAlert();
+            });
+          }
+        }else if(restoredSess){
+          try{sessionStorage.removeItem('dps_session');}catch(e){}
+          clearCookieSess();
+          window.__sess=null;
+          var cur=A.hidden?T:A;
+          if(!cur.hidden)swap(cur,L);
+          else L.hidden=false;
+          window.__loginReset&&window.__loginReset();
         }
-      }).catch(function(){});
+      }).catch(function(){
+        if(restoredSess)showPortalImmediate(restoredSess);
+      });
+  }else if(restoredSess){
+    showPortalImmediate(restoredSess);
   }
 })();</script>
 <script>
@@ -7637,7 +7732,7 @@ html body .rq-pbar input[type=date]{height:34px!important;min-height:0!important
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: currentColor;
+  background: #059669;
   color: #fff;
   display: grid;
   place-items: center;
@@ -7645,6 +7740,8 @@ html body .rq-pbar input[type=date]{height:34px!important;min-height:0!important
   font-size: 16px;
   flex-shrink: 0;
 }
+.sp-v-status.wait .sp-v-icon { background: #d97706; }
+.sp-v-status.bad .sp-v-icon { background: #dc2626; }
 .sp-v-status b { font-size: 14px; display: block; }
 .sp-v-status p { margin: 2px 0 0; font-size: 12px; opacity: 0.9; }
 

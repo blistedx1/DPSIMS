@@ -1,11 +1,8 @@
 const db = require('../../db');
-const { parseCookies, verifyToken, formatCookie } = require('../../lib/auth');
+const { parseCookies, verifyToken, formatCookie, setCorsHeaders } = require('../../lib/auth');
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  setCorsHeaders(req, res, 'GET, POST, OPTIONS');
 
   if (req.method === 'OPTIONS') return res.status(204).end();
 
@@ -18,12 +15,13 @@ module.exports = async (req, res) => {
       await db.query(`
         INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent)
         VALUES ($1, $2, 'logout', $3, $4, $5);
-      `, [session.userId, session.username, {}, clientIp, req.headers['user-agent'] || '']);
+      `, [session.userId, session.username, {}, clientIp, req.headers['user-agent'] || '']).catch(() => {});
     }
 
     const clearFull = formatCookie('dps_session', '', 0, true);
     const clearLimited = formatCookie('dps_limited_sess', '', 0, true);
-    res.setHeader('Set-Cookie', [clearFull, clearLimited]);
+    const clearLegacy = formatCookie('dps_portal_token', '', 0, true);
+    res.setHeader('Set-Cookie', [clearFull, clearLimited, clearLegacy]);
 
     return res.status(200).json({ ok: true });
   } catch (err) {

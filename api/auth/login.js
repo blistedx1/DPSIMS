@@ -1,11 +1,8 @@
 const db = require('../../db');
-const { hashSecret, verifySecret, signToken, formatCookie, checkRateLimit } = require('../../lib/auth');
+const { hashSecret, verifySecret, needsRehash, signToken, formatCookie, setCorsHeaders, checkRateLimit, PERSISTENT_MAX_AGE } = require('../../lib/auth');
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  setCorsHeaders(req, res, 'POST, OPTIONS');
 
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
@@ -28,10 +25,10 @@ module.exports = async (req, res) => {
       return res.status(429).json({ ok: false, error: `Too many attempts. Try again in ${limit.retrySec}s.` });
     }
 
-    // Find user in database
+    // Find user in database (supports both username and display_name match)
     const userRes = await db.query(
-      'SELECT id, username, role, display_name, password_hash, pin_hash, pin_changed, pw_changed, reset_required FROM users WHERE username = $1 AND role = $2 LIMIT 1',
-      [username, role]
+      'SELECT id, username, role, display_name, password_hash, pin_hash, pin_changed, pw_changed, reset_required, failed_attempts, locked_until FROM users WHERE (LOWER(username) = LOWER($1) OR LOWER(display_name) = LOWER($1)) AND role = $2 LIMIT 1',
+      [String(username).trim(), String(role).trim().toLowerCase()]
     );
 
     if (!userRes.rows || !userRes.rows.length) {
@@ -39,6 +36,11 @@ module.exports = async (req, res) => {
     }
 
     const user = userRes.rows[0];
+
+    if (user.locked_until && new Date(user.locked_until).getTime() > Date.now()) {
+      const waitSec = Math.ceil((new Date(user.locked_until).getTime() - Date.now()) / 1000);
+      return res.status(429).json({ ok: false, error: `Account temporarily locked. Try again in ${waitSec}s.` });
+    }
 
     // Verify secret (PIN or password)
     let secretVerified = false;
@@ -49,28 +51,48 @@ module.exports = async (req, res) => {
     }
 
     if (!secretVerified) {
-      // Log failed login
+      const nextFails = (Number(user.failed_attempts) || 0) + 1;
+      const lockMinutes = nextFails >= 5 ? 5 : 0;
+      await db.query(
+        `UPDATE users SET failed_attempts = $1, locked_until = ${lockMinutes ? "NOW() + INTERVAL '5 minutes'" : 'NULL'} WHERE id = $2;`,
+        [nextFails, user.id]
+      ).catch(() => {});
       db.query(
         'INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5, $6)',
-        [user.id, username, pin ? 'failed_pin_login' : 'failed_pw_login', { role }, clientIp, req.headers['user-agent'] || '']
+        [user.id, user.username, pin ? 'failed_pin_login' : 'failed_pw_login', { role, fails: nextFails }, clientIp, req.headers['user-agent'] || '']
       ).catch(() => {});
       return res.status(401).json({ ok: false, error: pin ? 'Incorrect PIN. Please try again.' : 'Incorrect password. Please try again.' });
     }
 
-    // Check teacher initial PIN change requirement (only when logging in with PIN)
-    if (user.role === 'teacher' && !user.pin_changed && pin) {
+    // Reset failed login counter and transparently rehash legacy SHA/djb2 secrets to scrypt
+    const upgradeUpdates = ['failed_attempts = 0', 'locked_until = NULL'];
+    const upgradeParams = [];
+    if (pin && needsRehash(user.pin_hash)) {
+      upgradeParams.push(hashSecret(pin));
+      upgradeUpdates.push(`pin_hash = $${upgradeParams.length}`);
+    } else if (password && needsRehash(user.password_hash)) {
+      upgradeParams.push(hashSecret(password));
+      upgradeUpdates.push(`password_hash = $${upgradeParams.length}`);
+    }
+    upgradeParams.push(user.id);
+    await db.query(`UPDATE users SET ${upgradeUpdates.join(', ')}, updated_at = NOW() WHERE id = $${upgradeParams.length};`, upgradeParams);
+
+    // Check forced PIN change requirement (first sign-in or Admin reset) on BOTH PIN and password login
+    const mustSetPin = (user.role === 'teacher' && !user.pin_changed) || !!user.reset_required;
+    if (mustSetPin) {
       if (newPin) {
         if (!/^\d{4}$/.test(newPin) || /^(\d)\1{3}$/.test(newPin) || '01234567890'.includes(newPin) || '09876543210'.includes(newPin) || newPin === '1234') {
           return res.status(400).json({ ok: false, error: 'Too easy to guess. Choose a different 4-digit PIN.' });
         }
         const newHash = hashSecret(newPin);
-        await db.query('UPDATE users SET pin_hash = $1, pin_changed = TRUE, updated_at = NOW() WHERE id = $2', [newHash, user.id]);
+        await db.query('UPDATE users SET pin_hash = $1, pin_changed = TRUE, reset_required = FALSE, updated_at = NOW() WHERE id = $2', [newHash, user.id]);
         user.pin_changed = true;
+        user.reset_required = false;
       } else {
         return res.status(200).json({
           ok: false,
           code: 'PIN_CHANGE_REQUIRED',
-          message: 'First sign-in: Please create a new 4-digit PIN.'
+          message: 'First sign-in or reset: Please create a new 4-digit PIN.'
         });
       }
     }
@@ -85,15 +107,15 @@ module.exports = async (req, res) => {
       hasActivePasskey = !!(passkeyRes.rows && passkeyRes.rows.length > 0);
     }
 
-    // Issue full session cookie directly on valid PIN/Password
+    // Issue persistent HttpOnly session cookie (only cleared on explicit logout)
     const fullToken = signToken({
       userId: user.id,
       username: user.username,
       role: user.role,
       displayName: user.display_name,
       scope: 'full'
-    }, 8 * 60 * 60 * 1000);
-    const fullCookie = formatCookie('dps_session', fullToken, 28800, false);
+    }, PERSISTENT_MAX_AGE * 1000);
+    const fullCookie = formatCookie('dps_session', fullToken, PERSISTENT_MAX_AGE, true);
 
     // Also issue limited session token for WebAuthn calls if needed
     const limitedToken = signToken({
@@ -103,14 +125,13 @@ module.exports = async (req, res) => {
       displayName: user.display_name,
       scope: 'register_only'
     }, 10 * 60 * 1000);
-    const limitedCookie = formatCookie('dps_limited_sess', limitedToken, 600, false);
+    const limitedCookie = formatCookie('dps_limited_sess', limitedToken, 600, true);
 
-    // Set full session cookie immediately so user is authenticated
     res.setHeader('Set-Cookie', [fullCookie, limitedCookie]);
 
     db.query(
       'INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5, $6)',
-      [user.id, username, pin ? 'pin_login_success' : 'pw_login_success', { role, hasActivePasskey }, clientIp, req.headers['user-agent'] || '']
+      [user.id, user.username, pin ? 'pin_login_success' : 'pw_login_success', { role: user.role, hasActivePasskey }, clientIp, req.headers['user-agent'] || '']
     ).catch(() => {});
 
     return res.status(200).json({
@@ -121,9 +142,11 @@ module.exports = async (req, res) => {
         id: user.id,
         username: user.username,
         role: user.role,
-        displayName: user.display_name
+        displayName: user.display_name,
+        pinChanged: user.pin_changed,
+        resetRequired: user.reset_required
       },
-      message: 'PIN verified successfully.'
+      message: 'Verified successfully.'
     });
   } catch (err) {
     console.error('[API/AUTH/LOGIN] Error:', err.message);

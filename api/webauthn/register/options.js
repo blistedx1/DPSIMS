@@ -1,12 +1,9 @@
 const { generateRegistrationOptions } = require('@simplewebauthn/server');
 const db = require('../../../db');
-const { parseCookies, verifyToken, getRpContext } = require('../../../lib/auth');
+const { parseCookies, verifyToken, getRpContext, setCorsHeaders } = require('../../../lib/auth');
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  setCorsHeaders(req, res, 'GET, POST, OPTIONS');
 
   if (req.method === 'OPTIONS') return res.status(204).end();
 

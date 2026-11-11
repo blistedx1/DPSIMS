@@ -50,24 +50,8 @@ self.addEventListener('fetch', event => {
 
   if (req.method !== 'GET') return;
 
-  // Never intercept or cache live notification streams, live app data sync, session, or push subscribe
-  if (url.pathname.startsWith('/api/notifications') || url.pathname.startsWith('/api/data') || url.pathname.startsWith('/api/session') || url.pathname.startsWith('/api/push')) {
-    return;
-  }
-
-  // 1. Dynamic API requests: Network-first with cache fallback
+  // Never intercept or cache any /api/ endpoints (auth, live sync, notifications, push)
   if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(req)
-        .then(res => {
-          if (res && res.status === 200) {
-            const clone = res.clone();
-            caches.open(CACHE_NAME).then(c => c.put(req, clone));
-          }
-          return res;
-        })
-        .catch(() => caches.match(req))
-    );
     return;
   }
 

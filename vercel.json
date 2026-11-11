@@ -26,11 +26,12 @@
   "rewrites": [
     { "source": "/api/session", "destination": "/api/session" },
     { "source": "/api/push/subscribe", "destination": "/api/push/subscribe" },
-    { "source": "/api/notifications/stream", "destination": "/api/notifications" },
     { "source": "/api/notify", "destination": "/api/notify" },
     { "source": "/api/notifications", "destination": "/api/notifications" },
+    { "source": "/api/slip-verify", "destination": "/api/slip-verify" },
     { "source": "/api/data", "destination": "/api/data" },
-    { "source": "/", "destination": "/Dps.html" }
+    { "source": "/Dps.html", "destination": "/index.html" },
+    { "source": "/", "destination": "/index.html" }
   ]
 }
 

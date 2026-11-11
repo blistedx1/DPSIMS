@@ -2,30 +2,30 @@ const db = require('../db');
 const push = require('../lib/push');
 const fs = require('fs');
 const path = require('path');
-const { parseCookies, verifyToken } = require('../lib/auth');
-const { mergeAppState, detectReqNotifications } = require('../lib/sync');
+const { parseCookies, verifyToken, setCorsHeaders } = require('../lib/auth');
+const { mergeAppState, detectReqNotifications, sanitizeStateForClient, authorizeDataOp } = require('../lib/sync');
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  setCorsHeaders(req, res, 'GET, POST, OPTIONS');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
   }
 
-  // Block calls made with only a limited session
   const cookies = parseCookies(req.headers.cookie);
-  if (cookies.dps_limited_sess && !cookies.dps_session) {
-    const limited = verifyToken(cookies.dps_limited_sess);
-    if (limited && limited.scope === 'register_only') {
-      return res.status(403).json({
-        ok: false,
-        error: 'Forbidden: Full session required. Please complete device screen lock registration.'
-      });
+  const fullSession = verifyToken(cookies.dps_session);
+  if (!fullSession || !fullSession.userId || fullSession.scope !== 'full') {
+    if (cookies.dps_limited_sess) {
+      const limited = verifyToken(cookies.dps_limited_sess);
+      if (limited && limited.scope === 'register_only') {
+        return res.status(403).json({
+          ok: false,
+          error: 'Forbidden: Full session required. Please complete device screen lock registration.'
+        });
+      }
     }
+    return res.status(401).json({ ok: false, error: 'Unauthorized. Please sign in first.' });
   }
 
   const readExisting = async (client) => {
@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
   // GET: Read strictly from Neon DB (fallback to data.json only when DB is unconfigured)
   if (req.method === 'GET') {
     try {
-      const state = await readExisting();
+      const state = sanitizeStateForClient(await readExisting());
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       return res.status(200).send(JSON.stringify(state));
     } catch (err) {
@@ -65,8 +65,9 @@ module.exports = async (req, res) => {
     try {
       const rawBody = Buffer.isBuffer(req.body) ? req.body.toString('utf8') : req.body;
       const parsed = typeof rawBody === 'string' ? JSON.parse(rawBody || '{}') : rawBody;
-      if (!parsed || typeof parsed !== 'object') {
-        return res.status(400).json({ ok: false, error: 'Invalid request body' });
+      const authz = authorizeDataOp(fullSession, parsed);
+      if (!authz.ok) {
+        return res.status(authz.status || 403).json({ ok: false, error: authz.error });
       }
       let existing, merged, assignedId, mergedStr;
 
@@ -129,14 +130,16 @@ module.exports = async (req, res) => {
         mergedStr = JSON.stringify(merged);
       }
 
-      try {
-        fs.writeFileSync(path.join(process.cwd(), 'data.json'), mergedStr, 'utf8');
-      } catch (e) {}
+      if (!process.env.VERCEL && !db.isConnected()) {
+        try {
+          fs.writeFileSync(path.join(process.cwd(), 'data.json'), mergedStr, 'utf8');
+        } catch (e) {}
+      }
 
       return res.status(200).json({
         ok: true,
         source: db.isConnected() ? 'postgres' : 'local',
-        state: merged,
+        state: sanitizeStateForClient(merged),
         assignedId: assignedId || null
       });
     } catch (err) {

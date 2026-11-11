@@ -1,12 +1,9 @@
 const { verifyRegistrationResponse } = require('@simplewebauthn/server');
 const db = require('../../../db');
-const { parseCookies, verifyToken, getRpContext, formatCookie, signToken } = require('../../../lib/auth');
+const { parseCookies, verifyToken, getRpContext, formatCookie, signToken, setCorsHeaders, PERSISTENT_MAX_AGE } = require('../../../lib/auth');
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  setCorsHeaders(req, res, 'POST, OPTIONS');
 
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
@@ -102,16 +99,16 @@ module.exports = async (req, res) => {
     // Clear reset_required flag on user
     await db.query('UPDATE users SET reset_required = FALSE, updated_at = NOW() WHERE id = $1;', [session.userId]);
 
-    // Issue FULL session cookie (8 hours)
+    // Issue persistent FULL session cookie
     const fullToken = signToken({
       userId: session.userId,
       username: session.username,
       role: session.role,
       displayName: session.displayName,
       scope: 'full'
-    }, 8 * 60 * 60 * 1000);
+    }, PERSISTENT_MAX_AGE * 1000);
 
-    const fullCookie = formatCookie('dps_session', fullToken, 28800, true);
+    const fullCookie = formatCookie('dps_session', fullToken, PERSISTENT_MAX_AGE, true);
     // Clear limited session cookie
     const clearLimitedCookie = formatCookie('dps_limited_sess', '', 0, true);
 

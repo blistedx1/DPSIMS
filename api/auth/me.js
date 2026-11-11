@@ -1,11 +1,9 @@
 const db = require('../../db');
-const { parseCookies, verifyToken } = require('../../lib/auth');
+const { parseCookies, verifyToken, setCorsHeaders } = require('../../lib/auth');
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  setCorsHeaders(req, res, 'GET, OPTIONS');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
 
   if (req.method === 'OPTIONS') return res.status(204).end();
 
@@ -22,8 +20,21 @@ module.exports = async (req, res) => {
       isLimited = true;
     }
 
+    let teachers = [];
+    let hasAdminPasskey = false;
+    try {
+      const tRes = await db.query(
+        "SELECT COALESCE(NULLIF(display_name, ''), username) AS name FROM users WHERE role = 'teacher' ORDER BY name ASC;"
+      );
+      teachers = (tRes.rows || []).map((r) => r.name).filter(Boolean);
+      const admPass = await db.query(
+        "SELECT 1 FROM passkeys pk JOIN users u ON u.id = pk.user_id WHERE u.role = 'admin' AND pk.revoked_at IS NULL LIMIT 1;"
+      );
+      hasAdminPasskey = !!(admPass.rows && admPass.rows.length);
+    } catch (_) {}
+
     if (!session || !session.userId) {
-      return res.status(200).json({ ok: false, user: null });
+      return res.status(200).json({ ok: false, user: null, sseEnabled: !process.env.VERCEL, teachers, hasAdminPasskey });
     }
 
     const userRes = await db.query(
@@ -32,7 +43,7 @@ module.exports = async (req, res) => {
     );
 
     if (!userRes.rows || !userRes.rows.length) {
-      return res.status(200).json({ ok: false, user: null });
+      return res.status(200).json({ ok: false, user: null, sseEnabled: !process.env.VERCEL, teachers, hasAdminPasskey });
     }
 
     const user = userRes.rows[0];
@@ -46,6 +57,8 @@ module.exports = async (req, res) => {
     return res.status(200).json({
       ok: true,
       limited: isLimited,
+      sseEnabled: !process.env.VERCEL,
+      teachers,
       user: {
         id: user.id,
         username: user.username,
@@ -55,6 +68,7 @@ module.exports = async (req, res) => {
         resetRequired: user.reset_required
       },
       hasPasskey: passkeyCount > 0,
+      hasAdminPasskey,
       passkeyCount
     });
   } catch (err) {

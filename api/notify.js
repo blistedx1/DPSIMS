@@ -1,14 +1,22 @@
 const db = require('../db');
 const push = require('../lib/push');
+const { parseCookies, verifyToken, setCorsHeaders } = require('../lib/auth');
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  setCorsHeaders(req, res, 'POST, OPTIONS');
 
   if (req.method === 'OPTIONS') return res.status(204).end();
 
   if (req.method === 'POST') {
+    const cookies = parseCookies(req.headers.cookie);
+    const session = verifyToken(cookies.dps_session);
+    if (!session || !session.userId || session.scope !== 'full') {
+      return res.status(401).json({ ok: false, error: 'Unauthorized. Sign in first.' });
+    }
+    if (!['admin', 'principal'].includes(String(session.role || '').toLowerCase())) {
+      return res.status(403).json({ ok: false, error: 'Forbidden: Only Admin or Principal can broadcast alerts.' });
+    }
+
     try {
       let notif = req.body;
       if (typeof notif === 'string') {

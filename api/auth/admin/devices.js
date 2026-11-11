@@ -1,11 +1,16 @@
+const crypto = require('crypto');
 const db = require('../../../db');
-const { parseCookies, verifyToken, hashSecret } = require('../../../lib/auth');
+const { parseCookies, verifyToken, hashSecret, setCorsHeaders } = require('../../../lib/auth');
+
+function randomPin4() {
+  let p;
+  do { p = String(crypto.randomInt(1000, 10000)); }
+  while (/^(\d)\1{3}$/.test(p) || '01234567890'.includes(p) || '09876543210'.includes(p) || p === '1234');
+  return p;
+}
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  setCorsHeaders(req, res, 'GET, POST, OPTIONS');
 
   if (req.method === 'OPTIONS') return res.status(204).end();
 
@@ -47,7 +52,7 @@ module.exports = async (req, res) => {
 
       // Return overview of all users and their active device count
       const usersRes = await db.query(`
-        SELECT u.id, u.username, u.role, u.display_name, u.reset_required,
+        SELECT u.id, u.username, u.role, u.display_name, u.pin_changed, u.pw_changed, u.reset_required,
                COUNT(p.id) FILTER (WHERE p.revoked_at IS NULL) as active_devices_count,
                MAX(p.last_used_at) as last_device_login
         FROM users u
@@ -63,7 +68,9 @@ module.exports = async (req, res) => {
           username: u.username,
           role: u.role,
           displayName: u.display_name,
-          resetRequired: u.reset_required,
+          pinChanged: !!u.pin_changed,
+          pwChanged: !!u.pw_changed,
+          resetRequired: !!u.reset_required,
           activeDevicesCount: parseInt(u.active_devices_count || 0, 10),
           lastDeviceLogin: u.last_device_login
         }))
@@ -127,20 +134,19 @@ module.exports = async (req, res) => {
       }
 
       if (action === 'reset_credentials') {
-        const { username, role } = body || {};
+        const { username, customPin } = body || {};
         if (!username) {
           return res.status(400).json({ ok: false, error: 'username is required.' });
         }
-        const userRes = await db.query('SELECT id, username, role FROM users WHERE LOWER(username) = LOWER($1) LIMIT 1;', [username]);
+        const userRes = await db.query('SELECT id, username, role, display_name FROM users WHERE LOWER(username) = LOWER($1) OR LOWER(display_name) = LOWER($1) LIMIT 1;', [username]);
         if (!userRes.rows || !userRes.rows.length) {
           return res.status(404).json({ ok: false, error: 'User not found in database.' });
         }
         const u = userRes.rows[0];
-        const isPrincipal = u.role === 'principal' || (role && role === 'principal') || u.username.toLowerCase() === 'principal';
-        const defaultPin = isPrincipal ? '2025' : '1234';
-        const defaultPw = isPrincipal ? 'Principal@DPS26' : 'Teacher@DPS26';
-        const pinHash = hashSecret(defaultPin);
-        const pwHash = hashSecret(defaultPw);
+        const tempPin = (customPin && /^\d{4}$/.test(String(customPin))) ? String(customPin) : randomPin4();
+        const tempPw = crypto.randomBytes(12).toString('base64url');
+        const pinHash = hashSecret(tempPin);
+        const pwHash = hashSecret(tempPw);
 
         await db.query(`
           UPDATE users
@@ -148,7 +154,9 @@ module.exports = async (req, res) => {
               password_hash = $2,
               pin_changed = FALSE,
               pw_changed = FALSE,
-              reset_required = FALSE,
+              reset_required = TRUE,
+              failed_attempts = 0,
+              locked_until = NULL,
               updated_at = NOW()
           WHERE id = $3;
         `, [pinHash, pwHash, u.id]);
@@ -158,11 +166,12 @@ module.exports = async (req, res) => {
         await db.query(`
           INSERT INTO auth_audit_log (user_id, actor_username, action, details, ip_address, user_agent)
           VALUES ($1, $2, 'admin_reset_credentials', $3, $4, $5);
-        `, [u.id, session.username, { targetUsername: u.username, role: u.role, defaultPin }, clientIp, req.headers['user-agent'] || '']).catch(() => {});
+        `, [u.id, session.username, { targetUsername: u.username, role: u.role }, clientIp, req.headers['user-agent'] || '']).catch(() => {});
 
         return res.status(200).json({
           ok: true,
-          message: `${u.username} credentials reset to default PIN (${defaultPin}). User must change PIN at next sign-in.`
+          tempPin,
+          message: `${u.display_name || u.username} reset. One-time temporary PIN: ${tempPin} (user must set a new PIN at next sign-in).`
         });
       }
 
@@ -171,7 +180,7 @@ module.exports = async (req, res) => {
         if (!username) {
           return res.status(400).json({ ok: false, error: 'username is required.' });
         }
-        const userRes = await db.query('SELECT id, username, role FROM users WHERE LOWER(username) = LOWER($1) LIMIT 1;', [username]);
+        const userRes = await db.query('SELECT id, username, role FROM users WHERE LOWER(username) = LOWER($1) OR LOWER(display_name) = LOWER($1) LIMIT 1;', [username]);
         if (!userRes.rows || !userRes.rows.length) {
           return res.status(200).json({ ok: true, message: 'User not in database or already deleted.' });
         }
@@ -188,29 +197,29 @@ module.exports = async (req, res) => {
       }
 
       if (action === 'add_user') {
-        const { username, displayName, role } = body || {};
+        const { username, displayName, role, initialPin } = body || {};
         if (!username) {
           return res.status(400).json({ ok: false, error: 'username is required.' });
         }
         const userRole = role || 'teacher';
         const dispName = displayName || username;
-        const defaultPin = userRole === 'principal' ? '2025' : '1234';
-        const defaultPw = userRole === 'principal' ? 'Principal@DPS26' : 'Teacher@DPS26';
-        const pinHash = hashSecret(defaultPin);
-        const pwHash = hashSecret(defaultPw);
+        const tempPin = (initialPin && /^\d{4}$/.test(String(initialPin))) ? String(initialPin) : randomPin4();
+        const tempPw = crypto.randomBytes(12).toString('base64url');
+        const pinHash = hashSecret(tempPin);
+        const pwHash = hashSecret(tempPw);
 
-        const checkRes = await db.query('SELECT id FROM users WHERE LOWER(username) = LOWER($1) LIMIT 1;', [username]);
+        const checkRes = await db.query('SELECT id FROM users WHERE LOWER(username) = LOWER($1) OR LOWER(display_name) = LOWER($1) LIMIT 1;', [username]);
         if (checkRes.rows && checkRes.rows.length) {
           return res.status(200).json({ ok: true, message: 'User already exists in database.' });
         }
 
         await db.query(`
           INSERT INTO users (username, role, display_name, password_hash, pin_hash, pin_changed, pw_changed, reset_required, created_at, updated_at)
-          VALUES ($1, $2, $3, $4, $5, FALSE, FALSE, FALSE, NOW(), NOW())
+          VALUES ($1, $2, $3, $4, $5, FALSE, FALSE, TRUE, NOW(), NOW())
           ON CONFLICT (username) DO NOTHING;
         `, [username, userRole, dispName, pwHash, pinHash]);
 
-        return res.status(200).json({ ok: true, message: `Faculty ${username} registered in database.` });
+        return res.status(200).json({ ok: true, tempPin, message: `Faculty ${dispName} registered. Temporary onboarding PIN: ${tempPin}.` });
       }
 
       return res.status(400).json({ ok: false, error: 'Unknown action.' });
