@@ -74,14 +74,20 @@ module.exports = async (req, res) => {
       if (db.isConnected()) {
         try {
           const txRes = await db.withTransaction(async (client) => {
-            await client.query(
-              "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', '{}'::jsonb, NOW()) ON CONFLICT (key) DO NOTHING;"
-            );
-            const cur = await readExisting(client);
+            let r = await client.query("SELECT payload FROM dps_app_state WHERE key = 'current' FOR UPDATE;");
+            if (!r.rows || !r.rows.length) {
+              await client.query(
+                "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', '{}'::jsonb, NOW()) ON CONFLICT (key) DO NOTHING;"
+              );
+              r = await client.query("SELECT payload FROM dps_app_state WHERE key = 'current' FOR UPDATE;");
+            }
+            const cur = (r.rows && r.rows.length && r.rows[0].payload)
+              ? (typeof r.rows[0].payload === 'string' ? JSON.parse(r.rows[0].payload) : r.rows[0].payload)
+              : { items: [], reqs: [] };
             const m = mergeAppState(cur, parsed);
             const str = JSON.stringify(m.state);
             await client.query(
-              "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', $1, NOW()) ON CONFLICT (key) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW();",
+              "UPDATE dps_app_state SET payload = $1, updated_at = NOW() WHERE key = 'current';",
               [str]
             );
             return { existing: cur, merged: m.state, assignedId: m.assignedId, mergedStr: str };
@@ -97,27 +103,24 @@ module.exports = async (req, res) => {
 
         try {
           const notifs = detectReqNotifications(existing ? existing.reqs : [], merged.reqs);
-          const pushJobs = [];
-          for (const notifData of notifs) {
-            await db.query(`
+          if (notifs.length > 0) {
+            const vals = [];
+            const placeholders = notifs.map((n, idx) => {
+              const b = idx * 9;
+              vals.push(n.id, n.type, n.title, n.body, n.targetRole, n.targetTeacher, n.tag, n.slipId, n.timestamp);
+              return `($${b+1}, $${b+2}, $${b+3}, $${b+4}, $${b+5}, $${b+6}, $${b+7}, $${b+8}, $${b+9})`;
+            }).join(', ');
+            const insertJob = db.query(`
               INSERT INTO dps_notifications (id, type, title, body, target_role, target_teacher, tag, slip_id, created_at)
-              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+              VALUES ${placeholders}
               ON CONFLICT (id) DO NOTHING;
-            `, [
-              notifData.id,
-              notifData.type,
-              notifData.title,
-              notifData.body,
-              notifData.targetRole,
-              notifData.targetTeacher,
-              notifData.tag,
-              notifData.slipId,
-              notifData.timestamp
+            `, vals).catch(err => console.error('[API/DATA] Notif insert error:', err.message));
+            const pushJobs = notifs.map(n => push.sendPushToSubscribers(n).catch(() => {}));
+            // Bound background notification wait so Vercel Hobby never hits its 10s function timeout
+            await Promise.race([
+              Promise.allSettled([insertJob, ...pushJobs]),
+              new Promise(r => setTimeout(r, 1500))
             ]);
-            pushJobs.push(push.sendPushToSubscribers(notifData).catch(() => {}));
-          }
-          if (pushJobs.length > 0) {
-            await Promise.race([Promise.allSettled(pushJobs), new Promise(r => setTimeout(r, 2500))]);
           }
         } catch (e) {
           console.error('[API/DATA] Notification diff error:', e.message);

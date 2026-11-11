@@ -592,7 +592,7 @@ html,body{width:100%;height:100%;margin:0;padding:0;background:#050505;overflow-
   #T .sp-tile.sp-lg svg{width:56px;height:56px}
   #T .sp-mbody{max-height:none;overflow:visible;padding:18px 18px 22px}
   #T .sp-drawer{width:100%}
-  #T button.sp-fab{bottom:14px}
+  #T button.sp-fab{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 }
 
 /* ==========================================================================
@@ -1855,7 +1855,7 @@ html body #A#A#A .a-actions{flex:0 0 auto;gap:6px!important}
 html body #A#A#A .a-role{display:none!important}
 html body #A#A#A .a-actions button{width:40px;min-width:40px;height:40px;padding:0}
 html body #A#A#A .a-nav{display:none!important}
-html body #A#A#A .a-bnav{display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);position:fixed;left:0;right:0;bottom:0;z-index:50;background:#063124;border-top:1px solid rgba(255,255,255,.14);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 20px rgba(0,0,0,.18)}
+html body #A#A#A .a-bnav{display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);position:relative;left:auto;right:auto;bottom:auto;flex:0 0 auto;width:100%;box-sizing:border-box;z-index:80;background:#063124;border-top:1px solid rgba(255,255,255,.14);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 20px rgba(0,0,0,.18)}
 html body.kb-open #A#A#A .a-bnav,html body.kb-open #T#T#T .t-nav{display:none!important}
 html body #A#A#A .a-btab{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:2px 0;min-width:0;min-height:48px;color:rgba(255,255,255,.7);font:600 10.5px var(--font)}
 html body #A#A#A .a-btab .a-bi{position:relative;display:grid;place-items:center;width:46px;height:28px;min-height:0;border-radius:14px;transition:background .2s}
@@ -1864,15 +1864,15 @@ html body #A#A#A .a-btab.on{color:#fff}
 html body #A#A#A .a-btab.on .a-bi{background:#0f7a58}
 html body #A#A#A .a-btab .a-bl{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 html body #A#A#A .a-btab .a-badge{position:absolute;top:-4px;right:2px;font-size:9.5px;padding:0 5px}
-html body #A#A#A .main{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))!important}
-html body #T#T#T .t-topbar{flex-wrap:nowrap!important;gap:8px!important;padding:10px 12px!important;height:auto!important}
+html body #A#A#A .main{padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))!important}
+html body #T#T#T .t-topbar{flex-wrap:nowrap!important;gap:8px!important;padding:10px 12px!important;height:auto!important;position:static!important;z-index:auto!important}
 html body #T#T#T .t-brand{min-width:0;flex:1 1 auto}
 html body #T#T#T .t-brand-txt{min-width:0}
 html body #T#T#T .t-brand-txt b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html body #T#T#T .t-brand-txt small{display:none}
 html body #T#T#T .t-actions{flex:0 0 auto;gap:6px!important}
 html body #T#T#T .t-user-pill{display:none!important}
-html body #T#T#T .t-nav{display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);position:fixed;left:0;right:0;bottom:0;top:auto;z-index:50;width:100%;order:0;margin:0;background:#063124!important;border:0!important;border-top:1px solid rgba(255,255,255,.14)!important;border-radius:0!important;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))!important;box-shadow:0 -6px 20px rgba(0,0,0,.18)}
+html body #T#T#T .t-nav{display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);position:fixed;left:0;right:0;bottom:0;top:auto;z-index:80;width:100%;order:0;margin:0;background:#063124!important;border:0!important;border-top:1px solid rgba(255,255,255,.14)!important;border-radius:0!important;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))!important;box-shadow:0 -6px 20px rgba(0,0,0,.18)}
 html body #T#T#T .t-nav .t-tab-btn{flex-direction:column;justify-content:center;gap:3px;min-height:48px;padding:4px 2px!important;font-size:11px;color:rgba(255,255,255,.7)!important;background:none!important}
 html body #T#T#T .t-nav .t-tab-btn svg{width:20px;height:20px}
 html body #T#T#T .t-nav .t-tab-btn.on{color:#fff!important;background:#0f7a58!important}
@@ -2849,13 +2849,13 @@ button:active, .btn:active, .rq-prbtn:active, .seg button:active, .kpi:active {
 }
 
 @keyframes epPortalEnter {
-  0% { opacity: 0; transform: translateY(6px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 @keyframes epPortalLeave {
-  0% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-6px); }
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 /* 6. Principal Requisition Center Popup (2s) -> Fly to Bottom Icon */
@@ -4087,10 +4087,13 @@ html[data-theme="light"] select option:checked,
     var bodyObj=Object.assign({},payload);
     if(op&&op._reset)bodyObj._reset=true;
     else if(op)bodyObj._op=op;
+    var acCtrl=typeof AbortController!=='undefined'?new AbortController():null;
+    var reqTm=acCtrl?setTimeout(function(){try{acCtrl.abort();}catch(e){}},20000):null;
     return fetch('/api/data',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       credentials:'include',
+      signal:acCtrl?acCtrl.signal:undefined,
       body:JSON.stringify(bodyObj)
     })
     .then(function(r){
@@ -4100,6 +4103,7 @@ html[data-theme="light"] select option:checked,
       });
     })
     .then(function(res){
+      if(reqTm)clearTimeout(reqTm);
       syncSaving=Math.max(0,syncSaving-1);
       if(res&&res.ok&&res.state){
         hydratedFromServer=true;
@@ -4120,9 +4124,12 @@ html[data-theme="light"] select option:checked,
       return res;
     })
     .catch(function(err){
+      if(reqTm)clearTimeout(reqTm);
       syncSaving=Math.max(0,syncSaving-1);
-      if(window.EnterpriseAnim)EnterpriseAnim.toast('Database Save Failed','Could not reach Neon database. Changes were not saved.','error');
-      return {ok:false,error:(err&&err.message)||'Network error'};
+      var isAbort=err&&err.name==='AbortError';
+      var errTxt=isAbort?'Request timed out — please check connection and retry.':((err&&err.message)||'Network error');
+      if(window.EnterpriseAnim)EnterpriseAnim.toast('Database Save Failed',errTxt,'error');
+      return {ok:false,error:errTxt};
     });
   }
   function save(op){
@@ -6269,8 +6276,9 @@ html[data-theme="light"] select option:checked,
     if(a)a.textContent=tCart.length;if(b)b.textContent=cartTotalQty();
     updateCartBtn(false);
   }
+  var tSendingSlip=false;
   async function sendSlip(){
-    if(!tCart.length)return;
+    if(!tCart.length||tSendingSlip)return;
     var purpose=(tPurpose||'').trim();
     if(!purpose){
       cartMsg('Please enter the Purpose / Department / Class.');
@@ -6284,25 +6292,40 @@ html[data-theme="light"] select option:checked,
       else if(l.q>s){l.q=s;problem=problem||'Some quantities were reduced to the available stock – please review and send again.'}
     });
     if(problem){saveCart();renderLayer();cartMsg(problem);return}
+    tSendingSlip=true;
     var sendBtn=document.querySelector('[data-sp-send]');
-    if(sendBtn)sendBtn.disabled=true;
-    var id=nextSlipId();
-    var newSlip={id:id,by:getTeacherName(),it:tCart.map(function(l){return [l.id,l.v,l.q]}),st:'Pending',date:iso(),purpose:purpose};
+    var origBtnHtml=sendBtn?sendBtn.innerHTML:'';
+    if(sendBtn){sendBtn.disabled=true;sendBtn.innerHTML='<span>Sending slip…</span>';}
+    cartMsg('');
+    var id=nextSlipId(), tName=getTeacherName();
+    var newSlip={id:id,by:tName,it:tCart.map(function(l){return [l.id,l.v,l.q]}),st:'Pending',date:iso(),purpose:purpose};
     reqs.unshift(newSlip);
-    var res=await save({type:'req_add',req:JSON.parse(JSON.stringify(newSlip))});
-    if(!res||!res.ok){
-      reqs.shift();
-      if(sendBtn)sendBtn.disabled=false;
-      cartMsg((res&&res.error)||'Could not save requisition slip to Neon database. Please try again.');
-      return;
+    try{
+      var res=await save({type:'req_add',req:JSON.parse(JSON.stringify(newSlip))});
+      if(!res||!res.ok){
+        var rmIdx=reqs.indexOf(newSlip);
+        if(rmIdx>=0)reqs.splice(rmIdx,1);
+        cartMsg((res&&res.error)||'Could not save requisition slip to Neon database. Please try again.');
+        return;
+      }
+      if(res.assignedId)newSlip.id=id=res.assignedId;
+      if(window.__beep)window.__beep('send');
+      tCart=[];tPurpose='';
+      window.__dpsMemCarts=window.__dpsMemCarts||{};
+      if(tName)window.__dpsMemCarts[tName]=[];
+      tCartOpen=false;tView='my-slips';tSent={id:id};
+      rerender();renderLayer();
+      clearTimeout(tSentTimer);
+      tSentTimer=setTimeout(function(){if(tSent&&tSent.id===id){tSent=null;renderLayer()}},5000);
+    }catch(err){
+      var errIdx=reqs.indexOf(newSlip);
+      if(errIdx>=0)reqs.splice(errIdx,1);
+      cartMsg((err&&err.message)||'Could not send requisition slip. Please try again.');
+    }finally{
+      tSendingSlip=false;
+      var btnNow=document.querySelector('[data-sp-send]');
+      if(btnNow&&tCartOpen){btnNow.disabled=false;if(origBtnHtml)btnNow.innerHTML=origBtnHtml;}
     }
-    if(res.assignedId)newSlip.id=id=res.assignedId;
-    if(window.__beep)window.__beep('send');
-    tCart=[];tPurpose='';saveCart();
-    tCartOpen=false;tView='my-slips';tSent={id:id};
-    rerender();renderLayer();
-    clearTimeout(tSentTimer);
-    tSentTimer=setTimeout(function(){if(tSent&&tSent.id===id){tSent=null;renderLayer()}},5000);
   }
   function sentHTML(){
     return '<div class="sp-backdrop sp-fade" data-sp-bd="sent"><div class="sp-sent"><div class="sp-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><h2>Slip sent for approval</h2><p>#'+slipNo(tSent.id)+' is now with the Principal for approval. After that it goes to Admin to issue. You can track it under My Slips.</p><button class="sp-add" data-sp-close="sent" style="width:100%">Track my slips</button></div></div>';
@@ -7048,45 +7071,94 @@ html[data-theme="light"] select option:checked,
     bar.querySelector('[data-push-x]').onclick=removePushBanner;
     document.body.appendChild(bar);
   }
+  function alertsPrefOn(){
+    var p=window.__dpsMemPrefs;
+    return !(p&&p.alerts===0);
+  }
+  function sameAppServerKey(sub, vapidB64){
+    try{
+      var raw=sub&&sub.options&&sub.options.applicationServerKey;
+      if(!raw||!vapidB64)return false;
+      var a=new Uint8Array(raw), b=urlB64ToU8(vapidB64);
+      if(a.length!==b.length)return false;
+      for(var i=0;i<a.length;i++){if(a[i]!==b[i])return false;}
+      return true;
+    }catch(e){return false;}
+  }
   window.__initPushNotifications=async function(sess,allowPrompt){
     try{
       if(!sess||!sess.role||location.protocol==='file:')return false;
       if(!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window))return false;
+      if(!allowPrompt&&!alertsPrefOn())return false;
       if(Notification.permission==='default'){
         if(!allowPrompt){showPushBanner(sess);return false;}
         var perm=await Notification.requestPermission();
-        if(perm!=='granted')return false;
+        if(perm!=='granted'){window.__refreshPushUi&&window.__refreshPushUi();return false;}
       }
-      if(Notification.permission!=='granted')return false;
+      if(Notification.permission!=='granted'){window.__refreshPushUi&&window.__refreshPushUi();return false;}
       removePushBanner();
       var reg=(await ensureSw())||await navigator.serviceWorker.ready;
+      if(!reg||!reg.pushManager){
+        try{reg=await navigator.serviceWorker.ready;}catch(e){}
+      }
       if(!reg||!reg.pushManager)return false;
+      var kr=await fetch('/api/push/subscribe',{cache:'no-store',credentials:'include'});
+      var kd=kr.ok?await kr.json():null;
+      if(!kd||!kd.publicKey)return false;
       var sub=await reg.pushManager.getSubscription();
+      if(sub&&!sameAppServerKey(sub,kd.publicKey)){
+        try{await sub.unsubscribe();}catch(e){}
+        sub=null;
+      }
       if(!sub){
-        var kr=await fetch('/api/push/subscribe',{cache:'no-store',credentials:'include'});
-        var kd=kr.ok?await kr.json():null;
-        if(!kd||!kd.publicKey)return false;
         sub=await reg.pushManager.subscribe({
           userVisibleOnly:true,
           applicationServerKey:urlB64ToU8(kd.publicKey)
         });
       }
       if(sub){
-        await fetch('/api/push/subscribe',{
+        var sr=await fetch('/api/push/subscribe',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
           credentials:'include',
           body:JSON.stringify({subscription:sub.toJSON?sub.toJSON():sub,role:sess.role,username:sess.name})
         });
-        return true;
+        var ok=!!(sr&&sr.ok);
+        window.__pushSubscribed=ok;
+        window.__refreshPushUi&&window.__refreshPushUi();
+        return ok;
       }
     }catch(e){
       console.warn('[Push] subscribe warning:',e&&e.message);
     }
+    window.__pushSubscribed=false;
+    window.__refreshPushUi&&window.__refreshPushUi();
     return false;
+  };
+  window.__testPushNotification=async function(){
+    try{
+      var sess=window.__sess||(window.__readPortalSession&&window.__readPortalSession());
+      if(!sess)return {ok:false,error:'Sign in first.'};
+      var ok=await window.__initPushNotifications(sess,true);
+      if(!ok)return {ok:false,error:Notification.permission==='denied'?'Notifications blocked in browser settings.':'Could not activate push subscription.'};
+      var reg=(await ensureSw())||await navigator.serviceWorker.ready;
+      var sub=reg&&reg.pushManager?await reg.pushManager.getSubscription():null;
+      if(!sub)return {ok:false,error:'No active push subscription on this device.'};
+      var r=await fetch('/api/push/subscribe',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        credentials:'include',
+        body:JSON.stringify({subscription:sub.toJSON?sub.toJSON():sub,role:sess.role,username:sess.name,test:true})
+      });
+      var d=await r.json().catch(function(){return {ok:false};});
+      return (r.ok&&d&&d.ok)?{ok:true}:{ok:false,error:(d&&d.error)||'Test push failed'};
+    }catch(e){
+      return {ok:false,error:(e&&e.message)||'Push test failed'};
+    }
   };
   window.__pushUnsubscribe=async function(){
     removePushBanner();
+    window.__pushSubscribed=false;
     try{
       if(!('serviceWorker' in navigator)||location.protocol==='file:')return;
       var reg=await navigator.serviceWorker.getRegistration('/');
@@ -7100,7 +7172,13 @@ html[data-theme="light"] select option:checked,
         }).catch(function(){});
       }
     }catch(e){}
+    window.__refreshPushUi&&window.__refreshPushUi();
   };
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible'&&window.__sess&&alertsPrefOn()&&'Notification' in window&&Notification.permission==='granted'){
+      window.__initPushNotifications(window.__sess,false);
+    }
+  });
 
   function swap(from,to){from.hidden=true;to.hidden=false;}
   function showPortalImmediate(s){
@@ -7212,7 +7290,7 @@ html[data-theme="light"] select option:checked,
   // block pinch / double-tap zoom (iOS)
   ['gesturestart','gesturechange'].forEach(function(n){document.addEventListener(n,function(e){e.preventDefault()})});
   // real viewport height var for old browsers
-  var vh=function(){de.style.setProperty('--vh',innerHeight*.01+'px')};vh();addEventListener('resize',vh);
+  var setVhVar=function(){de.style.setProperty('--vh',innerHeight*.01+'px')};setVhVar();addEventListener('resize',setVhVar);
   // PWA manifest fallback only for local file:// usage (HTTP/HTTPS uses /manifest.json)
   if(location.protocol==='file:'){try{var o='';
     var m={name:'DPS Amrapali Inventory',short_name:'DPS Inventory',display:'standalone',orientation:'portrait',background_color:'#f2f7f4',theme_color:'#0f3d2a',start_url:'.',scope:'.'};
@@ -8036,18 +8114,74 @@ html body #A#A .kpi>div{display:block!important;margin:0!important;width:100%;fo
  m.removedNodes.forEach(function(n){if(n.nodeType===1&&/kite-backdrop|settings-backdrop|sp-backdrop/.test((n.className&&n.className.toString())||''))fb('close')})})
  }).observe(document.body,{childList:true});
  /* settings switches (re-added whenever the theme pane renders) */
+ function pushStatus(){
+  var has=('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window)&&location.protocol!=='file:';
+  if(!has)return {supported:false,on:false,txt:'Not supported in this browser'};
+  var perm=Notification.permission;
+  if(perm==='denied')return {supported:true,on:false,txt:'Blocked — allow Notifications in browser/app settings'};
+  var prefOn=!(window.__dpsMemPrefs&&window.__dpsMemPrefs.alerts===0);
+  var on=perm==='granted'&&prefOn;
+  if(on)return {supported:true,on:true,txt:window.__pushSubscribed?'Active on this device (background alerts ready)':'Allowed — syncing with server…'};
+  if(perm==='granted'&&!prefOn)return {supported:true,on:false,txt:'Paused on this account'};
+  return {supported:true,on:false,txt:'Tap switch to enable background push alerts'};
+ }
+ function refreshPushUi(){
+  var pane=document.getElementById('settings-content-pane');if(!pane)return;
+  var ps=pushStatus();
+  var sw=pane.querySelector('.nx-sw[data-nx="push"]');
+  var sub=pane.querySelector('.nx-push-sub');
+  var tb=pane.querySelector('[data-nx-test-push]');
+  if(sw)sw.classList.toggle('on',!!ps.on);
+  if(sub)sub.textContent=ps.txt;
+  if(tb)tb.hidden=!ps.on;
+ }
+ window.__refreshPushUi=refreshPushUi;
  function addCard(){
   var pane=document.getElementById('settings-content-pane');
   if(!pane||pane.querySelector('.nx-fb-card')||!pane.querySelector('.settings-section-title'))return;
   if(!/Theme/i.test(pane.querySelector('.settings-section-title').textContent))return;
+  var ps=pushStatus();
   var d=document.createElement('div');d.className='nx-fb-card';
-  d.innerHTML='<div class="nx-fb-row"><div><b>Sound effects</b><small>Soft tones on taps, success and errors</small></div><button class="nx-sw'+(st.sound?' on':'')+'" data-nx="sound" aria-label="Sound effects"></button></div>'
+  d.innerHTML='<div class="nx-fb-row"><div><b>Push Alerts (PWA / Background)</b><small class="nx-push-sub">'+ps.txt+'</small><div style="margin-top:6px"><button type="button" class="pill" data-nx-test-push="1" style="height:28px;padding:0 10px;font-size:11.5px"'+(ps.on?'':' hidden')+'>Send Test Push</button></div></div><button class="nx-sw'+(ps.on?' on':'')+'" data-nx="push" aria-label="Push Alerts"></button></div>'
+   +'<div class="nx-fb-row"><div><b>Sound effects</b><small>Soft tones on taps, success and errors</small></div><button class="nx-sw'+(st.sound?' on':'')+'" data-nx="sound" aria-label="Sound effects"></button></div>'
    +'<div class="nx-fb-row"><div><b>Vibration (haptics)</b><small>Phone vibrates for feedback</small></div><button class="nx-sw'+(st.haptic?' on':'')+'" data-nx="haptic" aria-label="Vibration"></button></div>';
   pane.appendChild(d);
  }
  document.addEventListener('click',function(e){
+  var tb=e.target.closest&&e.target.closest('[data-nx-test-push]');
+  if(tb){
+   var oldTxt=tb.textContent;tb.disabled=true;tb.textContent='Sending…';
+   window.__testPushNotification&&window.__testPushNotification().then(function(r){
+    tb.disabled=false;tb.textContent=oldTxt;
+    if(r&&r.ok){fb('ok');if(window.EnterpriseAnim)EnterpriseAnim.toast('Test Push Sent','Check your notification tray!','success');}
+    else{fb('err');if(window.EnterpriseAnim)EnterpriseAnim.toast('Push Alert Warning',(r&&r.error)||'Could not send push notification.','error');}
+   });
+   return;
+  }
   var b=e.target.closest&&e.target.closest('.nx-sw');if(!b)return;
-  var k=b.getAttribute('data-nx');st[k]=st[k]?0:1;save();b.classList.toggle('on',!!st[k]);
+  var k=b.getAttribute('data-nx');
+  if(k==='push'){
+   var sess=window.__sess||(window.__readPortalSession&&window.__readPortalSession());
+   var ps=pushStatus();
+   window.__dpsMemPrefs=window.__dpsMemPrefs||{theme:'dgwhite',sound:1,haptic:1,seenReqIds:[]};
+   if(ps.on){
+    window.__dpsMemPrefs.alerts=0;
+    if(window.__savePrefsToNeon)window.__savePrefsToNeon();
+    window.__pushUnsubscribe&&window.__pushUnsubscribe();
+    refreshPushUi();
+   }else{
+    window.__dpsMemPrefs.alerts=1;
+    if(window.__savePrefsToNeon)window.__savePrefsToNeon();
+    if(sess&&window.__initPushNotifications){
+     window.__initPushNotifications(sess,true).then(function(ok){
+      refreshPushUi();
+      if(ok){fb('ok');}else{fb('err');if(window.EnterpriseAnim)EnterpriseAnim.toast('Push Alerts',pushStatus().txt,'error');}
+     });
+    }
+   }
+   return;
+  }
+  st[k]=st[k]?0:1;save();b.classList.toggle('on',!!st[k]);
   if(st[k])fb('ok');else if(k==='haptic'&&st.sound)tone(400,0,.08,'sine',.04);
  });
  new MutationObserver(addCard).observe(document.body,{childList:true,subtree:true});

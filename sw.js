@@ -1,5 +1,5 @@
-// DPS Stationery - Service Worker v12 (Silent Auto-Update & Real-Time Push)
-const CACHE_NAME = 'dps-stationery-v12';
+// DPS Stationery - Service Worker v13 (Silent Auto-Update & High-Priority Push)
+const CACHE_NAME = 'dps-stationery-v13';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -98,13 +98,15 @@ self.addEventListener('push', event => {
     data = { title: 'DPS Stationery Alert', body: event.data ? event.data.text() : '' };
   }
   const title = data.title || 'DPS Stationery Alert';
+  const payloadData = Object.assign({ url: '/?source=pwa' }, (data.data && typeof data.data === 'object') ? data.data : data);
   const options = {
     body: data.body || 'You have an update in stationery store.',
     icon: '/icon-192.png',
     badge: '/icon-192.png',
     tag: data.tag || 'dps-notify-' + Date.now(),
+    renotify: true,
     vibrate: [200, 100, 200],
-    data: data
+    data: payloadData
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });
@@ -112,6 +114,7 @@ self.addEventListener('push', event => {
 // Click notification: Focus active window or open application
 self.addEventListener('notificationclick', event => {
   event.notification.close();
+  const targetUrl = (event.notification && event.notification.data && event.notification.data.url) || '/?source=pwa';
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
       for (let client of windowClients) {
@@ -120,7 +123,7 @@ self.addEventListener('notificationclick', event => {
         }
       }
       if (clients.openWindow) {
-        return clients.openWindow('/');
+        return clients.openWindow(targetUrl);
       }
     })
   );

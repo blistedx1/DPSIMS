@@ -261,10 +261,13 @@ const server = http.createServer((req, res) => {
           if (db.isConnected()) {
             try {
               const txRes = await db.withTransaction(async (client) => {
-                await client.query(
-                  "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', '{}'::jsonb, NOW()) ON CONFLICT (key) DO NOTHING;"
-                );
-                const r = await client.query("SELECT payload FROM dps_app_state WHERE key = 'current' FOR UPDATE;");
+                let r = await client.query("SELECT payload FROM dps_app_state WHERE key = 'current' FOR UPDATE;");
+                if (!r.rows || !r.rows.length) {
+                  await client.query(
+                    "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', '{}'::jsonb, NOW()) ON CONFLICT (key) DO NOTHING;"
+                  );
+                  r = await client.query("SELECT payload FROM dps_app_state WHERE key = 'current' FOR UPDATE;");
+                }
                 let cur = (r.rows && r.rows.length && r.rows[0].payload)
                   ? (typeof r.rows[0].payload === 'string' ? JSON.parse(r.rows[0].payload) : r.rows[0].payload)
                   : null;
@@ -274,7 +277,7 @@ const server = http.createServer((req, res) => {
                 const m = mergeAppState(cur, parsed);
                 const str = JSON.stringify(m.state);
                 await client.query(
-                  "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', $1, NOW()) ON CONFLICT (key) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW();",
+                  "UPDATE dps_app_state SET payload = $1, updated_at = NOW() WHERE key = 'current';",
                   [str]
                 );
                 return { existing: cur, merged: m.state, assignedId: m.assignedId, mergedStr: str };

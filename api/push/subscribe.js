@@ -38,6 +38,13 @@ module.exports = async (req, res) => {
         role: session.role,
         username: session.displayName || session.username
       });
+      if (body && body.test === true) {
+        await push.sendTestNotification(subscription, {
+          role: session.role,
+          name: session.displayName || session.username
+        });
+        return res.status(200).json({ ok: true, tested: true, message: 'Test push sent to this device' });
+      }
       return res.status(200).json({ ok: true, message: 'Subscription saved successfully' });
     } catch (e) {
       console.error('[API/PUSH/SUBSCRIBE] Save error:', e.message);
