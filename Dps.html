@@ -4723,8 +4723,25 @@ html[data-theme="light"] select option:checked,
 
   function billDetail(id){
     var b=bills.filter(function(x){return x.id===id})[0];
-    if(!b){view='bills';clearSub();
-  /* ===== Live Slip Verification on QR Scan / Direct Link (?slip=xxx) ===== */
+    if(!b){view='bills';clearSub();go();return}
+    var t=bt(b);
+    var isAdmin=(getRole()==='admin');
+    var isOld=b.date<iso();
+    var stTag=(b.stockAdded!==false&&!isOld)
+      ?'<span class="bl-chip g">Stock synced</span>'
+      :'<span class="bl-chip w">Past date \u2022 stock untouched</span>';
+    var editBtn=isAdmin?'<button class="pill" data-a="editbill" data-b="'+b.id+'" style="margin-right:6px"><svg style="width:13px;height:13px;display:inline-block;vertical-align:-2px;margin-right:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Edit Bill</button>':'';
+    var h=top('Bill '+E(b.no),editBtn)+'<div class="det"><button class="back" data-a="back">'+ic('back')+'All bills</button>';
+    h+='<div class="bd-hero"><div class="bv lg">'+E(b.vendor.replace(/^(M\/s\.?|Messrs\.?)\s+/i,'').charAt(0).toUpperCase())+'</div><div class="bd-info"><h2>'+E(b.vendor)+'</h2><div class="bl-tags"><span class="bl-chip">Bill '+E(b.no)+'</span><span class="bl-chip">In-Pass '+E(b.ip)+'</span><span class="bl-chip">'+fmt(b.date)+'</span>'+stTag+'</div></div><div class="bd-amt"><b>'+money(t.t)+'</b><small>Total incl. GST</small></div></div>';
+    h+='<h2 class="s">Items ('+b.lines.length+')</h2><div class="bd-lines">'+b.lines.map(function(l){
+      var it=find(l[0]);
+      return '<div class="bd-line">'+rqTile(it)+'<div class="bd-li"><b>'+(it?E(it.name):'?')+'</b><span>'+dotHTML(l[1])+E(l[1])+'</span></div><div class="bd-calc"><span>'+l[2]+' \u00d7 '+money(+l[3])+'</span><b>'+money(l[2]*l[3])+'</b></div></div>';
+    }).join('')+'</div>';
+    h+='<div class="bd-tot"><div class="kb-row"><span>Subtotal</span><span>'+money(t.sub)+'</span></div><div class="kb-row"><span>Discount ('+b.disc+'%)</span><span>\u2212 '+money(t.d)+'</span></div><div class="kb-row"><span>GST ('+b.gst+'%)</span><span>+ '+money(t.g)+'</span></div><div class="kb-row tot"><span>Net total payable</span><b>'+money(t.t)+'</b></div></div></div>';
+    $('#main').innerHTML=h;
+  }
+
+  /* ===== Live Slip Verification on QR Scan / Direct Link (?slip=xxx) - Public, No Login Required ===== */
   window.closeSlipVerifyModal = function(){
     var m = document.getElementById('slip-verify-modal');
     if(m) m.remove();
@@ -4736,15 +4753,35 @@ html[data-theme="light"] select option:checked,
   };
 
   window.printSingleSlip = function(id){
-    var r = (reqs || []).find(function(x){ return x.id === +id; });
+    var r = (reqs || []).find(function(x){ return Number(x.id) === +id; });
     if(r) printSlips([r]);
   };
+
+  function showSlipVerificationLoading(sid){
+    window.closeSlipVerifyModal();
+    var modal = document.createElement('div');
+    modal.id = 'slip-verify-modal';
+    modal.className = 'sp-verify-backdrop';
+    modal.innerHTML = '<div class="sp-verify-card">'
+      + '<div class="sp-verify-head">'
+        + '<div class="sp-verify-logo"></div>'
+        + '<div><h3>Delhi Public School</h3><p>Amrapali Yojana, Lucknow \u2022 Official Voucher Verification</p></div>'
+        + '<button type="button" class="sp-verify-close" onclick="closeSlipVerifyModal()" aria-label="Close">\u2715</button>'
+      + '</div>'
+      + '<div class="sp-verify-body" style="text-align:center;padding:42px 20px">'
+        + '<h4 style="font-size:16px;margin:0 0 8px;color:#0f5b3a">Verifying Voucher #'+slipNo(sid)+'\u2026</h4>'
+        + '<p style="font-size:13px;color:#6b7280;margin:0">Fetching live record from school inventory database (no login required).</p>'
+      + '</div>'
+    + '</div>';
+    document.body.appendChild(modal);
+  }
 
   function showSlipVerificationModal(r, sid){
     window.closeSlipVerifyModal();
     var modal = document.createElement('div');
     modal.id = 'slip-verify-modal';
     modal.className = 'sp-verify-backdrop';
+    modal.addEventListener('click', function(ev){ if(ev.target === modal) closeSlipVerifyModal(); });
 
     if(!r){
       modal.innerHTML = '<div class="sp-verify-card">'
@@ -4757,7 +4794,7 @@ html[data-theme="light"] select option:checked,
           + '<div style="font-size:36px;margin-bottom:12px">\u26A0\uFE0F</div>'
           + '<h4 style="font-size:17px;margin:0 0 8px;color:#111827">Slip #'+slipNo(sid)+' Not Found</h4>'
           + '<p style="font-size:13px;color:#6b7280;margin:0 0 20px">This requisition voucher could not be found in active inventory records.</p>'
-          + '<button type="button" class="sp-v-btn-home" style="margin:0 auto" onclick="closeSlipVerifyModal()">Return to Portal</button>'
+          + '<button type="button" class="sp-v-btn-home" style="margin:0 auto" onclick="closeSlipVerifyModal()">Close</button>'
         + '</div>'
       + '</div>';
       document.body.appendChild(modal);
@@ -4836,7 +4873,7 @@ html[data-theme="light"] select option:checked,
       + '</div>'
       + '<div class="sp-verify-actions">'
         + '<button type="button" class="sp-v-btn-print" onclick="printSingleSlip('+r.id+')">\uD83D\uDDA8\uFE0F Print Official Voucher</button>'
-        + '<button type="button" class="sp-v-btn-home" onclick="closeSlipVerifyModal()">Back to Portal</button>'
+        + '<button type="button" class="sp-v-btn-home" onclick="closeSlipVerifyModal()">Close</button>'
       + '</div>'
     + '</div>';
 
@@ -4851,44 +4888,24 @@ html[data-theme="light"] select option:checked,
       var sid = parseInt(String(sp).replace(/\D/g, ''), 10);
       if(!sid) return;
 
-      // If data is not ready, fetch or wait
-      if(!reqs || !reqs.length){
-        try {
-          var res = await fetch('/api/data');
-          if(res.ok){
-            var d = await res.json();
-            if(d && d.reqs) reqs = d.reqs;
-            if(d && d.items) items = d.items;
-          }
-        } catch(e){}
-      }
+      showSlipVerificationLoading(sid);
+      try {
+        var res = await fetch('/api/data?_ts=' + Date.now(), { cache: 'no-store' });
+        if(res.ok){
+          var d = await res.json();
+          if(d && Array.isArray(d.reqs)) reqs = d.reqs;
+          if(d && Array.isArray(d.items) && d.items.length) items = d.items;
+        }
+      } catch(e){}
 
-      var r = (reqs || []).find(function(x){ return x.id === sid; });
+      var r = (reqs || []).find(function(x){ return x && Number(x.id) === sid; });
       showSlipVerificationModal(r, sid);
     } catch(err){
       console.warn('checkUrlSlip error:', err);
     }
   }
-
-  go();
+  window.__checkUrlSlip = checkUrlSlip;
   checkUrlSlip();
-return}
-    var t=bt(b);
-    var isAdmin=(getRole()==='admin');
-    var isOld=b.date<iso();
-    var stTag=(b.stockAdded!==false&&!isOld)
-      ?'<span class="bl-chip g">Stock synced</span>'
-      :'<span class="bl-chip w">Past date \u2022 stock untouched</span>';
-    var editBtn=isAdmin?'<button class="pill" data-a="editbill" data-b="'+b.id+'" style="margin-right:6px"><svg style="width:13px;height:13px;display:inline-block;vertical-align:-2px;margin-right:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Edit Bill</button>':'';
-    var h=top('Bill '+E(b.no),editBtn)+'<div class="det"><button class="back" data-a="back">'+ic('back')+'All bills</button>';
-    h+='<div class="bd-hero"><div class="bv lg">'+E(b.vendor.replace(/^(M\/s\.?|Messrs\.?)\s+/i,'').charAt(0).toUpperCase())+'</div><div class="bd-info"><h2>'+E(b.vendor)+'</h2><div class="bl-tags"><span class="bl-chip">Bill '+E(b.no)+'</span><span class="bl-chip">In-Pass '+E(b.ip)+'</span><span class="bl-chip">'+fmt(b.date)+'</span>'+stTag+'</div></div><div class="bd-amt"><b>'+money(t.t)+'</b><small>Total incl. GST</small></div></div>';
-    h+='<h2 class="s">Items ('+b.lines.length+')</h2><div class="bd-lines">'+b.lines.map(function(l){
-      var it=find(l[0]);
-      return '<div class="bd-line">'+rqTile(it)+'<div class="bd-li"><b>'+(it?E(it.name):'?')+'</b><span>'+dotHTML(l[1])+E(l[1])+'</span></div><div class="bd-calc"><span>'+l[2]+' \u00d7 '+money(+l[3])+'</span><b>'+money(l[2]*l[3])+'</b></div></div>';
-    }).join('')+'</div>';
-    h+='<div class="bd-tot"><div class="kb-row"><span>Subtotal</span><span>'+money(t.sub)+'</span></div><div class="kb-row"><span>Discount ('+b.disc+'%)</span><span>\u2212 '+money(t.d)+'</span></div><div class="kb-row"><span>GST ('+b.gst+'%)</span><span>+ '+money(t.g)+'</span></div><div class="kb-row tot"><span>Net total payable</span><b>'+money(t.t)+'</b></div></div></div>';
-    $('#main').innerHTML=h;
-  }
   function ebCalc(){
     var el=document.getElementById('eb-sum');if(!el)return;
     var rows=readRows('eb');

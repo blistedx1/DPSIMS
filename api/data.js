@@ -60,7 +60,11 @@ module.exports = async (req, res) => {
   // POST: Merge & save strictly to Neon DB first
   if (req.method === 'POST') {
     try {
-      const parsed = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      const rawBody = Buffer.isBuffer(req.body) ? req.body.toString('utf8') : req.body;
+      const parsed = typeof rawBody === 'string' ? JSON.parse(rawBody || '{}') : rawBody;
+      if (!parsed || typeof parsed !== 'object') {
+        return res.status(400).json({ ok: false, error: 'Invalid request body' });
+      }
       const existing = await readExisting();
       const { state: merged, assignedId } = mergeAppState(existing, parsed);
       const mergedStr = JSON.stringify(merged);

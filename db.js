@@ -1,78 +1,61 @@
 require('dotenv').config();
-const { execFileSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
+const dns = require('dns');
+try { dns.setDefaultResultOrder('ipv4first'); } catch (e) {}
+const { Pool } = require('pg');
 
-let connectionString = (process.env.DATABASE_URL || '').trim();
+const connectionString = (process.env.DATABASE_URL || '').trim();
+let pool = null;
 
-// Clean connection string for HTTP API (strip channel_binding which is SCRAM-only)
-connectionString = connectionString.replace(/[?&]channel_binding=[^&]+/g, '');
-
-function getHost() {
-  try {
-    const m = connectionString.match(/@([^/:?]+)/);
-    if (!m) return null;
-    return m[1].replace('-pooler', '');
-  } catch(e) {
-    return null;
+function getPool() {
+  if (!connectionString) return null;
+  if (!pool) {
+    let cs = connectionString;
+    try {
+      const u = new URL(cs);
+      u.searchParams.delete('channel_binding');
+      if (u.searchParams.get('sslmode') === 'require' && !u.searchParams.has('uselibpqcompat')) {
+        u.searchParams.set('uselibpqcompat', 'true');
+      }
+      cs = u.toString();
+    } catch (e) {}
+    pool = new Pool({
+      connectionString: cs,
+      ssl: { rejectUnauthorized: false },
+      max: 5,
+      idleTimeoutMillis: 20000,
+      connectionTimeoutMillis: 15000
+    });
+    pool.on('error', () => {});
   }
+  return pool;
 }
 
-const dbHost = getHost();
-const tmpDir = os.tmpdir();
-
 async function query(sqlText, params = []) {
-  if (!connectionString || !dbHost) {
+  const p = getPool();
+  if (!p) {
     throw new Error('DATABASE_URL is not configured');
   }
 
-  const endpoint = `https://${dbHost}/sql`;
-  const payload = JSON.stringify({
-    query: sqlText,
-    params: params
-  });
-
-  const tmpFile = path.join(tmpDir, `neon_q_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.json`);
-  fs.writeFileSync(tmpFile, payload, 'utf8');
-
-  const bin = process.platform === 'win32' ? 'curl.exe' : 'curl';
-
-  try {
-    const raw = execFileSync(bin, [
-      '-s',
-      '--retry', '2',
-      '--retry-delay', '1',
-      '--max-time', '18',
-      '-X', 'POST',
-      endpoint,
-      '-H', `Neon-Connection-String: ${connectionString}`,
-      '-H', 'Content-Type: application/json',
-      '--data-binary', `@${tmpFile}`
-    ], {
-      encoding: 'utf8',
-      maxBuffer: 50 * 1024 * 1024,
-      timeout: 20000
-    });
-
-    try { fs.unlinkSync(tmpFile); } catch(e) {}
-
-    const parsed = JSON.parse(raw);
-    if (parsed.message) {
-      throw new Error(`Neon DB Error: ${parsed.message}`);
+  let lastErr;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await p.query(sqlText, params);
+      return {
+        rows: res.rows || [],
+        rowCount: res.rowCount || (res.rows ? res.rows.length : 0),
+        fields: res.fields || []
+      };
+    } catch (err) {
+      lastErr = err;
+      if (attempt === 0) {
+        await new Promise(r => setTimeout(r, 250));
+      }
     }
-    return {
-      rows: parsed.rows || [],
-      rowCount: parsed.rowCount || (parsed.rows ? parsed.rows.length : 0),
-      fields: parsed.fields || []
-    };
-  } catch(err) {
-    try { fs.unlinkSync(tmpFile); } catch(e) {}
-    throw err;
   }
+  throw lastErr;
 }
 
 module.exports = {
   query,
-  isConnected: () => !!(connectionString && dbHost)
+  isConnected: () => !!connectionString
 };

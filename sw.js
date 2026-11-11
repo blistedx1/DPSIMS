@@ -1,5 +1,5 @@
-// DPS Stationery - Service Worker v9 (Silent Auto-Update & Real-Time Push)
-const CACHE_NAME = 'dps-stationery-v9';
+// DPS Stationery - Service Worker v10 (Silent Auto-Update & Real-Time Push)
+const CACHE_NAME = 'dps-stationery-v10';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
