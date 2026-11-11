@@ -6677,86 +6677,62 @@ html body .rq-pbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin
 html body .rq-pbar label{font-size:12.5px;font-weight:700;color:var(--muted);margin-right:auto}
 html body .rq-pbar input[type=date]{height:34px!important;min-height:0!important;width:auto!important;padding:0 10px!important;font:600 13px var(--font)}
 @media print{
-  @page{size:A4;margin:12mm}
+  @page{size:A4 portrait;margin:7mm 10mm}
   html,html:root body,html body{background:#fff!important;background-image:none!important}
   body::before,body::after{display:none!important}
   body>*:not(#slip-print){display:none!important}
-  #slip-print{display:block!important;background:#fff!important;color:#111;font:13px/1.45 'Plus Jakarta Sans',Arial,Helvetica,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .spp-page{break-after:page;page-break-after:always}
-  .spp-page:last-child{break-after:auto;page-break-after:auto}
+  #slip-print{display:block!important;background:#fff!important;color:#111827!important;font:10.5px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .spp-page{break-inside:avoid;page-break-inside:avoid;break-after:auto;page-break-after:auto;padding:5px 0 9px;margin-bottom:9px;border-bottom:1.5px dashed #9ca3af}
+  .spp-page:last-child{break-after:auto;page-break-after:auto;border-bottom:0;margin-bottom:0;padding-bottom:0}
 }
-/* Clean, Normal, Official School Receipt Voucher */
-#slip-print { display: none; }
+/* Clean, Normal, Official School Receipt Voucher (2-3 Slips per A4 Page) */
 
-@media print {
-  @page { size: A4 portrait; margin: 10mm 12mm; }
-  html, body { background: #fff !important; color: #111 !important; }
-  body > *:not(#slip-print) { display: none !important; }
-  #slip-print {
-    display: block !important;
-    background: #fff !important;
-    color: #111827 !important;
-    font: 11.5px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  .spp-page {
-    break-after: page;
-    page-break-after: always;
-    padding: 6px 0;
-  }
-  .spp-page:last-child {
-    break-after: auto;
-    page-break-after: auto;
-  }
-}
-
-/* Base Normal Voucher Styles (Minimal UI, Clean Official Format) */
+/* Base Normal Voucher Styles (Minimal UI, Clean Official Format - Compact 2-3 Slips/A4) */
 #slip-print .spp-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #1f2937;
-  margin-bottom: 12px;
+  gap: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1.5px solid #1f2937;
+  margin-bottom: 7px;
 }
 #slip-print .spp-head-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 #slip-print .spp-logo {
-  width: 50px;
-  height: 64px;
+  width: 42px;
+  height: 52px;
   flex: 0 0 auto;
   background: var(--logo-nobg) center / contain no-repeat;
 }
 #slip-print .spp-school b {
   display: block;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.3px;
   color: #0f5b3a;
-  line-height: 1.2;
+  line-height: 1.15;
 }
 #slip-print .spp-school span {
   display: block;
-  font-size: 11px;
+  font-size: 10px;
   color: #4b5563;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 #slip-print .spp-doc-badge {
   display: inline-block;
-  margin-top: 4px;
-  font-size: 10.5px;
+  margin-top: 3px;
+  font-size: 9.5px;
   font-weight: 800;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
   color: #111827;
   background: #f3f4f6;
   border: 1px solid #d1d5db;
-  padding: 2px 7px;
+  padding: 1.5px 6px;
   border-radius: 4px;
 }
 #slip-print .spp-qr-box {
@@ -6764,13 +6740,13 @@ html body .rq-pbar input[type=date]{height:34px!important;min-height:0!important
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 86px;
+  width: 68px;
   flex-shrink: 0;
 }
 #slip-print .spp-qr-frame {
   position: relative;
-  width: 78px;
-  height: 78px;
+  width: 62px;
+  height: 62px;
   background: #ffffff;
   border: 1px solid #9ca3af;
   border-radius: 4px;
@@ -6788,61 +6764,61 @@ html body .rq-pbar input[type=date]{height:34px!important;min-height:0!important
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   background: #ffffff;
   border-radius: 3px;
-  box-shadow: 0 0 0 2px #ffffff, 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: 0 0 0 1.5px #ffffff, 0 1px 2px rgba(0,0,0,0.3);
   display: grid;
   place-items: center;
   pointer-events: none;
 }
 #slip-print .spp-qr-logo {
-  width: 16px;
-  height: 16px;
+  width: 13px;
+  height: 13px;
   background: var(--logo-nobg) center / contain no-repeat;
 }
 #slip-print .spp-qr-lbl {
-  font-size: 8px;
+  font-size: 7.5px;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
   text-transform: uppercase;
   color: #374151;
-  margin-top: 3px;
+  margin-top: 2px;
   text-align: center;
 }
 
 #slip-print .spp-meta {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 5px 18px;
+  gap: 3px 14px;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 7px 12px;
-  margin-bottom: 12px;
-  font-size: 11px;
+  border-radius: 5px;
+  padding: 5px 9px;
+  margin-bottom: 7px;
+  font-size: 10.5px;
 }
 #slip-print .spp-meta div {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 #slip-print .spp-meta label {
   color: #6b7280;
   font-weight: 500;
-  min-width: 105px;
+  min-width: 96px;
 }
 #slip-print .spp-meta-st {
   grid-column: span 2;
   border-top: 1px dashed #e5e7eb;
-  padding-top: 5px;
-  margin-top: 2px;
+  padding-top: 3px;
+  margin-top: 1px;
 }
 #slip-print .spp-st-tag {
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 700;
-  padding: 2px 7px;
+  padding: 1.5px 6px;
   border-radius: 4px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -6854,22 +6830,22 @@ html body .rq-pbar input[type=date]{height:34px!important;min-height:0!important
 #slip-print table.spp-t {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 10px;
-  font-size: 11px;
+  margin-bottom: 6px;
+  font-size: 10.5px;
   border: 1px solid #374151;
 }
 #slip-print .spp-t th {
   background: #f3f4f6;
   color: #111827;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
   text-align: left;
-  padding: 5px 7px;
+  padding: 3.5px 6px;
   border: 1px solid #9ca3af;
   letter-spacing: 0.2px;
 }
 #slip-print .spp-t td {
-  padding: 5px 7px;
+  padding: 3.5px 6px;
   border: 1px solid #d1d5db;
   vertical-align: middle;
 }
@@ -6878,17 +6854,27 @@ html body .rq-pbar input[type=date]{height:34px!important;min-height:0!important
 #slip-print .spp-t tr.rj td strong { text-decoration: line-through; }
 #slip-print .spp-t tr.tot td {
   background: #f9fafb;
-  border-top: 2px solid #374151;
+  border-top: 1.5px solid #374151;
   font-weight: 700;
 }
 
 #slip-print .spp-rem {
   border-left: 3px solid #6b7280;
   background: #f9fafb;
-  padding: 6px 10px;
-  margin-bottom: 14px;
-  font-size: 11px;
+  padding: 4px 8px;
+  margin-bottom: 6px;
+  font-size: 10px;
   color: #374151;
+}
+#slip-print .spp-computer-note {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9.5px;
+  color: #374151;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid #e5e7eb;
 }
 
 #slip-print .spp-sign {
