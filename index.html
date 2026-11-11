@@ -1839,7 +1839,12 @@ html[data-theme="dgwhite"] .kb-row.tot b{color:var(--g-darker)!important}
 #L[data-theme="dgwhite"] .v-bottom-addr{color:rgba(255,255,255,.7)}
 </style>
 <script>
-window.__thId=function(){try{return localStorage.getItem("dps_theme")==="obsidian"?"obsidian":"dgwhite"}catch(e){return "dgwhite"}};
+window.__dpsMemAuth=window.__dpsMemAuth||null;
+window.__dpsMemPrefs=window.__dpsMemPrefs||{theme:'dgwhite',sound:1,haptic:1,seenReqIds:[]};
+window.__dpsMemDevlock=window.__dpsMemDevlock||{};
+window.__dpsMemCarts=window.__dpsMemCarts||{};
+(function(){try{if(window.localStorage){Object.keys(localStorage).forEach(function(k){if(k.indexOf('dps_')===0||k==='nx_fb')localStorage.removeItem(k);});}}catch(e){}})();
+window.__thId=function(){return (window.__dpsMemPrefs&&window.__dpsMemPrefs.theme==='obsidian')?'obsidian':'dgwhite';};
 try{document.documentElement.setAttribute("data-theme",window.__thId());}catch(e){}
 </script>
 <meta name="mobile-web-app-capable" content="yes">
@@ -3418,8 +3423,17 @@ html[data-theme="light"] select option:checked,
     });
   }catch(e){}
 
-  function ls(k,v){try{if(v===undefined){return JSON.parse(localStorage.getItem(k))}localStorage.setItem(k,JSON.stringify(v))}catch(e){return v===undefined?null:undefined}}
   var mem={};
+  function ls(k,v){
+    if(k===KEY){
+      if(v===undefined)return window.__dpsMemAuth||null;
+      window.__dpsMemAuth=v;
+      return v;
+    }
+    if(v===undefined)return mem.hasOwnProperty(k)?mem[k]:null;
+    mem[k]=v;
+    return v;
+  }
   var ac=null,soundOn=true; /* sound is always on */
   function tone(f,t,d,type,g){var c=ac.currentTime+t,o=ac.createOscillator(),v=ac.createGain();o.type=type||'sine';o.frequency.value=f;v.gain.setValueAtTime(.0001,c);v.gain.exponentialRampToValueAtTime(g||.12,c+.008);v.gain.exponentialRampToValueAtTime(.0001,c+d);o.connect(v);v.connect(ac.destination);o.start(c);o.stop(c+d+.02)}
   function sfx(n){
@@ -3476,6 +3490,9 @@ html[data-theme="light"] select option:checked,
   window.__dpsMatchHash=matchHash;
   async function init(){
     store=ls(KEY);
+    if(!store&&window.fetch){
+      try{await Promise.race([syncAuthFromServer(),new Promise(function(r){setTimeout(r,2500)})]);store=ls(KEY);}catch(e){}
+    }
     if(!store){
       store={
         admin:{pin:await hash(DEMO.adminPin),pw:await hash(DEMO.adminPw)},
@@ -3522,7 +3539,9 @@ html[data-theme="light"] select option:checked,
       headers:{'Content-Type':'application/json'},
       credentials:'include',
       body:JSON.stringify({_op:{type:'auth_update',role:uRole,name:uName||'',rec:rec}})
-    }).then(function(r){return r.ok;}).catch(function(){return false;});
+    }).then(function(r){
+      return r.json().then(function(d){return !!(r.ok&&d&&d.ok);}).catch(function(){return false;});
+    }).catch(function(){return false;});
   }
   window.__pushAuthUpdate=pushAuthUpdate;
   var authSyncBusy=null;
@@ -3534,31 +3553,20 @@ html[data-theme="light"] select option:checked,
       .then(function(remote){
         authSyncBusy=null;
         if(!remote||typeof remote!=='object')return false;
-        var cur=ls(KEY)||store||{};
-        var remAuth=(remote.auth&&typeof remote.auth==='object')?remote.auth:{};
-        // Auto-upload any locally changed PIN/PW that the server does not yet have
-        function checkAndPush(rRole,rName,locRec,remRec){
-          if(!locRec)return;
-          var locCh=!!(locRec.changed||locRec.pinChanged);
-          var remCh=!!(remRec&&(remRec.changed||remRec.pinChanged));
-          var lt=Math.max(Number(locRec.updatedAt||0),Number(locRec.resetAt||0));
-          var rt=Math.max(Number((remRec&&remRec.updatedAt)||0),Number((remRec&&remRec.resetAt)||0));
-          if((locCh&&!remCh&&rt===0)||(lt>rt)){
-            if(!locRec.updatedAt)locRec.updatedAt=Date.now();
-            pushAuthUpdate(rRole,rName,locRec);
-          }
+        if(remote.prefs&&typeof remote.prefs==='object'){
+          window.__dpsMemPrefs=Object.assign({theme:'dgwhite',sound:1,haptic:1,seenReqIds:[]},remote.prefs);
+          if(window.__applyThemeFromSync)window.__applyThemeFromSync(window.__dpsMemPrefs.theme);
+          if(window.__nxSyncPrefs)window.__nxSyncPrefs(window.__dpsMemPrefs);
         }
-        checkAndPush('admin','admin',cur.admin,remAuth.admin);
-        checkAndPush('principal','principal',cur.principal,remAuth.principal);
-        if(cur.teachers){
-          Object.keys(cur.teachers).forEach(function(tn){
-            checkAndPush('teacher',tn,cur.teachers[tn],remAuth.teachers&&remAuth.teachers[tn]);
-          });
+        if(remote.devlock&&typeof remote.devlock==='object'){
+          window.__dpsMemDevlock=remote.devlock;
         }
-        if(remote.auth){
-          var merged=mergeAuthStores(cur,remote.auth);
-          store=merged;
-          ls(KEY,merged);
+        if(remote.carts&&typeof remote.carts==='object'){
+          window.__dpsMemCarts=remote.carts;
+        }
+        if(remote.auth&&typeof remote.auth==='object'){
+          store=remote.auth;
+          ls(KEY,remote.auth);
           if(document.getElementById('name')&&mode==='login'){
             var prevVal=document.getElementById('name').value;
             fillNames();
@@ -3720,15 +3728,21 @@ html[data-theme="light"] select option:checked,
       if(pin!==first){mode='new';first='';buf='';busy=false;render();shake($('#dots'));setErr('PINs did not match. Start again.');return}
       var tKey=$('#name').value;
       if(store.teachers&&tKey){
-        store.teachers[tKey]=store.teachers[tKey]||{pin:'',pw:await hash(DEMO.teacherPw)};
-        store.teachers[tKey].pin=await hash(pin);
-        store.teachers[tKey].changed=true;
-        store.teachers[tKey].pinChanged=true;
-        store.teachers[tKey].updatedAt=Date.now();
+        var prevRec=store.teachers[tKey]?Object.assign({},store.teachers[tKey]):null;
+        var nextRec=Object.assign({},prevRec||{pin:'',pw:await hash(DEMO.teacherPw)},{
+          pin:await hash(pin),
+          changed:true,
+          pinChanged:true,
+          updatedAt:Date.now()
+        });
+        var savedOk=await Promise.race([pushAuthUpdate('teacher',tKey,nextRec),new Promise(function(r){setTimeout(function(){r(false)},6000)})]);
+        if(!savedOk){
+          buf='';busy=false;dots();shake($('#dots'));setErr('Could not save PIN to Neon database. Please try again.');return;
+        }
+        store.teachers[tKey]=nextRec;
         save();
-        await Promise.race([pushAuthUpdate('teacher',tKey,store.teachers[tKey]),new Promise(function(r){setTimeout(r,1800)})]);
       }
-      return success('Your new PIN is saved.');
+      return success('Your new PIN is saved to Neon database.');
     }
   }
 
@@ -3785,10 +3799,13 @@ html[data-theme="light"] select option:checked,
     window.__adminForcePin = false;
 
     function st(){
-      try{ return JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ return {}; }
+      return (window.__dpsMemDevlock&&typeof window.__dpsMemDevlock==='object')?window.__dpsMemDevlock:{};
     }
     function put(o){
-      try{ localStorage.setItem(KEY,JSON.stringify(o)); }catch(e){}
+      window.__dpsMemDevlock=o||{};
+      if(window.fetch){
+        fetch('/api/data',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({_op:{type:'devlock_update',devlock:window.__dpsMemDevlock}})}).catch(function(){});
+      }
     }
     function isSupported(){
       return !!(window.PublicKeyCredential && navigator.credentials && navigator.credentials.create && crypto && crypto.subtle && (location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'));
@@ -4119,28 +4136,35 @@ html[data-theme="light"] select option:checked,
   };
   var sessionCfg=Object.assign({},defaultSessionCfg);
   seed();
-  var DK='dps_data_v4', DK_DIRTY='dps_sync_dirty_v1';
-  var syncSaving=0, syncFetching=false, lastServerSig='';
+  var syncSaving=0, syncFetching=false, lastServerSig='', hydratedFromServer=false;
   function readAuthLocal(){
-    try{var a=JSON.parse(localStorage.getItem('dps_auth_v3'));return(a&&typeof a==='object')?a:null}catch(e){return null}
+    var a=window.__dpsMemAuth;
+    return (a&&typeof a==='object')?a:null;
   }
+  function savePrefsToNeon(){
+    if(!window.fetch)return;
+    window.__dpsMemPrefs=window.__dpsMemPrefs||{theme:'dgwhite',sound:1,haptic:1,seenReqIds:[]};
+    fetch('/api/data',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      credentials:'include',
+      body:JSON.stringify({_op:{type:'prefs_update',prefs:window.__dpsMemPrefs}})
+    }).catch(function(){});
+  }
+  window.__savePrefsToNeon=savePrefsToNeon;
   function statePayload(){
     if(log&&log.length>600)log=log.slice(0,600);
     var p={items:items,uid:uid,bills:bills,bid:bid,fac:fac,log:log,reqs:reqs,sessionCfg:sessionCfg};
     var au=readAuthLocal();
     if(au)p.auth=au;
+    if(window.__dpsMemPrefs)p.prefs=window.__dpsMemPrefs;
+    if(window.__dpsMemDevlock)p.devlock=window.__dpsMemDevlock;
+    if(window.__dpsMemCarts)p.carts=window.__dpsMemCarts;
     return p;
   }
   function stateSig(d){
     if(!d)return '';
-    try{return JSON.stringify({i:d.items||[],b:d.bills||[],f:d.fac||[],l:d.log||[],r:d.reqs||[],s:d.sessionCfg||{},a:d.auth||{}});}catch(e){return '';}
-  }
-  function saveLocalOnly(){
-    try{
-      var p=statePayload();
-      localStorage.setItem(DK,JSON.stringify(p));
-      return p;
-    }catch(e){return null;}
+    try{return JSON.stringify({i:d.items||[],b:d.bills||[],f:d.fac||[],l:d.log||[],r:d.reqs||[],s:d.sessionCfg||{},a:d.auth||{},p:d.prefs||{},dl:d.devlock||{},c:d.carts||{}});}catch(e){return '';}
   }
   function isPortalVisible(){
     var L=document.getElementById('L');
@@ -4148,6 +4172,7 @@ html[data-theme="light"] select option:checked,
   }
   function applyRemoteState(remote, skipRender){
     if(!remote||!Array.isArray(remote.items)||!remote.items.length)return false;
+    hydratedFromServer=true;
     var prevPendingMap={};
     (reqs||[]).forEach(function(x){if(x&&x.id!=null&&x.st==='Pending')prevPendingMap[x.id]=true});
     items=remote.items;
@@ -4159,14 +4184,24 @@ html[data-theme="light"] select option:checked,
     reqs=remote.reqs||[];
     bills.forEach(function(b){if(b.stockAdded===undefined)b.stockAdded=!(b.date<iso())});
     if(remote.sessionCfg)sessionCfg=Object.assign({},defaultSessionCfg,remote.sessionCfg);
-    if(remote.auth&&typeof remote.auth==='object'&&window.__dpsMergeAuth){
-      try{
-        var mergedAuth=window.__dpsMergeAuth(readAuthLocal(),remote.auth);
-        localStorage.setItem('dps_auth_v3',JSON.stringify(mergedAuth));
-      }catch(e){}
+    if(remote.auth&&typeof remote.auth==='object'){
+      window.__dpsMemAuth=remote.auth;
+    }
+    if(remote.prefs&&typeof remote.prefs==='object'){
+      window.__dpsMemPrefs=Object.assign({theme:'dgwhite',sound:1,haptic:1,seenReqIds:[]},remote.prefs);
+      if(typeof applyTheme==='function')applyTheme(window.__dpsMemPrefs.theme,true);
+      if(window.__nxSyncPrefs)window.__nxSyncPrefs(window.__dpsMemPrefs);
+    }
+    if(remote.devlock&&typeof remote.devlock==='object'){
+      window.__dpsMemDevlock=remote.devlock;
+    }
+    if(remote.carts&&typeof remote.carts==='object'){
+      window.__dpsMemCarts=remote.carts;
+      if(typeof tCartFor==='string'&&tCartFor&&Array.isArray(remote.carts[tCartFor])&&!tCartOpen&&typeof validLine==='function'){
+        tCart=remote.carts[tCartFor].filter(validLine);
+      }
     }
     lastServerSig=stateSig(remote);
-    saveLocalOnly();
     if(skipRender)return true;
     var Ael=document.getElementById('A'), Tel=document.getElementById('T');
     var ae=document.activeElement;
@@ -4195,15 +4230,6 @@ html[data-theme="light"] select option:checked,
   }
   function syncFromServer(forceRender){
     if(!window.fetch||syncSaving>0||syncFetching)return Promise.resolve(false);
-    // Flush pending offline save first before pulling
-    try{
-      var pending=localStorage.getItem(DK_DIRTY);
-      if(pending){
-        var parsedP=JSON.parse(pending);
-        localStorage.removeItem(DK_DIRTY);
-        return postToServer(parsedP.payload, parsedP.op).then(function(){return true;});
-      }
-    }catch(e){}
     syncFetching=true;
     return fetch('/api/data?_ts='+Date.now(),{cache:'no-store',credentials:'include'})
       .then(function(r){return r.ok?r.json():null;})
@@ -4211,12 +4237,13 @@ html[data-theme="light"] select option:checked,
         syncFetching=false;
         if(remote&&Array.isArray(remote.items)&&remote.items.length>0){
           var rSig=stateSig(remote);
-          if(rSig!==lastServerSig){
+          if(rSig!==lastServerSig||!hydratedFromServer){
             return applyRemoteState(remote, !forceRender && !isPortalVisible());
           }
+          hydratedFromServer=true;
           return false;
         }else if(items&&items.length>0){
-          // Server empty/uninitialized: seed server once from local master catalog
+          hydratedFromServer=true;
           save();
         }
         return false;
@@ -4235,11 +4262,16 @@ html[data-theme="light"] select option:checked,
       credentials:'include',
       body:JSON.stringify(bodyObj)
     })
-    .then(function(r){return r.json();})
+    .then(function(r){
+      return r.json().catch(function(){return {ok:false,error:'HTTP '+r.status};}).then(function(res){
+        if(!r.ok&&res&&res.ok!==false)res.ok=false;
+        return res;
+      });
+    })
     .then(function(res){
       syncSaving=Math.max(0,syncSaving-1);
-      try{localStorage.removeItem(DK_DIRTY);}catch(e){}
       if(res&&res.ok&&res.state){
+        hydratedFromServer=true;
         if(op&&op.type==='req_add'&&res.assignedId&&typeof tSent!=='undefined'&&tSent&&tSent.id===op.req.id){
           tSent.id=res.assignedId;
         }
@@ -4249,33 +4281,22 @@ html[data-theme="light"] select option:checked,
           applyRemoteState(res.state, false);
         }else{
           lastServerSig=srvSig;
-          saveLocalOnly();
         }
+      }else{
+        var errMsg=(res&&res.error)||'Neon database sync failed.';
+        if(window.EnterpriseAnim)EnterpriseAnim.toast('Database Save Failed',errMsg,'error');
       }
       return res;
     })
-    .catch(function(){
+    .catch(function(err){
       syncSaving=Math.max(0,syncSaving-1);
-      try{localStorage.setItem(DK_DIRTY,JSON.stringify({payload:payload,op:op||null,t:Date.now()}));}catch(e){}
-      return null;
+      if(window.EnterpriseAnim)EnterpriseAnim.toast('Database Save Failed','Could not reach Neon database. Changes were not saved.','error');
+      return {ok:false,error:(err&&err.message)||'Network error'};
     });
   }
-  try{
-    localStorage.removeItem('dps_data_v3');
-    localStorage.removeItem('dps_data_v2');
-    localStorage.removeItem('dps_data_v1');
-    var sv=JSON.parse(localStorage.getItem(DK));
-    if(sv&&Array.isArray(sv.items)&&sv.items.length>0){
-      items=sv.items;uid=sv.uid;bills=sv.bills||[];bid=sv.bid;fac=sv.fac;log=sv.log||[];reqs=sv.reqs||[];
-      bills.forEach(function(b){if(b.stockAdded===undefined)b.stockAdded=!(b.date<iso())});
-      if(sv.sessionCfg)sessionCfg=Object.assign({},defaultSessionCfg,sv.sessionCfg);
-      lastServerSig=stateSig(statePayload());
-    } else {
-      saveLocalOnly();
-    }
-  }catch(e){}
   function save(op){
-    var p=saveLocalOnly();
+    if(!hydratedFromServer&&!(op&&op._reset))return;
+    var p=statePayload();
     if(p){
       lastServerSig=stateSig(p);
       postToServer(p, op);
@@ -4417,9 +4438,11 @@ html[data-theme="light"] select option:checked,
     }
   }
 
-  function applyTheme(name){
+  function applyTheme(name, fromSync){
     name = (name==='dgwhite'||name==='obsidian') ? name : window.__thId();
-    try{ localStorage.setItem('dps_theme', name); }catch(e){}
+    window.__dpsMemPrefs=window.__dpsMemPrefs||{theme:'dgwhite',sound:1,haptic:1,seenReqIds:[]};
+    window.__dpsMemPrefs.theme=name;
+    if(!fromSync&&typeof savePrefsToNeon==='function')savePrefsToNeon();
     ['A','L','T'].forEach(function(id){
       var el = document.getElementById(id);
       if(el) el.setAttribute('data-theme', name);
@@ -4427,7 +4450,8 @@ html[data-theme="light"] select option:checked,
     document.documentElement.setAttribute('data-theme', name);
     try{ var mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute('content', name==='dgwhite' ? '#f2f7f4' : '#050505'); }catch(e){}
   }
-  applyTheme();
+  window.__applyThemeFromSync=function(name){applyTheme(name,true);};
+  applyTheme(window.__thId(),true);
 
   function closeSettingsModal(){
     var m=$('#settings-modal');
@@ -5296,8 +5320,8 @@ return}
 
   /* ===== Password Manager (admin only) ===== */
   var PWD={pin:'1234',pw:'Teacher@DPS26'},PWP={pin:'2025',pw:'Principal@DPS26'};
-  function pwAuth(){try{var a=JSON.parse(localStorage.getItem(AUTH_KEY));return a&&typeof a==='object'?a:null}catch(e){return null}}
-  function pwSave(a){try{localStorage.setItem(AUTH_KEY,JSON.stringify(a));return true}catch(e){return false}}
+  function pwAuth(){var a=window.__dpsMemAuth;return (a&&typeof a==='object')?a:null;}
+  function pwSave(a){window.__dpsMemAuth=a;return true;}
   async function pwEnsure(n){
     var a=pwAuth();if(!a)return;a.teachers=a.teachers||{};
     if(!a.teachers[n]){a.teachers[n]={pin:await hashAuth(PWD.pin),pw:await hashAuth(PWD.pw),changed:false};pwSave(a);if(window.__pushAuthUpdate)window.__pushAuthUpdate('teacher',n,a.teachers[n]);}
@@ -5820,7 +5844,7 @@ return}
     if(a==='mkdmg'){if(getRole()!=='admin')return;mkDmg();return}
     if(a==='dmgfrom'){if(getRole()!=='admin')return;dmgItem=openId;clearSub();view='add';addTab='dmg';go();$('#main').scrollTop=0;return}
     if(a==='mkbill'){if(getRole()!=='admin')return;mkBill();return}
-    if(a==='reset'){if(getRole()!=='admin')return;try{localStorage.removeItem(DK);localStorage.removeItem(DK_DIRTY)}catch(x){}seed();save({_reset:true});go();return}
+    if(a==='reset'){if(getRole()!=='admin')return;seed();save({_reset:true});go();return}
     if(d.r){
       var r=reqs.filter(function(x){return x.id===+d.r})[0],role=getRole(),msg='',okm=true,syncOp=null;
       if(!r)return;
@@ -6024,9 +6048,15 @@ return}
     var n=getTeacherName();
     if(tCartFor===n)return;
     tCartFor=n;tCart=[];
-    try{var a=JSON.parse(localStorage.getItem(cartKey()));if(Array.isArray(a))tCart=a.filter(validLine)}catch(e){}
+    var mc=(window.__dpsMemCarts&&n)?window.__dpsMemCarts[n]:null;
+    if(Array.isArray(mc))tCart=mc.filter(validLine);
   }
-  function saveCart(){try{localStorage.setItem(cartKey(),JSON.stringify(tCart))}catch(e){}}
+  function saveCart(){
+    var n=getTeacherName();if(!n)return;
+    window.__dpsMemCarts=window.__dpsMemCarts||{};
+    window.__dpsMemCarts[n]=tCart.slice();
+    if(hydratedFromServer)save({type:'cart_update',name:n,cart:window.__dpsMemCarts[n]});
+  }
   function cartQty(id,v){
     var l=tCart.filter(function(x){return x.id===id&&x.v===v})[0];
     return l?l.q:0;
@@ -6695,23 +6725,21 @@ return}
   };
   go();
   /* ---------- LIVE MULTI-DEVICE SYNC & REAL-TIME ALERTS ---------- */
-  var SEEN_REQ_KEY='dps_pr_seen_reqs_v1', seenPopupIds={};
+  var seenPopupIds={};
   function loadSeenReqs(){
-    try{
-      var arr=JSON.parse(localStorage.getItem(SEEN_REQ_KEY)||'[]');
-      if(Array.isArray(arr))arr.forEach(function(id){seenPopupIds[id]=true});
-    }catch(e){}
+    var arr=(window.__dpsMemPrefs&&Array.isArray(window.__dpsMemPrefs.seenReqIds))?window.__dpsMemPrefs.seenReqIds:[];
+    arr.forEach(function(id){seenPopupIds[id]=true;});
   }
   function markSeenReqs(ids){
-    ids.forEach(function(id){if(id!=null)seenPopupIds[id]=true});
-    try{
-      var all=Object.keys(seenPopupIds).slice(-200);
-      localStorage.setItem(SEEN_REQ_KEY,JSON.stringify(all));
-    }catch(e){}
+    ids.forEach(function(id){if(id!=null)seenPopupIds[id]=true;});
+    window.__dpsMemPrefs=window.__dpsMemPrefs||{theme:'dgwhite',sound:1,haptic:1,seenReqIds:[]};
+    window.__dpsMemPrefs.seenReqIds=Object.keys(seenPopupIds).slice(-200);
+    if(window.__savePrefsToNeon)window.__savePrefsToNeon();
   }
   loadSeenReqs();
   function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
   function showPrincipalReqPopup(itemsList){
+    loadSeenReqs();
     if(!itemsList||!itemsList.length)return;
     var Ael=document.getElementById('A');
     if(!Ael||Ael.hidden||getRole()!=='principal')return;
@@ -7966,11 +7994,24 @@ html body #A#A .kpi>div{display:block!important;margin:0!important;width:100%;fo
 .nx-sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.35);transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
 .nx-sw.on{background:var(--acc,#9bab84)}.nx-sw.on::after{transform:translateX(18px)}
 </style>
-<script id="nx-feedback-js">
+ <script id="nx-feedback-js">
 (function(){
- var K='nx_fb',st={sound:1,haptic:1};
- try{var j=JSON.parse(localStorage.getItem(K)||'null');if(j){st.sound=j.sound?1:0;st.haptic=j.haptic?1:0}}catch(e){}
- function save(){try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}}
+ var st={sound:1,haptic:1};
+ function syncPrefs(p){
+  if(!p||typeof p!=='object')return;
+  st.sound=(p.sound===undefined||p.sound)?1:0;
+  st.haptic=(p.haptic===undefined||p.haptic)?1:0;
+  var bs=document.querySelector('.nx-sw[data-nx="sound"]');if(bs)bs.classList.toggle('on',!!st.sound);
+  var bh=document.querySelector('.nx-sw[data-nx="haptic"]');if(bh)bh.classList.toggle('on',!!st.haptic);
+ }
+ window.__nxSyncPrefs=syncPrefs;
+ syncPrefs(window.__dpsMemPrefs);
+ function save(){
+  window.__dpsMemPrefs=window.__dpsMemPrefs||{theme:'dgwhite',sound:1,haptic:1,seenReqIds:[]};
+  window.__dpsMemPrefs.sound=st.sound;
+  window.__dpsMemPrefs.haptic=st.haptic;
+  if(window.__savePrefsToNeon)window.__savePrefsToNeon();
+ }
  var ac,last=0;
  function ctx(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();return ac}catch(e){return null}}
  function tone(f,t,d,type,g,f2){var a=ctx();if(!a)return;var c=a.currentTime+t,o=a.createOscillator(),v=a.createGain();

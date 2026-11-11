@@ -41,6 +41,9 @@ async function query(sqlText, params = []) {
   try {
     const raw = execFileSync(bin, [
       '-s',
+      '--retry', '2',
+      '--retry-delay', '1',
+      '--max-time', '18',
       '-X', 'POST',
       endpoint,
       '-H', `Neon-Connection-String: ${connectionString}`,

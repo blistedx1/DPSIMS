@@ -39,30 +39,21 @@ function readLocalDataObj() {
 }
 
 async function readAuthoritativeState(forceFresh) {
-  const now = Date.now();
-  if (!forceFresh && cachedStateStr && (now - cachedStateAt) < 1500) {
-    try { return { str: cachedStateStr, obj: JSON.parse(cachedStateStr) }; } catch (e) {}
-  }
-
-  let localObj = readLocalDataObj();
   if (db.isConnected()) {
-    try {
-      const r = await db.query("SELECT payload FROM dps_app_state WHERE key = 'current' LIMIT 1;");
-      if (r.rows && r.rows.length && r.rows[0].payload) {
-        const dbObj = typeof r.rows[0].payload === 'string' ? JSON.parse(r.rows[0].payload) : r.rows[0].payload;
-        // Prefer whichever actually has items if one is uninitialized
-        const dbHasItems = dbObj && Array.isArray(dbObj.items) && dbObj.items.length > 0;
-        const localHasItems = localObj && Array.isArray(localObj.items) && localObj.items.length > 0;
-        const chosen = dbHasItems || !localHasItems ? dbObj : localObj;
-        const str = JSON.stringify(chosen);
-        cachedStateStr = str;
-        cachedStateAt = Date.now();
-        fs.writeFile(DATA_FILE, str, () => {});
-        return { str, obj: chosen };
-      }
-    } catch (e) {}
+    const r = await db.query("SELECT payload FROM dps_app_state WHERE key = 'current' LIMIT 1;");
+    if (r.rows && r.rows.length && r.rows[0].payload) {
+      const dbObj = typeof r.rows[0].payload === 'string' ? JSON.parse(r.rows[0].payload) : r.rows[0].payload;
+      const str = JSON.stringify(dbObj);
+      cachedStateStr = str;
+      cachedStateAt = Date.now();
+      return { str, obj: dbObj };
+    }
+    const localObj = readLocalDataObj();
+    const chosen = localObj || { items: [], reqs: [] };
+    return { str: JSON.stringify(chosen), obj: chosen };
   }
 
+  const localObj = readLocalDataObj();
   const chosen = localObj || { items: [], reqs: [] };
   const str = JSON.stringify(chosen);
   cachedStateStr = str;
@@ -211,15 +202,16 @@ const server = http.createServer((req, res) => {
     }
 
     if (req.method === 'GET') {
-      readAuthoritativeState(false).then(({ str }) => {
+      readAuthoritativeState(true).then(({ str }) => {
         res.writeHead(200, {
           'Content-Type': 'application/json; charset=utf-8',
           'Cache-Control': 'no-store, no-cache, must-revalidate'
         });
         res.end(str);
-      }).catch(() => {
-        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-        res.end('{}');
+      }).catch(err => {
+        console.error('[DB] Neon read error:', err.message);
+        res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+        res.end(JSON.stringify({ ok: false, error: 'Neon database read failed' }));
       });
       return;
     }
@@ -237,18 +229,7 @@ const server = http.createServer((req, res) => {
           const { state: merged, assignedId } = mergeAppState(existing, parsed);
           const mergedStr = JSON.stringify(merged);
 
-          // Update memory cache immediately so concurrent GETs get newest state
-          cachedStateStr = mergedStr;
-          cachedStateAt = Date.now();
-
-          // Detect requisition transitions & broadcast live notifications (SSE + DB + Web Push)
-          const notifs = detectReqNotifications(existing ? existing.reqs : [], merged.reqs);
-          notifs.forEach(n => broadcastNotification(n));
-
-          // Persist to local disk & Neon PostgreSQL before responding
-          try { fs.writeFileSync(DATA_FILE, mergedStr, 'utf8'); } catch (err) {
-            console.error('[DATA] Local write error:', err.message);
-          }
+          // Strict Neon DB persistence first when DB is configured
           if (db.isConnected()) {
             try {
               await db.query(
@@ -257,21 +238,35 @@ const server = http.createServer((req, res) => {
               );
             } catch (err) {
               console.error('[DB] Cloud sync error:', err.message);
+              res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+              return res.end(JSON.stringify({ ok: false, error: 'Neon database write failed: ' + err.message }));
             }
           }
+
+          // Update memory cache & local mirror only after Neon write succeeds
+          cachedStateStr = mergedStr;
+          cachedStateAt = Date.now();
+          try { fs.writeFileSync(DATA_FILE, mergedStr, 'utf8'); } catch (err) {
+            console.error('[DATA] Local write error:', err.message);
+          }
+
+          // Detect requisition transitions & broadcast live notifications (SSE + DB + Web Push)
+          const notifs = detectReqNotifications(existing ? existing.reqs : [], merged.reqs);
+          notifs.forEach(n => broadcastNotification(n));
+
           res.writeHead(200, {
             'Content-Type': 'application/json; charset=utf-8',
             'Cache-Control': 'no-store'
           });
           res.end(JSON.stringify({
             ok: true,
-            source: db.isConnected() ? 'postgres+local' : 'local',
+            source: db.isConnected() ? 'postgres' : 'local',
             state: merged,
             assignedId: assignedId || null
           }));
         } catch (e) {
-          res.writeHead(400, { 'Content-Type': 'text/plain' });
-          res.end('Invalid JSON');
+          res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+          res.end(JSON.stringify({ ok: false, error: e.message || 'Server error' }));
         }
       });
       return;

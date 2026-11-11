@@ -29,6 +29,13 @@ module.exports = async (req, res) => {
   }
 
   const readExisting = async () => {
+    if (db.isConnected()) {
+      const r = await db.query("SELECT payload FROM dps_app_state WHERE key = 'current' LIMIT 1;");
+      if (r.rows && r.rows.length && r.rows[0].payload) {
+        return typeof r.rows[0].payload === 'string' ? JSON.parse(r.rows[0].payload) : r.rows[0].payload;
+      }
+      return { items: [], reqs: [] };
+    }
     let localObj = null;
     try {
       const dataFile = path.join(process.cwd(), 'data.json');
@@ -36,31 +43,21 @@ module.exports = async (req, res) => {
         localObj = JSON.parse(fs.readFileSync(dataFile, 'utf8'));
       }
     } catch (e) {}
-
-    if (db.isConnected()) {
-      try {
-        const r = await db.query("SELECT payload FROM dps_app_state WHERE key = 'current' LIMIT 1;");
-        if (r.rows && r.rows.length && r.rows[0].payload) {
-          const dbObj = typeof r.rows[0].payload === 'string' ? JSON.parse(r.rows[0].payload) : r.rows[0].payload;
-          const dbHasItems = dbObj && Array.isArray(dbObj.items) && dbObj.items.length > 0;
-          const localHasItems = localObj && Array.isArray(localObj.items) && localObj.items.length > 0;
-          return dbHasItems || !localHasItems ? dbObj : localObj;
-        }
-      } catch (err) {
-        console.error('[API/DATA] DB read error:', err.message);
-      }
-    }
     return localObj || { items: [], reqs: [] };
   };
 
-  // GET: Read data from Neon DB, fallback to data.json
+  // GET: Read strictly from Neon DB (fallback to data.json only when DB is unconfigured)
   if (req.method === 'GET') {
-    const state = await readExisting();
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    return res.status(200).send(JSON.stringify(state));
+    try {
+      const state = await readExisting();
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      return res.status(200).send(JSON.stringify(state));
+    } catch (err) {
+      return res.status(503).json({ ok: false, error: 'Neon DB read failed: ' + err.message });
+    }
   }
 
-  // POST: Merge & save data to Neon DB, auto-detect requisition status changes and notify
+  // POST: Merge & save strictly to Neon DB first
   if (req.method === 'POST') {
     try {
       const parsed = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
@@ -69,6 +66,16 @@ module.exports = async (req, res) => {
       const mergedStr = JSON.stringify(merged);
 
       if (db.isConnected()) {
+        try {
+          await db.query(
+            "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', $1, NOW()) ON CONFLICT (key) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW();",
+            [mergedStr]
+          );
+        } catch (dbErr) {
+          console.error('[API/DATA] DB write error:', dbErr.message);
+          return res.status(503).json({ ok: false, error: 'Neon DB write failed: ' + dbErr.message });
+        }
+
         try {
           const notifs = detectReqNotifications(existing ? existing.reqs : [], merged.reqs);
           for (const notifData of notifs) {
@@ -92,15 +99,6 @@ module.exports = async (req, res) => {
         } catch (e) {
           console.error('[API/DATA] Notification diff error:', e.message);
         }
-
-        try {
-          await db.query(
-            "INSERT INTO dps_app_state (key, payload, updated_at) VALUES ('current', $1, NOW()) ON CONFLICT (key) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW();",
-            [mergedStr]
-          );
-        } catch (dbErr) {
-          console.error('[API/DATA] DB write error:', dbErr.message);
-        }
       }
 
       try {
@@ -115,7 +113,7 @@ module.exports = async (req, res) => {
       });
     } catch (err) {
       console.error('[API/DATA] POST error:', err.message);
-      return res.status(400).json({ ok: false, error: err.message });
+      return res.status(500).json({ ok: false, error: err.message });
     }
   }
 
